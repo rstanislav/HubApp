@@ -1,0 +1,111 @@
+@import "reset.css";
+
+body {
+	background: #3e5b83 url('../images/login/background.png') top repeat-x;
+	color: #000;
+	font: 13px "Lucida Grande", Verdana, sans-serif;
+}
+
+a {
+	color: #101821;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #d4617e;
+}
+
+.box {
+	padding: 30px 35px 35px 35px;
+	-webkit-border-radius: 5px;
+}
+
+#login {
+	width: 350px;
+	margin: 50px auto 50px auto;
+}
+
+#login .box {
+	background: #c3ccd5 url('../images/login/background_box.png') bottom repeat-x;
+	//background: #fff;
+	line-height: 22px;
+	position: relative;
+	clear: both;
+	padding-bottom: 30px;
+	margin-bottom: 20px;
+	-webkit-border-radius: 5px;
+}
+
+#login p {
+	margin-top: 5px;
+}
+
+h2 {
+	font: 18px "HelveticaNeue-Light", "Helvetica Neue Light", Helvetica, sans-serif;
+	color: #2c4874;
+	text-shadow: 0px 1px 2px #ccc;
+	padding-bottom: 5px;
+}
+
+label {
+	display: block;
+	margin-bottom: 5px;
+	font-size: 11px;
+}
+
+input.text {
+	width: 272px;
+	padding: 2px 3px;
+	margin: 0 -1px 10px -1px;
+	font-size: 13px;
+	background-color: #7188a1;
+	border: 1px solid #1e1a17;
+	color: #fff;
+}
+
+input.text:focus {
+	background-color: #556e89;
+	color: white;
+}
+
+.remember {
+	float: left;
+	padding-top: 7px;
+}
+
+.remember span {
+	cursor: default;
+}
+
+.remember input {
+	margin: 5px 6px 0 0;
+	float: left;
+}
+
+input.submit {
+	float: right;
+	background: #4f565a;
+	border: 0;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	color: #fff;
+	font: bold 12px "Lucida Grande", Verdana, sans-serif;
+	margin: 7px 3px 0 0;
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+input.submit:hover {
+	background: #808080;
+	color: white;
+}
+
+#login #footer {
+	margin: -5px 35px;
+	font-size: 11px;
+	line-height: 22px;
+	text-align: right;
+}
+
+#login #footer a {
+}

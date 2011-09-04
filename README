@@ -1,0 +1,19 @@
+This glue of PHP/JS/HTML/MySQL gives you complete control over your media center running XBMC on a Windows computer.
+
+Features:
+* Add TV series you would like to keep track of
+* Automatically download new episodes from RSS feeds with uTorrent based on your preferred quality requirement (HDTV, BRRip, 720p etc)
+* Effortlessly add new drives to your HTPC. Just plug in the drive and it will be available to add in the control panel. Required folders are created, XBMC sources are updated and folder structure is maintained.
+* View your XBMC movie library and start movies right from the control panel.
+* Add movies to your wishlist and it will automatically be added when it is available via RSS feeds
+* Add multiple RSS feeds
+* Downloaded files are extracted and moved to the appropriate place on your active drive.
+* View a detailed log of the actions Hub has taken while you were sleeping.
+* Add multiple XBMC "Zones" if you have more than one HTPC in your home running XBMC. You can control the living room while your kids are controlling the bed room!
+* Add users, assign them to a usergroup and give user groups permission. Fully customizable! You can give your guests a guest account and make sure they don't screw anything up.
+* Browse and download archived torrents
+* Control uTorrent directly from Hub
+
+Hub combines the best of all worlds. TheTVDB.com supplies the TV data, RSS feeds supplies the torrent data, uTorrent supplies the means to get new episodes/movies and XBMC supplies a beautiful interface to showcase them on. Hub glues all of these together so that you only have one place to control all of these.
+
+Hub requires a local installation of Apache, PHP >5.3.0, MySQL, uTorrent (2.2 supported), XBMC and a working internet connection.

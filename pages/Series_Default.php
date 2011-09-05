@@ -35,8 +35,8 @@ foreach($Series AS $Serie) {
 	$Serie['FirstAired']    = ($Serie['SerieFirstAired']) ? date('d.m.y', $Serie['SerieFirstAired']) : '';
 	
 	$SerieRefreshLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieRefresh'))     ? '<a id="SerieRefresh-'.$Serie['SerieID'].'"><img src="images/icons/refresh.png" /></a>'   : '';
-	$SerieSpellingLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieAddSpelling')) ? '<a id="SerieSpelling-'.$Serie['SerieID'].'"><img src="images/icons/spelling.png" /></a>' : '';
-	$SerieDeleteLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDelete'))      ? '<a id="SerieDelete-'.$Serie['SerieID'].'"><img src="images/icons/delete.png" /></a>'     : '';
+	$SerieSpellingLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieAddSpelling')) ? '<a id="SerieSpelling-'.$Serie['SerieID'].'" rel="'.$Serie['SerieTitle'].'"><img src="images/icons/spelling.png" /></a>' : '';
+	$SerieDeleteLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDelete'))      ? '<a id="SerieDelete-'.$Serie['SerieID'].'" rel="'.$Serie['SerieTitle'].'"><img src="images/icons/delete.png" /></a>'     : '';
 	
 	echo '
 	<tr id="Serie-'.$Serie['SerieID'].'">

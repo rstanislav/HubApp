@@ -56,7 +56,7 @@ foreach($ZonesObj->GetZones() AS $Zone) {
 		$SwitchButtonText = 'Switch to';
 	}
 	
-	$ZoneDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneDelete')) ? '<a id="ZoneDelete-'.$Zone['ZoneID'].'"><img src="images/icons/delete.png" /></a>' : '';
+	$ZoneDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneDelete')) ? '<a id="ZoneDelete-'.$Zone['ZoneID'].'" rel="'.$Zone['ZoneName'].'"><img src="images/icons/delete.png" /></a>' : '';
 	
 	echo '
 	 <tr id="Zone-'.$Zone['ZoneID'].'">

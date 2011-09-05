@@ -26,11 +26,11 @@ if(is_array($Torrents) && sizeof($Torrents)) {
 	foreach($Torrents AS $Torrent) {
 		$TimeRemaining = ($Torrent[UTORRENT_TORRENT_DOWNSPEED]) ? $HubObj->ConvertSeconds(($Torrent[UTORRENT_TORRENT_SIZE] - $Torrent[UTORRENT_TORRENT_DOWNLOADED]) / $Torrent[UTORRENT_TORRENT_DOWNSPEED]) : '∞';
 		
-		$TCPause  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentPause')) ? '<a id="TorrentPause-'.$Torrent[UTORRENT_TORRENT_HASH].'"><img src="images/icons/control_pause.png" /></a>' : '';
-		$TCStop   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStop')) ? '<a id="TorrentStop-'.$Torrent[UTORRENT_TORRENT_HASH].'"><img src="images/icons/control_stop.png" /></a>' : '';
-		$TCStart  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStart')) ? '<a id="TorrentStart-'.$Torrent[UTORRENT_TORRENT_HASH].'"><img src="images/icons/control_play.png" /></a>' : '';
-		$TCDelete = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDelete')) ? '<a id="TorrentDelete-'.$Torrent[UTORRENT_TORRENT_HASH].'"><img src="images/icons/delete.png" /></a>' : '';
-		$TCDelete .= ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDeleteData')) ? '<a id="TorrentDeleteData-'.$Torrent[UTORRENT_TORRENT_HASH].'"><img src="images/icons/delete_plus.png" /></a>' : '';
+		$TCPause   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentPause')) ? '<a id="TorrentPause-'.$Torrent[UTORRENT_TORRENT_HASH].'" rel="'.$Torrent[UTORRENT_TORRENT_NAME].'"><img src="images/icons/control_pause.png" /></a>' : '';
+		$TCStop    = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStop')) ? '<a id="TorrentStop-'.$Torrent[UTORRENT_TORRENT_HASH].'" rel="'.$Torrent[UTORRENT_TORRENT_NAME].'"><img src="images/icons/control_stop.png" /></a>' : '';
+		$TCStart   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStart')) ? '<a id="TorrentStart-'.$Torrent[UTORRENT_TORRENT_HASH].'" rel="'.$Torrent[UTORRENT_TORRENT_NAME].'"><img src="images/icons/control_play.png" /></a>' : '';
+		$TCDelete  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDelete')) ? '<a id="TorrentDelete-'.$Torrent[UTORRENT_TORRENT_HASH].'" rel="'.$Torrent[UTORRENT_TORRENT_NAME].'"><img src="images/icons/delete.png" /></a>' : '';
+		$TCDelete .= ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDeleteData')) ? '<a id="TorrentDeleteData-'.$Torrent[UTORRENT_TORRENT_HASH].'" rel="'.$Torrent[UTORRENT_TORRENT_NAME].'"><img src="images/icons/delete_plus.png" /></a>' : '';
 		
 		$TorrentControls = $TCDelete;
 		

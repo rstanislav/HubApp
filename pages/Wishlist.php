@@ -40,7 +40,7 @@ if(is_array($Wishes)) {
 	 </tr>
 	 </thead>'."\n";
 	foreach($Wishes AS $Wish) {
-		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'"><img src="images/icons/delete.png" /></a>' : '';
+		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'" rel="'.$Wish['WishlistTitle'].' ('.$Wish['WishlistYear'].')"><img src="images/icons/delete.png" /></a>' : '';
 		
 		echo '
 		<tr id="Wishlist-'.$Wish['WishlistID'].'">
@@ -80,7 +80,7 @@ if(is_array($Wishes)) {
 	 </thead>'."\n";
 	foreach($Wishes AS $Wish) {
 		$WishlistPlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.urlencode($Wish['WishlistFile']).'"><img src="images/icons/control_play.png" title="Play '.$Wish['WishlistFile'].'" /></a>' : '';
-		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'"><img src="images/icons/delete.png" /></a>' : '';
+		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'" rel="'.$Wish['WishlistTitle'].' ('.$Wish['WishlistYear'].')"><img src="images/icons/delete.png" /></a>' : '';
 		$WishListStatusImg = '';
 		
 		if($Wish['TorrentKey'] && !$Wish['WishlistFile']) {

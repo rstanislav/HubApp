@@ -189,30 +189,6 @@ function AjaxButton(Button, Extra) {
 	if(!ButtonClass)                      ButtonClass = 'positive';
 	
 	switch(Action) {
-		case 'ZoneDelete':
-			jConfirm('Are you sure you want to delete this zone?', 'Delete zone', function(response) {
-				if(response) {
-					$.ajax({
-						method: 'get',
-						url:    'load.php',
-						data:   'page=ZoneDelete&ZoneID=' + ID,
-						beforeSend: function() {
-							$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
-							$(ButtonObj).contents().find('.label').text('Deleting ...');
-						},
-						success: function(Return) {
-							if(Return != 'OK') {
-								$(ButtonObj).contents().find('.label').text('Error!');
-							}
-							else {
-								$('#Zone-' + ID).slideUp('slow').remove();
-							}
-						}
-					});
-				}
-			});
-		break;
-		
 		case 'FoldersRebuild':
 			$.ajax({
 				method: 'get',
@@ -276,7 +252,7 @@ function AjaxButton(Button, Extra) {
 		break;
 		
 		case 'SerieSpelling':
-			jPrompt('', '', 'Alternate title', function(response) {
+			jPrompt('Type in a new alternate title for "' + $(ButtonObj).attr('rel') + '"', '', 'Alternate Title', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',
@@ -301,8 +277,8 @@ function AjaxButton(Button, Extra) {
 		break;
 		
 		case 'SerieDelete':
-			jConfirm('Are you sure you want to delete this serie?', 'Delete serie', function(response) {
-				if(response) {
+			jPrompt('Are you sure you want to delete "' + $(ButtonObj).attr('rel') + '" along with all episodes and folders?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Serie', function(response) {
+				if(response == 'delete') {
 					$.ajax({
 						method: 'get',
 						url:    'load.php',
@@ -409,6 +385,29 @@ function AjaxLink(Link) {
 	
 	LinkVal = $(Link).html();
 	switch(Action) {
+		case 'ZoneDelete':
+			jPrompt('Are you sure you want to delete zone "' + $(Link).attr('rel') + '"?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Zone', function(response) {
+				if(response == 'delete') {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=ZoneDelete&ZoneID=' + FirstID,
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
+							}
+							else {
+								$('#Zone-' + FirstID).slideUp('slow').remove();
+							}
+						}
+					});
+				}
+			});
+		break;
+		
 		case 'DriveActive':
 			$.ajax({
 				method: 'get',
@@ -448,7 +447,7 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'DriveRemove':
-			jConfirm('Are you sure you want to remove this drive?', 'Remove drive', function(response) {
+			jConfirm('Are you sure you want to remove "' + $(Link).attr('rel') + '"?', 'Remove Drive', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',
@@ -490,7 +489,7 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'SerieSpelling':
-			jPrompt('', '', 'Alternate title', function(response) {
+			jPrompt('Type in a new alternate title for "' + $(Link).attr('rel') + '"', '', 'Alternate Title', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',
@@ -513,8 +512,8 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'SerieDelete':
-			jConfirm('Are you sure you want to delete this serie?', 'Delete serie', function(response) {
-				if(response) {
+			jPrompt('Are you sure you want to delete "' + $(Link).attr('rel') + '" along with all episodes and folders?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Serie', function(response) {
+				if(response == 'delete') {
 					$.ajax({
 						method: 'get',
 						url:    'load.php',
@@ -638,7 +637,7 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'TorrentDelete':
-			jConfirm('Are you sure you want to delete this torrent?', 'Delete torrent', function(response) {
+			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '"?', 'Delete Torrent?', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',
@@ -661,7 +660,7 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'TorrentDeleteData':
-			jConfirm('Are you sure you want to delete this torrent with all of its data?', 'Delete torrent', function(response) {
+			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '" with all of its data?', 'Delete Torrent', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',
@@ -703,7 +702,7 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'WishlistDelete':
-			jConfirm('Are you sure you want to delete this item from the wishlist?', 'Delete wish', function(response) {
+			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '" from the Wishlist?', 'Delete Wish', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',
@@ -726,7 +725,7 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'RSSFeedDelete':
-			jConfirm('Are you sure you want to delete this feed along with all the entries?', 'Delete RSS Feed', function(response) {
+			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '" along with all the data?', 'Delete RSS Feed', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',

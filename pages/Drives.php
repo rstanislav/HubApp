@@ -27,20 +27,21 @@ $Drives = $DrivesObj->GetDrives();
 
 $TotalFreeSpace = $TotalSpace = 0;
 foreach($Drives AS $Drive) {
+	$DriveRoot       = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
+	$DriveRootText   = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'].' ('.$Drive['DriveLetter'].')' : $Drive['DriveLetter'];
+	
 	if($Drive['DriveID'] == $HubObj->ActiveDrive) {
 		$DriveActiveLink = '';
 		$DriveRemoveLink = '';
 	}
 	else {
-		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'"><img src="images/icons/drive_active.png" /></a>';
-		$DriveRemoveLink = '<a id="DriveRemove-'.$Drive['DriveID'].'"><img src="images/icons/drive_remove.png" /></a>';
+		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active.png" /></a>';
+		$DriveRemoveLink = '<a id="DriveRemove-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_remove.png" /></a>';
 	}
 	
 	$DriveActiveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) ? $DriveActiveLink : '';
 	$DriveRemoveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) ? $DriveRemoveLink : '';
 	
-	$DriveRoot       = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
-	$DriveRootText   = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'].' ('.$Drive['DriveLetter'].')' : $Drive['DriveLetter'];
 	$FreeSpace       = $DrivesObj->GetFreeSpace($DriveRoot, TRUE);
 	$Space           = $DrivesObj->GetTotalSpace($DriveRoot, TRUE);
 	$TotalFreeSpace += $FreeSpace;

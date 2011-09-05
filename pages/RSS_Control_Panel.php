@@ -41,7 +41,7 @@ if(is_array($RSSFeeds)) {
 	 </tr>
 	 </thead>'."\n";
 	foreach($RSSFeeds AS $RSSFeed) {
-		$RSSFeedDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'RSSFeedDelete')) ? '<a id="RSSFeedDelete-'.$RSSFeed['RSSID'].'"><img src="images/icons/delete.png" /></a>' : '';
+		$RSSFeedDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'RSSFeedDelete')) ? '<a id="RSSFeedDelete-'.$RSSFeed['RSSID'].'" rel="'.$RSSFeed['RSSTitle'].'"><img src="images/icons/delete.png" /></a>' : '';
 		
 		echo '
 		<tr id="RSSFeed-'.$RSSFeed['RSSID'].'">

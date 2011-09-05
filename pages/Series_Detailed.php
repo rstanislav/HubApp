@@ -22,8 +22,8 @@ if(is_array($Series)) {
 		}
 		
 		$SerieRefreshLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieRefresh')) ? '<a id="SerieRefresh-'.$SerieID.'" class="button neutral"><span class="inner"><span class="label" nowrap="">Refresh</span></span></a>' : '';
-		$SerieSpellingLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieAddSpelling')) ? '<a id="SerieSpelling-'.$SerieID.'" class="button positive"><span class="inner"><span class="label" nowrap="">+Spelling</span></span></a>' : '';
-		$SerieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDelete')) ? '<a id="SerieDelete-'.$SerieID.'" class="button negative"><span class="inner"><span class="label" nowrap="">Delete</span></span></a>' : '';
+		$SerieSpellingLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieAddSpelling')) ? '<a id="SerieSpelling-'.$SerieID.'" rel="'.$Serie['SerieTitle'].'" class="button positive"><span class="inner"><span class="label" nowrap="">+Spelling</span></span></a>' : '';
+		$SerieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDelete')) ? '<a id="SerieDelete-'.$SerieID.'" rel="'.$Serie['SerieTitle'].'" class="button negative"><span class="inner"><span class="label" nowrap="">Delete</span></span></a>' : '';
 		
 		echo '
 		<div class="head-control">

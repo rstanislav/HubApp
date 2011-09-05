@@ -1,7 +1,7 @@
 <div class="head-control">
  <a id="XBMCUpdateLibrary-0" class="button positive"><span class="inner"><span class="label" nowrap="">Update Library</span></span></a>
  <a id="XBMCCleanLibrary-0" class="button positive"><span class="inner"><span class="label" nowrap="">Clean Library</span></span></a>
- <a id="XBMCTakeScreenshot-0" class="button positive"><span class="inner"><span class="label" nowrap="">Take A Screenshot</span></span></a>
+ <!--<a id="XBMCTakeScreenshot-0" class="button positive"><span class="inner"><span class="label" nowrap="">Take A Screenshot</span></span></a>//-->
 </div>
  
 <div class="head">XBMC Control Panel <small style="font-size: 12px;">(<a href="#!/Help/XBMCCP">?</a>)</small></div>

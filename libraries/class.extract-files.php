@@ -19,7 +19,8 @@ class ExtractFiles extends Hub {
 		$CompletedFiles = array();
 		if(is_array($Drives)) {
 			foreach($Drives AS $Drive) {
-				$Files = Hub::RecursiveGlob($Drive['DriveRoot'].'/Completed', "{*.mp4,*.mkv,*.avi,*.rar}", GLOB_BRACE);
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$Files = Hub::RecursiveGlob($DriveRoot.'/Completed', "{*.mp4,*.mkv,*.avi,*.rar}", GLOB_BRACE);
 				
 				foreach($Files AS $File) {
 					$FileExt = pathinfo($File, PATHINFO_EXTENSION);
@@ -48,7 +49,7 @@ class ExtractFiles extends Hub {
 							
 							if($UniqueRarFile) {
 								if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b/i", $File)) {
-									$CompletedFiles['Extract'][] = $File;
+									$CompletedFiles['Extract'][] = $File.','.$Drive['DriveID'];
 								}
 							}
 						break;
@@ -57,7 +58,7 @@ class ExtractFiles extends Hub {
 						case 'mkv':
 						case 'avi':
 							if($this->GetFileSize($File) >= (1024 * 1024 * 150)) {
-								$CompletedFiles['Move'][] = $File;
+								$CompletedFiles['Move'][] = $File.','.$Drive['DriveID'];
 							}
 						break;
 					}
@@ -68,29 +69,31 @@ class ExtractFiles extends Hub {
 		return $CompletedFiles;
 	}
 	
-	function ExtractFile($File) {
+	function ExtractFile($File, $DriveID) {
 		$FileInfo = pathinfo($File);
 		$FileInfo['foldername'] = substr($FileInfo['dirname'], (strrpos($FileInfo['dirname'], '/') + 1));
-		$FileInfo['drive']      = substr($FileInfo['dirname'], 0, (strpos($FileInfo['dirname'], '/')));
+		
+		$Drive = Drives::GetDriveByID($DriveID);
+		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
 		
 		if(!empty($FileInfo['foldername'])) {
-			exec('"'.realpath(dirname(__FILE__).'/../').'/resources/unrar/UnRAR.exe" e "'.$File.'" "'.$FileInfo['dirname'].'/"', $RarOutput, $RarReturn);
+			exec('"'.realpath(dirname(__FILE__).'/../').'/resources/unrar/UnRAR.exe" e "'.str_replace('/', '\\', $File).'" "'.str_replace('/', '\\', $FileInfo['dirname']).'/"', $RarOutput, $RarReturn);
 			
 			if($RarReturn == 0) {
 				$ExtractedFile = $RarOutput[(sizeof($RarOutput) - 2)];
 				$ExtractedFile = str_replace('...         ', '', $ExtractedFile);
 				$ExtractedFile = substr($ExtractedFile, 0, strpos($ExtractedFile, '  '));
 				
-				$MoveFileReturn = self::MoveFile($FileInfo['dirname'].'/'.$ExtractedFile);
+				$MoveFileReturn = self::MoveFile($FileInfo['dirname'].'/'.$ExtractedFile, $DriveID);
 				
 				return $MoveFileReturn;
 			}
 			else {
-				if(@rename($FileInfo['dirname'], $FileInfo['drive'].'/Unsorted/'.$FileInfo['foldername'])) {
-					Hub::AddLog(EVENT.'File System', 'Success', 'Moved broken download "'.$FileInfo['dirname'].'" to "'.$FileInfo['drive'].'/Unsorted/'.$FileInfo['foldername'].'"');
+				if(@rename($FileInfo['dirname'], $DriveRoot.'/Unsorted/'.$FileInfo['foldername'])) {
+					Hub::AddLog(EVENT.'File System', 'Success', 'Moved broken download "'.$FileInfo['dirname'].'" to "'.$DriveRoot.'/Unsorted/'.$FileInfo['foldername'].'"');
 				}
 				else {
-					Hub::AddLog(EVENT.'File System', 'Failure', 'Failed to move broken download "'.$FileInfo['dirname'].'" to "'.$FileInfo['drive'].'/Unsorted/'.$FileInfo['foldername'].'"');
+					Hub::AddLog(EVENT.'File System', 'Failure', 'Failed to move broken download "'.$FileInfo['dirname'].'" to "'.$DriveRoot.'/Unsorted/'.$FileInfo['foldername'].'"');
 				}
 				
 				return FALSE;
@@ -98,13 +101,15 @@ class ExtractFiles extends Hub {
 		}
 	}
 	
-	function MoveFile($File) {
+	function MoveFile($File, $DriveID) {
 		$FileInfo = pathinfo($File);
 		$FileInfo['foldername'] = substr($FileInfo['dirname'], (strrpos($FileInfo['dirname'], '/') + 1));
-		$FileInfo['drive']      = substr($FileInfo['dirname'], 0, (strpos($FileInfo['dirname'], '/')));
+		
+		$Drive = Drives::GetDriveByID($DriveID);
+		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
 		
 		if(in_array(strtoupper($FileInfo['foldername']), array('CD1', 'CD2', 'CD3'))) {
-			$NewFileName = str_replace($FileInfo['drive'].'/Completed/', '', $FileInfo['dirname']);
+			$NewFileName = str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']);
 			$NewFileName = str_replace('/', '-', $NewFileName);
 			$NewFileName = $NewFileName.'.'.$FileInfo['extension'];
 		}
@@ -123,36 +128,36 @@ class ExtractFiles extends Hub {
 		
 		$ParsedFile = RSS::ParseRelease($NewFileName);
 		
-		$NewFolder = $FileInfo['drive'].'/Unsorted';
+		$NewFolder = $DriveRoot.'/Unsorted';
 		if($ParsedFile['Type'] == 'TV') {
 			$Serie = $this->PDO->query('SELECT SerieTitle, SerieTitleAlt, SerieID FROM Series WHERE SerieTitle = "'.$ParsedFile['Title'].'" OR SerieTitleAlt = "'.$ParsedFile['Title'].'"')->fetch();
 			
-			if(!empty($Serie['SerieTitle']) && is_dir($FileInfo['drive'].'/Media/TV/'.$Serie['SerieTitle'])) {
-				$NewFolder = $FileInfo['drive'].'/Media/TV/'.$Serie['SerieTitle'];
+			if(!empty($Serie['SerieTitle']) && is_dir($DriveRoot.'/Media/TV/'.$Serie['SerieTitle'])) {
+				$NewFolder = $DriveRoot.'/Media/TV/'.$Serie['SerieTitle'];
 			}
-			else if(!empty($Serie['SerieTitleAlt']) && is_dir($FileInfo['drive'].'/Media/TV/'.$Serie['SerieTitleAlt'])) {
-				$NewFolder = $FileInfo['drive'].'/Media/TV/'.$Serie['SerieTitleAlt'];
+			else if(!empty($Serie['SerieTitleAlt']) && is_dir($DriveRoot.'/Media/TV/'.$Serie['SerieTitleAlt'])) {
+				$NewFolder = $DriveRoot.'/Media/TV/'.$Serie['SerieTitleAlt'];
 			}
 		}
 		else if($ParsedFile['Type'] == 'Movie') {
-			if(is_dir($FileInfo['drive'].'/Media/Movies')) {
-				$NewFolder = $FileInfo['drive'].'/Media/Movies';
+			if(is_dir($DriveRoot.'/Media/Movies')) {
+				$NewFolder = $DriveRoot.'/Media/Movies';
 			}
 		}
 		else {
-			if(is_dir($FileInfo['drive'])) {
-				$NewFolder = $FileInfo['drive'].'/Unsorted';
+			if(is_dir($DriveRoot)) {
+				$NewFolder = $DriveRoot.'/Unsorted';
 			}
 		}
 		
 		if(rename($FileInfo['dirname'].'/'.$FileInfo['basename'], $NewFolder.'/'.$NewFileName)) {
 			$AddLogEntry = '';
 				
-			if(!str_replace($FileInfo['drive'].'/Completed', '', $FileInfo['dirname'])) {
+			if(!str_replace($DriveRoot.'/Completed', '', $FileInfo['dirname'])) {
 				$OldLocation = $FileInfo['basename'];
 			}
 			else {
-				$OldLocation = str_replace($FileInfo['drive'].'/Completed/', '', $FileInfo['dirname']).'/'.$FileInfo['basename'];
+				$OldLocation = str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']).'/'.$FileInfo['basename'];
 			}
 			
 			if($FileInfo['foldername'] != 'Completed') {
@@ -185,7 +190,7 @@ class ExtractFiles extends Hub {
 			}
 			
 			$LogEntry = 'Moved "'.$FileInfo['dirname'].'/'.$FileInfo['basename'].'" to "'.$NewFolder.'/'.$NewFileName.'"'.$AddLogEntry;
-			if($NewFolder != $FileInfo['drive'].'/Unsorted') {
+			if($NewFolder != $DriveRoot.'/Unsorted') {
 				Hub::AddLog(EVENT.'Extract Files', 'Success', $LogEntry, 0, 'update');
 				
 				return $LogEntry;
@@ -197,7 +202,7 @@ class ExtractFiles extends Hub {
 			}
 		}
 		else {
-			$LogEntry = 'Failed to move '.str_replace($FileInfo['drive'].'/Completed/', '', $FileInfo['dirname']).'/'.$FileInfo['basename'].' to '.$NewFolder.'/'.$NewFileName;
+			$LogEntry = 'Failed to move '.str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']).'/'.$FileInfo['basename'].' to '.$NewFolder.'/'.$NewFileName;
 			Hub::AddLog(EVENT.'File System', 'Failure', $LogEntry);
 			
 			return $LogEntry;
@@ -209,13 +214,17 @@ class ExtractFiles extends Hub {
 		if(is_array($Files) && sizeof($Files)) {
 			if(array_key_exists('Extract', $Files)) {
 				foreach($Files['Extract'] AS $File) {
-					self::ExtractFile($File);
+					list($File, $DriveID) = explode(',', $File);
+					
+					self::ExtractFile($File, $DriveID);
 				}
 			}
 			
 			if(array_key_exists('Move', $Files)) {
 				foreach($Files['Move'] AS $File) {
-					self::MoveFile($File);
+					list($File, $DriveID) = explode(',', $File);
+					
+					self::MoveFile($File, $DriveID);
 				}
 			}
 		}
@@ -229,7 +238,8 @@ class ExtractFiles extends Hub {
 		if(is_array($Drives)) {
 			$FoldersDeleted = $FoldersSizeDeleted = 0;
 			foreach($Drives AS $Drive) {
-				$CompletedContents = array_filter(glob($Drive['DriveRoot'].'/Completed/*'), 'is_dir');
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$CompletedContents = array_filter(glob($DriveRoot.'/Completed/*'), 'is_dir');
 			
 				foreach($CompletedContents AS $Complete) {
 					$DirSize = $this->GetDirectorySize($Complete);

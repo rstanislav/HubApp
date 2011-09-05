@@ -156,9 +156,11 @@ class Series extends Hub {
 					$Drives = Drives::GetDrives();
 					if(is_array($Drives)) {
 						foreach($Drives AS $Drive) {
-							if(!is_dir($Drive['DriveRoot'].'/Media/TV/'.$Serie->SeriesName)) {
-								if(!mkdir($Drive['DriveRoot'].'/Media/TV/'.$Serie->SeriesName)) {
-									Hub::AddLog(EVENT.'Drives', 'Failure', 'Unable to create "'.$Drive['DriveRoot'].'/Media/TV/'.$Serie->SeriesName.'"');
+							$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+							
+							if(!is_dir($DriveRoot.'/Media/TV/'.$Serie->SeriesName)) {
+								if(!mkdir($DriveRoot.'/Media/TV/'.$Serie->SeriesName)) {
+									Hub::AddLog(EVENT.'Drives', 'Failure', 'Unable to create "'.$DriveRoot.'/Media/TV/'.$Serie->SeriesName.'"');
 								}
 							}
 						}
@@ -293,10 +295,12 @@ class Series extends Hub {
 			
 			if(strlen($Serie['SerieTitle'])) {
 				foreach($Drives AS $Drive) {
-					Drives::RecursiveDirRemove($Drive['DriveRoot'].'/Media/TV/'.$Serie['SerieTitle']);
+					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+					
+					Drives::RecursiveDirRemove($DriveRoot.'/Media/TV/'.$Serie['SerieTitle']);
 					
 					if(strlen($Serie['SerieTitleAlt'])) {
-						Drives::RecursiveDirRemove($Drive['DriveRoot'].'/Media/TV/'.$Serie['SerieTitleAlt']);
+						Drives::RecursiveDirRemove($DriveRoot.'/Media/TV/'.$Serie['SerieTitleAlt']);
 					}
 				}
 			}
@@ -520,8 +524,10 @@ class Series extends Hub {
 			$Drives = Drives::GetDrives();
 			if(is_array($Drives)) {
 				foreach($Drives AS $Drive) {
-					if(is_dir($Drive['DriveRoot'].'/Media/TV/')) {
-						$SeriesDir = glob($Drive['DriveRoot'].'/Media/TV/*');
+					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+					
+					if(is_dir($DriveRoot.'/Media/TV/')) {
+						$SeriesDir = glob($DriveRoot.'/Media/TV/*');
 						$SeriesDirArr = array_merge($SeriesDirArr, $SeriesDir);
 					}
 				}
@@ -572,7 +578,8 @@ class Series extends Hub {
 				$EpisodesPrep->execute();
 				
 				foreach($Drives AS $Drive) {
-					$SeriesInfoArr = $this->GetSeriesInfo($Drive['DriveRoot'], TRUE);
+					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+					$SeriesInfoArr = $this->GetSeriesInfo($DriveRoot, TRUE);
 			
 					foreach($SeriesInfoArr AS $SerieTitle => $Series) {
 						foreach($Series['Episodes'] AS $Episode) {
@@ -617,8 +624,10 @@ class Series extends Hub {
 		if(is_array($Drives) && is_array($Series)) {
 			$RebuiltFolders = 0;
 			foreach($Drives AS $Drive) {
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				
 				foreach($Series AS $Serie) {
-					$Folder = $Drive['DriveRoot'].'/Media/TV/'.$Serie['SerieTitle'];
+					$Folder = $DriveRoot.'/Media/TV/'.$Serie['SerieTitle'];
 					if(!is_dir($Folder)) {
 						if(@mkdir($Folder)) {
 							$RebuiltFolders++;

@@ -11,6 +11,7 @@ if(is_array($Files) && sizeof($Files)) {
 		foreach($Files['Extract'] AS $File) {
 			$FileNo++;
 			$AjaxQueue = TRUE;
+			list($File, $DriveID) = explode(',', $File);
 			
 			echo '
 			<div id="ExtractFile-'.$FileNo.'">Waiting to extract "'.$File.'" ...</div>
@@ -20,7 +21,7 @@ if(is_array($Files) && sizeof($Files)) {
 				$("#ExtractFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Extracting \"'.$File.'\" ...");
 			    
 				$.ajax({ url:     "load.php",
-						 data:    "page=ExtractFile&File='.urlencode($File).'&ID='.$FileNo.'",
+						 data:    "page=ExtractFile&File='.urlencode($File).'&ID='.$FileNo.'&DriveID='.$DriveID.'",
 						 success: function(data) {
 						     $("#ExtractFile-'.$FileNo.'").html(data);
 			       	 	     $(document).dequeue("ajaxRequests");
@@ -35,6 +36,7 @@ if(is_array($Files) && sizeof($Files)) {
 		foreach($Files['Move'] AS $File) {
 			$FileNo++;
 			$AjaxQueue = TRUE;
+			list($File, $DriveID) = explode(',', $File);
 			
 			echo '
 			<div id="MoveFile-'.$FileNo.'">Waiting to move '.$File.' ...</div>
@@ -44,7 +46,7 @@ if(is_array($Files) && sizeof($Files)) {
 				$("#ExtractFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Moving \"'.$File.'\" ...");
 			    
 				$.ajax({ url:     "load.php",
-						 data:    "page=MoveFile&File='.urlencode($File).'&ID='.$FileNo.'",
+						 data:    "page=MoveFile&File='.urlencode($File).'&ID='.$FileNo.'&DriveID='.$DriveID.'",
 						 success: function(data) {
 						     $("#MoveFile-'.$FileNo.'").html(data);
 			       	 	     $(document).dequeue("ajaxRequests");

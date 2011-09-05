@@ -6,10 +6,11 @@ class UnsortedFiles extends Hub {
 		if(is_array($Drives)) {
 			$UnsortedFiles = array();
 			foreach($Drives AS $Drive) {
-				$Files[$Drive['DriveRoot']] = glob($Drive['DriveRoot'].'/Unsorted/*');
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$Files[$DriveRoot] = glob($DriveRoot.'/Unsorted/*');
 				
-				if(sizeof($Files[$Drive['DriveRoot']])) {
-					$UnsortedFiles[$Drive['DriveRoot']] = $Files[$Drive['DriveRoot']];
+				if(sizeof($Files[$DriveRoot])) {
+					$UnsortedFiles[$DriveRoot] = $Files[$DriveRoot];
 				}
 			}
 			

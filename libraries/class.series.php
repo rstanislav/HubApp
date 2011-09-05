@@ -374,20 +374,22 @@ class Series extends Hub {
 		$Serie = $this->PDO->query('SELECT SerieTitle, SeriePoster AS Poster FROM Series WHERE SerieID = '.$SerieID)->fetch();
 		$FileInfo = pathinfo($this->TheTVDBAPI->GetPoster($Serie['Poster']));
 		
-		if(!is_file(APP_PATH.'/posters/'.$FileInfo['filename'].'.'.$FileInfo['extension']) || $ForceNew) {
-			$ch = curl_init($this->TheTVDBAPI->GetPoster($Serie['Poster']));
-			$fp = fopen(APP_PATH.'/tmp/'.$FileInfo['filename'].'.'.$FileInfo['extension'], 'wb');
-			curl_setopt($ch, CURLOPT_FILE, $fp);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_exec($ch);
-			curl_close($ch);
-			fclose($fp);
+		if(isset($FileInfo['extension'])) {
+			if(!is_file(APP_PATH.'/posters/'.$FileInfo['filename'].'.'.$FileInfo['extension']) || $ForceNew) {
+				$ch = curl_init($this->TheTVDBAPI->GetPoster($Serie['Poster']));
+				$fp = fopen(APP_PATH.'/tmp/'.$FileInfo['filename'].'.'.$FileInfo['extension'], 'wb');
+				curl_setopt($ch, CURLOPT_FILE, $fp);
+				curl_setopt($ch, CURLOPT_HEADER, 0);
+				curl_exec($ch);
+				curl_close($ch);
+				fclose($fp);
 			
-			$this->MakeThumbnail(APP_PATH.'/tmp/'.$FileInfo['filename'].'.'.$FileInfo['extension'], APP_PATH.'/posters/thumbnails/'.$FileInfo['filename'].'.'.$FileInfo['extension'],150,221);
+				$this->MakeThumbnail(APP_PATH.'/tmp/'.$FileInfo['filename'].'.'.$FileInfo['extension'], APP_PATH.'/posters/thumbnails/'.$FileInfo['filename'].'.'.$FileInfo['extension'],150,221);
 			
-			Hub::AddLog(EVENT.'Series', 'Success', 'Downloaded a new poster for "'.$Serie['SerieTitle'].'"');
+				Hub::AddLog(EVENT.'Series', 'Success', 'Downloaded a new poster for "'.$Serie['SerieTitle'].'"');
 			
-			rename(APP_PATH.'/tmp/'.$FileInfo['filename'].'.'.$FileInfo['extension'], APP_PATH.'/posters/'.$FileInfo['filename'].'.'.$FileInfo['extension']);
+				rename(APP_PATH.'/tmp/'.$FileInfo['filename'].'.'.$FileInfo['extension'], APP_PATH.'/posters/'.$FileInfo['filename'].'.'.$FileInfo['extension']);
+			}
 		}
 	}
 	

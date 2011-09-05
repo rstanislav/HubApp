@@ -93,7 +93,7 @@ class XBMC extends Hub {
 		    $Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
 		    $Image = $this->XBMCRPC->Files->Download($Image);
 		    
-		    return 'http://'.$Zone['ZoneXBMCHost'].':'.$Zone['ZoneXBMCPort'].'/'.$Image['path'];
+		    return 'http://'.$Zone['ZoneXBMCUsername'].':'.$Zone['ZoneXBMCPassword'].'@'.$Zone['ZoneXBMCHost'].':'.$Zone['ZoneXBMCPort'].'/'.$Image['path'];
 		}
 		catch(XBMC_RPC_Exception $e) {
 		    die($e->getMessage());

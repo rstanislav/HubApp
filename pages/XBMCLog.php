@@ -26,12 +26,14 @@ function updateLog(toTime) {
 <div class="head">XBMC Log <small style="font-size: 12px;">(<a href="#!/Help/XBMCLog">?</a>)</small></div>
 
 <table id="xbmc-log">
+ <thead>
  <tr>
-  <th>Time</th>
+  <th style="text-align:center;width: 60px">Time</th>
   <th>&nbsp;</th>
   <th>&nbsp;</th>
   <th>Text</th>
  </tr>
+ </thead>
 <?php
 $XBMCObj->GetLogFile();
 ?>

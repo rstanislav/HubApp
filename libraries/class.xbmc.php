@@ -152,9 +152,9 @@ class XBMC extends Hub {
 				}
 				echo '
 				<tr>
-				 <td rel="time">'.$Time.'</td>
-				 <td>'.$T.'</td>
-				 <td>'.$M.'</td>
+				 <td rel="time" style="text-align:center;">'.$Time.'</td>
+				 <td style="text-align:center;width: 60px">'.$T.'</td>
+				 <td style="text-align:center;width: 60px">'.$M.'</td>
 				 <td>'.$Text.'</td>
 				</tr>'."\n";
 				if($Line++ == $Lines) {

@@ -16,13 +16,15 @@ if(is_array($Users)) {
 	  </tr>
 	 </thead>'."\n";
 	foreach($Users AS $User) {
+		$UserDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'UserDelete')) ? '<a id="UserDelete-'.$User['UserID'].'" rel="'.$User['UserName'].'"><img src="images/icons/delete.png" /></a>' : '';
+		
 		echo '
 		<tr>
 		 <td>'.date('d.m.y', $User['UserDate']).'</td>
 		 <td>'.$User['UserName'].'</td>
 		 <td>'.$User['UserGroupName'].'</td>
 		 <td>'.$User['UserEMail'].'</td>
-		 <td><img src="images/icons/delete.png" /></td>
+		 <td>'.$UserDeleteLink.'</td>
 		</tr>'."\n";
 	}
 	echo '</table>'."\n";

@@ -228,12 +228,6 @@ table.main {
   	background: url('../images/header/divider.png') no-repeat;
 }
 
-/*
-*
-* Tables
-*
-*/
-
 .notification {
 	width: 100%;
 	padding-top: 5px;
@@ -297,6 +291,11 @@ table.main {
 	width: 175px;
 }
 
+/*
+*
+* Upload Files
+*
+*/
 #upload-wrapper {
 	display: none;
 	width: 100%;
@@ -319,6 +318,7 @@ table.main {
    	font-weight: bold;
    	//text-shadow: rgba(255,255,255,1) 2px 1px 0px;
 }
+
 /*
 *
 * Loading
@@ -365,99 +365,6 @@ table.main {
 	font-size: 13px;
 	color: #666;
 	font-weight: bold;
-}
-
-
-
-/*
-*
-* Context Menu
-*
-*/
-.context {
-	cursor: pointer;
-	cursor: hand;
-	-moz-user-select: none;
-	-khtml-user-select: none;
-	user-select: none;
-}
-.contextMenu {
-	position: absolute;
-	z-index: 999;
-	border: solid 1px #7f8080;
-	background: #fff;
-	padding: 0px;
-	margin: 0px;
-	display: none;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-right-radius: 5px;
-	border-bottom-right-radius: 5px;
-	-moz-border-radius-bottomright: 5px;
-	-webkit-border-bottom-right-radius: 5px;
-	border-bottom-left-radius: 5px;
-	-moz-border-radius-bottomleft: 5px;
-	-webkit-border-bottom-left-radius: 5px;
-	border-top-left-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-webkit-border-top-left-radius: 5px;
-	
-	-moz-box-shadow: 0 0 8px 1px rgba(0,0,0,0.4);
-	-webkit-box-shadow: 0 0 8px 1px rgba(0,0,0,0.4);
-	box-shadow: 0 0 8px 1px rgba(0,0,0,0.4);
-}
-.contextMenu li {
-	font-size: 13px;
-	line-height: 13px;
-	font-weight: none;
-	font: Helvetica;
-	color: #000;
-	margin-top: 5px;
-	padding: 3px;
-	padding-right: 15px;
-	padding-left: 30px;
-	
-	border-top: 1px solid #fff;
-	border-bottom: 1px solid #fff;
-}
-.contextMenu li:last-child {
-	margin-bottom: 5px;
-}
-.contextMenu a {
-	color: #000;
-	text-decoration: none;
-}
-.contextMenu li:hover {
-	background: #7d90a3;
-	border-top: 1px solid #6d7b8a;
-	border-bottom: 1px solid #6d7b8a;
-	cursor: pointer;
-	cursor: hand;
-}
-.contextMenu li:hover a {
-	color: #fff;
-	text-decoration: none;
-}
-.contextMenu li.disabled a, .contextMenu li:hover.disabled a {
-	border-top: 1px solid #fff;
-	border-bottom: 1px solid #fff;
-	background: #fff;
-	color: #bbb;
-	cursor: default;
-}.contextMenu li.disabled, .contextMenu li:hover.disabled {
-	border-top: 1px solid #fff;
-	border-bottom: 1px solid #fff;
-	background: #fff;
-	color: #bbb;
-	cursor: default;
-}
-.contextMenu li.separator, .contextMenu li:hover.separator {
-	border: 0px;
-	cursor: default;
-	border-top: solid 1px #bcc2c7;
-	line-height: 0px;
-	margin-top: 5px;
-	padding: 0px;
 }
 
 /*
@@ -627,11 +534,6 @@ a.button.disabled {
 	text-align:right;
 }
 
-#toolbar {
-	position: absolute;
-	left: 220px;
-	float: left;
-}
 /*
 *
 * Tooltips

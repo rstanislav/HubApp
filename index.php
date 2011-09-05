@@ -74,16 +74,6 @@ else {
  </div>
 </div>
 
-<ul id="torrentControl" class="torrentControl contextMenu">
- <li class=""><a href="#">Force start</a></li>
- <li class=""><a href="#">Start</a></li>
- <li class="disabled"><a href="#">Pause</a></li>
- <li class=""><a href="#">Stop</a></li>
- <li class="separator">&nbsp;</li>
- <li><a href="#">Remove</a></li>
- <li class=""><a href="#">Remove and delete data</a></li>
-</ul>
-
 <table class="main">
  <tr>
   <td class="header left">

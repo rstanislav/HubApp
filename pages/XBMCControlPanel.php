@@ -9,7 +9,6 @@
 <?php
 $XBMCObj->Connect();
 // $HubObj->d($XBMCObj->GetCommands());
-$HubObj->d($XBMCObj->MakeRequest('VideoPlayer', 'State'));
 
 $InfoLabelParams = explode('-', 'Fanart.Image-'.
                                 'Container.TvshowThumb-'.
@@ -62,6 +61,8 @@ $ActivePlayer = $XBMCObj->MakeRequest('Player', 'GetActivePlayers');
 $XBMC = $XBMCObj->MakeRequest('System', 'GetInfoLabels', $InfoLabelParams);
 
 if($ActivePlayer['video']) {
+	$HubObj->d($XBMCObj->MakeRequest('VideoPlayer', 'State'));
+	
 	if($XBMC['VideoPlayer.TVShowTitle']) { // TV Episode Playing
 		echo '
 		<div class="head-control">
@@ -154,11 +155,11 @@ if($ActivePlayer['video']) {
 		'Window: '.$XBMC['System.ScreenMode'];
 		*/
 	}
+	
+	print_r($XBMCObj->d($XBMC));
 }
 else {
 	// info about lists
 	echo '<div class="notification">Nothing is playing right now</div>';
 }
-
-print_r($XBMCObj->d($XBMC));
 ?>

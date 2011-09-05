@@ -25,6 +25,7 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
 <?php
 $Drives = $DrivesObj->GetDrives();
 
+$TotalFreeSpace = $TotalSpace = 0;
 foreach($Drives AS $Drive) {
 	if($Drive['DriveID'] == $HubObj->ActiveDrive) {
 		$DriveActiveLink = '';
@@ -38,17 +39,32 @@ foreach($Drives AS $Drive) {
 	$DriveActiveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) ? $DriveActiveLink : '';
 	$DriveRemoveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) ? $DriveRemoveLink : '';
 	
-	$FreeSpace  = $DrivesObj->GetFreeSpace($Drive['DriveRoot'], TRUE);
-	$TotalSpace = $DrivesObj->GetTotalSpace($Drive['DriveRoot'], TRUE);
+	$DriveRoot       = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
+	$DriveRootText   = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'].' ('.$Drive['DriveLetter'].')' : $Drive['DriveLetter'];
+	$FreeSpace       = $DrivesObj->GetFreeSpace($DriveRoot, TRUE);
+	$Space           = $DrivesObj->GetTotalSpace($DriveRoot, TRUE);
+	$TotalFreeSpace += $FreeSpace;
+	$TotalSpace     += $Space;
+	
 	echo '
 	<tr id="Drive-'.$Drive['DriveID'].'">
 	 <td style="text-align: center;">'.date('d.m.y', $Drive['DriveDate']).'</td>
-	 <td>'.$Drive['DriveRoot'].'</td>
+	 <td>'.$DriveRootText.'</td>
 	 <td>'.$DrivesObj->BytesToHuman($FreeSpace).'</td>
-	 <td>'.$DrivesObj->BytesToHuman($TotalSpace).'</td>
+	 <td>'.$DrivesObj->BytesToHuman($Space).'</td>
 	 <td>'.$DrivesObj->GetFreeSpacePercentage($FreeSpace, $TotalSpace).'% free</td>
 	 <td style="text-align:center">'.$DriveActiveLink.' '.$DriveRemoveLink.'</td>
 	</tr>'."\n";
 }
 ?>
+ <tfoot>
+ <tr>
+  <th style="text-align: center;"></th>
+  <th>Total</td>
+  <th><?php echo $DrivesObj->BytesToHuman($TotalFreeSpace); ?></th>
+  <th><?php echo $DrivesObj->BytesToHuman($TotalSpace); ?></th>
+  <th><?php echo $DrivesObj->GetFreeSpacePercentage($TotalFreeSpace, $TotalSpace).'% free'; ?></th>
+  <th style="text-align:center"></th>
+ </tr>
+ </tfoot>
 </table>

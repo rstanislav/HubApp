@@ -10,8 +10,10 @@ class Drives extends Hub {
 			$Drive = self::GetDriveByID($this->ActiveDrive);
 			
 			if(is_array($Drive)) {
-				$FreeSpace  = self::GetFreeSpace($Drive['DriveRoot'],  TRUE);
-				$TotalSpace = self::GetTotalSpace($Drive['DriveRoot'], TRUE);
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				
+				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
+				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
 				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) <= $Settings['SettingHubMinimumActiveDiskPercentage']) {
 					$Drives = Drives::GetDrives();
 					
@@ -26,20 +28,18 @@ class Drives extends Hub {
 					}
 				}
 				
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveLetter'] : $Drive['DriveRoot'];
-				
 				if(is_dir($DriveRoot.'/Downloads')) {
-					UTorrent::SetSetting('dir_active_download', $DriveRoot.'/Downloads');
+					UTorrent::SetSetting('dir_active_download', $Drive['DriveLetter'].'/Downloads');
 				}
 				else {
-					die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Incomplete Downloads folder: "'.$DriveRoot.'/Downloads" does not exist'));
+					die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Incomplete Downloads folder: "'.$Drive['DriveLetter'].'/Downloads" does not exist'));
 				}
 				
 				if(is_dir($DriveRoot.'/Completed')) {
-					UTorrent::SetSetting('dir_completed_download', $DriveRoot.'/Completed');
+					UTorrent::SetSetting('dir_completed_download', $Drive['DriveLetter'].'/Completed');
 				}
 				else {
-					die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Completed Downloads folder: "'.$DriveRoot.'/Completed" does not exist'));
+					die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Completed Downloads folder: "'.$Drive['DriveLetter'].'/Completed" does not exist'));
 				}
 				
 				if($Settings['SettingUTorrentWatchFolder'] && is_dir($Settings['SettingUTorrentWatchFolder'])) {
@@ -114,21 +114,21 @@ class Drives extends Hub {
 		}
 	}
 	
-	function GetFreeSpace($DriveRoot, $AsBytes = FALSE) {
+	function GetFreeSpace($DriveLetter, $AsBytes = FALSE) {
 		if($AsBytes) {
-			return disk_free_space($DriveRoot);
+			return disk_free_space($DriveLetter);
 		}
 		else {
-			return $this->BytesToHuman(disk_free_space($DriveRoot));
+			return $this->BytesToHuman(disk_free_space($DriveLetter));
 		}
 	}
 	
-	function GetTotalSpace($DriveRoot, $AsBytes = FALSE) {
+	function GetTotalSpace($DriveLetter, $AsBytes = FALSE) {
 		if($AsBytes) {
-			return disk_total_space($DriveRoot);
+			return disk_total_space($DriveLetter);
 		}
 		else {
-			return $this->BytesToHuman(disk_total_space($DriveRoot));
+			return $this->BytesToHuman(disk_total_space($DriveLetter));
 		}
 	}
 	
@@ -152,16 +152,12 @@ class Drives extends Hub {
 			$Drive = $DrivePrep->fetch();
 			UTorrent::Connect();
 			
-			Hub::AddLog(EVENT.'File System', 'Success', 'Set "'.$Drive['DriveRoot'].'" as active drive');
-			
-			if($Drive['DriveNetwork']) {
-				$DriveRoot = $Drive['DriveLetter'];
-			}
-			else {
-				$DriveRoot = $Drive['DriveRoot'];
-			}
+			$DriveRoot     = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
+			$DriveRootText = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'].' ('.$Drive['DriveLetter'].')' : $Drive['DriveLetter'];
 			
 			$this->ActiveDrive = $Drive['DriveID'];
+			Hub::AddLog(EVENT.'File System', 'Success', 'Set "'.$DriveRootText.'" as active drive');
+			
 			
 			if(!is_dir($DriveRoot.'/Downloads')) {
 				mkdir($DriveRoot.'/Downloads');
@@ -171,10 +167,10 @@ class Drives extends Hub {
 				mkdir($DriveRoot.'/Completed');
 			}
 			
-			UTorrent::SetSetting('dir_active_download',    $DriveRoot.'/Downloads');
-			UTorrent::SetSetting('dir_completed_download', $DriveRoot.'/Completed');
+			UTorrent::SetSetting('dir_active_download',    $Drive['DriveLetter'].'/Downloads');
+			UTorrent::SetSetting('dir_completed_download', $Drive['DriveLetter'].'/Completed');
 			
-			Hub::AddLog(EVENT.'uTorrent', 'Success', 'Set "'.$Drive['DriveRoot'].'" as active drive');
+			Hub::AddLog(EVENT.'uTorrent', 'Success', 'Set "'.$DriveRootText.'" as active drive');
 		}
 	}
 	

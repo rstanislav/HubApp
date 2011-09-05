@@ -1076,56 +1076,6 @@ a {
 	cursor: pointer;
 	cursor: hand;
 }
-/*
-#maincontent table {
-	width: 100%;
-	border-spacing: 0px;
-	border: 1px solid #848484;
-	border-bottom: 0px;
-}
-
-#maincontent th {
-	text-align: left;
-	padding: 10px;
-	padding-left: 5px;
-	background-image: -moz-linear-gradient(#5c7aab, #3f5a86);
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3f5a86), to(#5c7aab));
-	background-image: -webkit-linear-gradient(#5c7aab, #3f5a86); 
-	background-image: -o-linear-gradient(#5c7aab, #3f5a86);
-	color: #fff;
-	text-shadow: 1px 1px 1px #000;
-}
-
-#maincontent tr {
-}
-
-#maincontent td {
-	padding: 5px;
-	padding-left: 3px;
-	border-bottom: 1px solid #848484;
-}
-#maincontent td:last {
-	border-top: 0px;
-}
-
-#maincontent tr:nth-child(odd) {
-	background-image: -moz-linear-gradient(#d9e1ef, #f6f9fd);
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f9fd), to(#d9e1ef));
-	background-image: -webkit-linear-gradient(#d9e1ef, #f6f9fd); 
-	background-image: -o-linear-gradient(#d9e1ef, #f6f9fd);
-}
-
-#maincontent tr:nth-child(even) {
-	background-image: -moz-linear-gradient(#ffffff, #f6f9fd);
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f9fd), to(#ffffff));
-	background-image: -webkit-linear-gradient(#ffffff, #f6f9fd); 
-	background-image: -o-linear-gradient(#ffffff, #f6f9fd);
-}
-
-#maincontent td:hover {
-	background: #bas;
-}
-*/
 
 #maincontent table a, #maincontent table a:link, #maincontent table a:visited {
 	border:none;
@@ -1171,22 +1121,10 @@ a {
 	color:#2c486d;
 }
 
-tfoot th {
+#maincontent tfoot th {
 	background:#f4f9fe;
-	text-align:center;
-}
-
-#maincontent tfoot th strong {
-	font:bold 1.2em "Century Gothic","Trebuchet MS",Arial,Helvetica,sans-serif;
-	margin:.5em .5em .5em 0;
-	color:#66a3d3;
-}
-
-#maincontent tfoot th em {
-	color:#f03b58;
-	font-weight: bold;
-	font-size: 1.1em;
-	font-style: normal;
+	font:bold 12px "Century Gothic","Trebuchet MS",Arial,Helvetica,sans-serif;
+	color:#2c486d;
 }
 
 #maincontent table.nostyle, #maincontent table.nostyle th, #maincontent table.nostyle tr, #maincontent table.nostyle tr td {

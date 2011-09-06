@@ -425,8 +425,9 @@ class RSS extends Hub {
 	}
 	
 	function SearchTitle($Search) {
-		$SearchPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE TorrentTitle LIKE :Search ORDER BY TorrentDate DESC');
-		$SearchPrep->execute(array(':Search' => $Search.'%'));
+		$SearchPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE TorrentTitle LIKE :Search AND TorrentTitle NOT LIKE :ExcludeSearch ORDER BY TorrentDate DESC');
+		$SearchPrep->execute(array(':Search'        => $Search.'%',
+		                           ':ExcludeSearch' => '%hebsub%'));
 		
 		if($SearchPrep->rowCount()) {
 			return $SearchPrep->fetchAll();

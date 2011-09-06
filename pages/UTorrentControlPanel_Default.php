@@ -93,6 +93,8 @@ if(is_object($UTorrentObj->UTorrentAPI)) {
 			 </td>
 			</tr>'."\n";
 		}
+		
+		$TotalTimeRemaining = ($TotalSpeed) ? $HubObj->ConvertSeconds(($TotalSize - $TotalDownloaded) / $TotalSpeed) : '∞';
 		echo '
 		 <tfoot>
 		 <tr>
@@ -102,7 +104,7 @@ if(is_object($UTorrentObj->UTorrentAPI)) {
 		  <th>'.$HubObj->BytesToHuman($TotalDownloaded).'</th>
 		  <th></th>
 		  <th>'.$HubObj->BytesToHuman($TotalSpeed).'/s</th>
-		  <th>'.$HubObj->ConvertSeconds(($TotalSize - $TotalDownloaded) / $TotalSpeed).'</th>
+		  <th>'.$TotalTimeRemaining.'</th>
 		  <th></th>
 		 </tr>
 		 </tfoot>

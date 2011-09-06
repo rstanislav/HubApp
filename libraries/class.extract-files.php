@@ -164,9 +164,27 @@ class ExtractFiles extends Hub {
 		else {
 			if(is_dir($DriveRoot)) {
 				$NewFolder = $DriveRoot.'/Unsorted';
+				
+				if($NewFileName == $FileInfo['foldername'].'.'.$FileInfo['extension']) {
+					$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
+					$FilesNo = 0;
+					foreach($Files AS $File) {
+						if(self::GetFileSize($File) > (1024 * 1024 * 100)) {
+							$FilesNo++;
+						}
+					}
+					
+					if($FilesNo > 1) {
+						$NewFileName = $FileInfo['basename'];
+					}
+				}
 			}
 		}
 		
+		if(is_file($NewFolder.'/'.$NewFileName)) {
+			$NewFileName = 'DUPE-'.mt_rand().'-'.$NewFileName;
+		}
+
 		if(rename($FileInfo['dirname'].'/'.$FileInfo['basename'], $NewFolder.'/'.$NewFileName)) {
 			$AddLogEntry = '';
 				
@@ -178,11 +196,21 @@ class ExtractFiles extends Hub {
 			}
 			
 			if($FileInfo['foldername'] != 'Completed') {
-				if(@Drives::RecursiveDirRemove($FileInfo['dirname'])) {
-					$AddLogEntry = ' and deleted "'.$FileInfo['dirname'].'"';
+				$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
+				$FilesNo = 0;
+				foreach($Files AS $File) {
+					if(self::GetFileSize($File) > (1024 * 1024 * 100)) {
+						$FilesNo++;
+					}
 				}
-				else {
-					$AddLogEntry = ' but failed to delete "'.$FileInfo['dirname'].'"';
+				
+				if(!$FilesNo) {
+					if(@Drives::RecursiveDirRemove($FileInfo['dirname'])) {
+						$AddLogEntry = ' and deleted "'.$FileInfo['dirname'].'"';
+					}
+					else {
+						$AddLogEntry = ' but failed to delete "'.$FileInfo['dirname'].'"';
+					}
 				}
 			}
 			
@@ -259,7 +287,7 @@ class ExtractFiles extends Hub {
 				$CompletedContents = array_filter(glob($DriveRoot.'/Completed/*'), 'is_dir');
 			
 				foreach($CompletedContents AS $Complete) {
-					$DirSize = $this->GetDirectorySize($Complete);
+					$DirSize = self::GetDirectorySize($Complete);
 					if($DirSize <= (1024 * 1024 * 100)) {
 						@Drives::RecursiveDirRemove($Complete);
 						

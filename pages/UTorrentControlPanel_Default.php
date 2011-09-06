@@ -16,7 +16,6 @@ if(is_array($Torrents) && sizeof($Torrents)) {
 	  <th>Name</th>
 	  <th style="width: 50px">Status</th>
 	  <th style="width: 70px">Size</th>
-	  <th style="width: 70px">Downloaded</th>
 	  <th style="width: 50px">Progress</th>
 	  <th style="width: 70px">Speed</th>
 	  <th style="width: 90px">Time remaining</th>
@@ -24,7 +23,6 @@ if(is_array($Torrents) && sizeof($Torrents)) {
 	 </tr>
 	 </thead>'."\n";
 	
-	$TotalSize = $TotalDownloaded = $TotalSpeed = 0;
 	foreach($Torrents AS $Torrent) {
 		$TimeRemaining = ($Torrent[UTORRENT_TORRENT_DOWNSPEED]) ? $HubObj->ConvertSeconds(($Torrent[UTORRENT_TORRENT_SIZE] - $Torrent[UTORRENT_TORRENT_DOWNLOADED]) / $Torrent[UTORRENT_TORRENT_DOWNSPEED]) : '∞';
 		
@@ -73,16 +71,11 @@ if(is_array($Torrents) && sizeof($Torrents)) {
 			$TorrentControls = $TCStop.$TCPause.$TCDelete;
 		}
 		
-		$TotalSize += $Torrent[UTORRENT_TORRENT_SIZE];
-		$TotalDownloaded += $Torrent[UTORRENT_TORRENT_DOWNLOADED];
-		$TotalSpeed += $Torrent[UTORRENT_TORRENT_DOWNSPEED];
-		
 		echo '
 		<tr>
 		 <td>'.$Torrent[UTORRENT_TORRENT_NAME].'</td>
 		 <td>'.$TorrentStatus.'</td>
 		 <td>'.$HubObj->BytesToHuman($Torrent[UTORRENT_TORRENT_SIZE]).'</td>
-		 <td>'.$HubObj->BytesToHuman($Torrent[UTORRENT_TORRENT_DOWNLOADED]).'</td>
 		 <td>'.($Torrent[UTORRENT_TORRENT_PROGRESS] / 10).'%</td>
 		 <td>'.$HubObj->BytesToHuman($Torrent[UTORRENT_TORRENT_DOWNSPEED]).'/s</td>
 		 <td>'.$TimeRemaining.'</td>
@@ -91,20 +84,7 @@ if(is_array($Torrents) && sizeof($Torrents)) {
 		 </td>
 		</tr>'."\n";
 	}
-	echo '
-	 <tfoot>
-	 <tr>
-	  <th></th>
-	  <th></th>
-	  <th>'.$HubObj->BytesToHuman($TotalSize).'</th>
-	  <th>'.$HubObj->BytesToHuman($TotalDownloaded).'</th>
-	  <th></th>
-	  <th>'.$HubObj->BytesToHuman($TotalSpeed).'/s</th>
-	  <th>'.$HubObj->ConvertSeconds(($TotalSize - $TotalDownloaded) / $TotalSpeed).'</th>
-	  <th></th>
-	 </tr>
-	 </tfoot>
-	</table>'."\n";
+	echo '</table>'."\n";
 }
 else {
 	echo '<div class="notification">No torrents loaded</div>';

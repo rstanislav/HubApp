@@ -1,7 +1,10 @@
 <?php
 class ExtractFiles extends Hub {
 	function GetFileSize($File) {
-		return filesize($File);
+		$FSObj = new COM('Scripting.FileSystemObject'); 
+		$File = $FSObj->GetFile($File);
+		
+		return $File->Size();
 	}
 	
 	function GetDirectorySize($Directory) { 

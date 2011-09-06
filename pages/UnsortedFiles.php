@@ -98,6 +98,7 @@ if(is_array($UnsortedFiles)) {
 	 foreach($UnsortedFiles AS $DriveRoot => $UnsortedFiles) {
 	 	foreach($UnsortedFiles AS $UnsortedFile) {
 	 		$i++;
+	 		$UnsortedFile = str_replace('\\', '/', $UnsortedFile);
 	 		$FilePath = str_replace('\\', '/', dirname($UnsortedFile).'/');
 	 		$File = str_replace($FilePath, '', $UnsortedFile);
 	 		

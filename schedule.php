@@ -32,7 +32,9 @@ $RSSObj->Update();
 $RSSObj->DownloadWantedTorrents();
 
 // Remove finished torrents from uTorrent
-$UTorrentObj->DeleteFinishedTorrents();
+if(is_object($UTorrentObj->UTorrentAPI)) {
+	$UTorrentObj->DeleteFinishedTorrents();
+}
 
 if((date('G') > 3 && date('G') < 7)) {
 	$FolderRebuild = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastFolderRebuild"')->fetch();
@@ -49,20 +51,24 @@ if((date('G') > 3 && date('G') < 7)) {
 	
 	if((time() - $SerieRefresh['Last']) >= (60 * 60 * 24)) {
 		// Refresh database series data
-		$SeriesObj->RefreshAllSeries();
+		if(is_object($SeriesObj->TheTVDBAPI)) {
+			$SeriesObj->RefreshAllSeries();
 		
-		$RefreshPrep = $HubObj->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastSerieRefresh"');
-		$RefreshPrep->execute(array(':Time' => time()));
+			$RefreshPrep = $HubObj->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastSerieRefresh"');
+			$RefreshPrep->execute(array(':Time' => time()));
+		}
 	}
 	
 	$SerieRebuild= $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRebuild"')->fetch();
 	
 	if((time() - $SerieRefresh['Last']) >= (60 * 60 * 24)) {
 		// Rebuild database episodes data
-		$SeriesObj->RebuildEpisodes();
+		if(is_object($SeriesObj->TheTVDBAPI)) {
+			$SeriesObj->RebuildEpisodes();
 		
-		$RebuildPrep = $HubObj->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastSerieRebuild"');
-		$RebuildPrep->execute(array(':Time' => time()));
+			$RebuildPrep = $HubObj->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastSerieRebuild"');
+			$RebuildPrep->execute(array(':Time' => time()));
+		}
 	}
 }
 

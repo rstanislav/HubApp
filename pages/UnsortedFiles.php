@@ -98,7 +98,7 @@ if(is_array($UnsortedFiles)) {
 	 foreach($UnsortedFiles AS $DriveRoot => $UnsortedFiles) {
 	 	foreach($UnsortedFiles AS $UnsortedFile) {
 	 		$i++;
-	 		$FilePath = dirname($UnsortedFile).'/';
+	 		$FilePath = str_replace('\\', '/', dirname($UnsortedFile).'/');
 	 		$File = str_replace($FilePath, '', $UnsortedFile);
 	 		
 	 		echo '<form id="UnsortedFileMoveForm-'.$i.'" action="load.php?page=UnsortedFileMove" method="post">'."\n";

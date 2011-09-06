@@ -117,16 +117,48 @@ class UTorrent extends Hub {
 		return $this->UTorrentAPI->getTorrents();
 	}
 	
+	function TorrentStartAll() {
+		$Torrents = self::GetTorrents();
+		
+		foreach($Torrents AS $Torrent) {
+			self::TorrentStart($Torrent[UTORRENT_TORRENT_HASH]);
+		}
+	}
+	
 	function TorrentStart($Hash) {
 		return $this->UTorrentAPI->torrentStart($Hash);
+	}
+	
+	function TorrentStopAll() {
+		$Torrents = self::GetTorrents();
+		
+		foreach($Torrents AS $Torrent) {
+			self::TorrentStop($Torrent[UTORRENT_TORRENT_HASH]);
+		}
 	}
 	
 	function TorrentStop($Hash) {
 		return $this->UTorrentAPI->torrentStop($Hash);
 	}
 	
+	function TorrentPauseAll() {
+		$Torrents = self::GetTorrents();
+		
+		foreach($Torrents AS $Torrent) {
+			self::TorrentPause($Torrent[UTORRENT_TORRENT_HASH]);
+		}
+	}
+	
 	function TorrentPause($Hash) {
 		return $this->UTorrentAPI->torrentPause($Hash);
+	}
+	
+	function TorrentRemoveAll() {
+		$Torrents = self::GetTorrents();
+		
+		foreach($Torrents AS $Torrent) {
+			self::TorrentDelete($Torrent[UTORRENT_TORRENT_HASH]);
+		}
 	}
 	
 	function TorrentDelete($Hash) {

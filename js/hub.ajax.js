@@ -66,7 +66,10 @@ $(document).ready(function() {
 	'a[id|="UserGroupEdit"],' +
 	'a[id|="TorrentDownload"],' +
 	'a[id|="WishlistDelete"],' +
-	'a[id|="RSSFeedDelete"]').click(function(event) {
+	'a[id|="RSSFeedDelete"],' +
+	'a[id|="TorrentStartAll"],' +
+	'a[id|="TorrentPauseAll"],' +
+	'a[id|="TorrentStopAll"]').click(function(event) {
 		if($(this).hasClass('button')) {
 			if(!$(this).hasClass('disabled')) {
 				AjaxButton(this);
@@ -189,6 +192,92 @@ function AjaxButton(Button, Extra) {
 	if(!ButtonClass)                      ButtonClass = 'positive';
 	
 	switch(Action) {
+		case 'TorrentStartAll':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=TorrentStartAll',
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Starting ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
+		case 'TorrentPauseAll':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=TorrentPauseAll',
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Pausing ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
+		case 'TorrentStopAll':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=TorrentStopAll',
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Stopping ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
+		case 'TorrentRemove':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=TorrentRemove' + ExtraParam,
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Removing ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
+		break;
+		
 		case 'FoldersRebuild':
 			$.ajax({
 				method: 'get',

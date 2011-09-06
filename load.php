@@ -16,6 +16,51 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'TorrentStartAll':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStart')) {
+				$UTorrentObj->Connect();
+				
+				if(is_object($UTorrentObj->UTorrentAPI)) {
+					$UTorrentObj->TorrentStartAll();
+				}
+			}
+		break;
+		
+		case 'TorrentPauseAll':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentPause')) {
+				$UTorrentObj->Connect();
+				
+				if(is_object($UTorrentObj->UTorrentAPI)) {
+					$UTorrentObj->TorrentPauseAll();
+				}
+			}
+		break;
+		
+		case 'TorrentStopAll':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStop')) {
+				$UTorrentObj->Connect();
+				
+				if(is_object($UTorrentObj->UTorrentAPI)) {
+					$UTorrentObj->TorrentStopAll();
+				}
+			}
+		break;
+		
+		case 'TorrentRemove':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDelete')) {
+				$UTorrentObj->Connect();
+				
+				if(is_object($UTorrentObj->UTorrentAPI)) {
+					if(filter_has_var(INPUT_GET, 'All')) {
+						$UTorrentObj->TorrentRemoveAll();
+					}
+					else if(filter_has_var(INPUT_GET, 'Finished')) {
+						$UTorrentObj->DeleteFinishedTorrents();
+					}
+				}
+			}
+		break;
+			
 		case 'FilePlay':
 			$XBMCObj->Connect();
 			$XBMCObj->PlayFile($_GET['File']);

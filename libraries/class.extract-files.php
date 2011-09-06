@@ -1,10 +1,24 @@
 <?php
 class ExtractFiles extends Hub {
 	function GetFileSize($File) {
-		$FSObj = new COM('Scripting.FileSystemObject'); 
-		$File = $FSObj->GetFile($File);
+		clearstatcache();
 		
-		return $File->Size();
+		$IntegerMax  = 4294967295; // 2147483647+2147483647+1;
+		$FileSize    = filesize($File);
+		$FilePointer = fopen($File, 'r');
+		fseek($FilePointer, 0, SEEK_END);
+		
+		if(ftell($FilePointer) == 0) {
+			$FileSize += $IntegerMax;
+		}
+		
+		fclose($FilePointer);
+		
+		if($FileSize < 0) {
+			$FileSize += $IntegerMax;
+		}
+		
+		return $FileSize;
 	}
 	
 	function GetDirectorySize($Directory) { 

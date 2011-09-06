@@ -16,7 +16,15 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		foreach($RecentMovies['movies'] AS $Movie) {
 			$Thumbnail = (array_key_exists('thumbnail', $Movie)) ? $XBMCObj->GetImage($Movie['thumbnail']) : '';
 			$Genre     = (array_key_exists('genre', $Movie))     ? $Movie['genre']                         : '';
-			$File      = $HubObj->ConcatFilePath($Movie['file']);
+			$Files      = $HubObj->ConcatFilePath($Movie['file']);
+			
+			$FilePath = '';
+			if(is_array($Files)) {
+				$FilePath = implode('<br />', $Files);
+			}
+			else {
+				$FilePath = $Files;
+			}
 			
 			$MoviePoster = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'"><img class="poster" width="150" height="250" src="'.$Thumbnail.'" /></a>' : '<img class="poster" width="150" height="250" src="'.$Thumbnail.'" />';
 			
@@ -25,7 +33,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			 '.$MoviePoster.'<br />
 			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong><br />
 			 <em>'.$Genre.'</em><br />
-			 <small>'.$File.'</small>
+			 <small>'.$FilePath.'</small>
 			</td>'."\n";
 			
 			if($i++ % 3 == 0) {

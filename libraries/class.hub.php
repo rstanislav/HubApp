@@ -225,17 +225,29 @@ class Hub {
 	}
 	
 	function ConcatFilePath($Path) {
-		$Path = str_replace('smb://', '', $Path);
-		$Path = str_replace('\\', '/', $Path);
-		$First = strpos($Path, 'Media');
-		$Last = strrpos($Path, '/');
+		if(strstr($Path, 'stack')) {
+			$Path = str_replace('stack://', '', $Path);
+			
+			$FileArr = explode(',', $Path);
+			
+			$ConcatFileArr = array();
+			foreach($FileArr AS $File) {
+				$ConcatFileArr[] = trim(Hub::ConcatFilePath($File));
+			}
+			
+			return $ConcatFileArr;
+		}
+		else {
+			$Path = str_replace('smb:', '', $Path);
+			$Path = str_replace('\\', '/', $Path);
+			$First = strpos($Path, 'Media');
+			$Last = strrpos($Path, '/');
 		
-		$First = substr($Path, 0, $First);
-		$Last = substr($Path, $Last, strlen($Path));
+			$First = substr($Path, 0, $First);
+			$Last = substr($Path, $Last, strlen($Path));
 		
-		return $First.' … '.$Last;
-		
-		//return dirname($Path);
+			return $First.' … '.$Last;
+		}
 	}
 	
 	function GetSettings() {

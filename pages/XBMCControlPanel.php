@@ -1,6 +1,9 @@
+<?php
+$XBMCLibraryUpdateLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryUpdate')) ? '<a id="XBMCLibraryUpdate-0" class="button positive"><span class="inner"><span class="label" nowrap="">Update Library</span></span></a>' : '';
+//$XBMCLibraryCleanLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryClean')) ? '<a id="XBMCLibraryClean-0" class="button positive"><span class="inner"><span class="label" nowrap="">Clean Library</span></span></a>' : '';
+?>
 <div class="head-control">
- <a id="XBMCUpdateLibrary-0" class="button positive"><span class="inner"><span class="label" nowrap="">Update Library</span></span></a>
- <a id="XBMCCleanLibrary-0" class="button positive"><span class="inner"><span class="label" nowrap="">Clean Library</span></span></a>
+ <?php echo $XBMCLibraryUpdateLink; ?>
  <!--<a id="XBMCTakeScreenshot-0" class="button positive"><span class="inner"><span class="label" nowrap="">Take A Screenshot</span></span></a>//-->
 </div>
  

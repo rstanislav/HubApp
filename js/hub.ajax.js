@@ -69,7 +69,9 @@ $(document).ready(function() {
 	'a[id|="RSSFeedDelete"],' +
 	'a[id|="TorrentStartAll"],' +
 	'a[id|="TorrentPauseAll"],' +
-	'a[id|="TorrentStopAll"]').click(function(event) {
+	'a[id|="TorrentStopAll"],' +
+	'a[id|="XBMCLibraryUpdate"],' +
+	'a[id|="XBMCLibraryClean"]').click(function(event) {
 		if($(this).hasClass('button')) {
 			if(!$(this).hasClass('disabled')) {
 				AjaxButton(this);
@@ -192,6 +194,48 @@ function AjaxButton(Button, Extra) {
 	if(!ButtonClass)                      ButtonClass = 'positive';
 	
 	switch(Action) {
+		case 'XBMCLibraryUpdate':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=XBMCLibraryUpdate',
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Updating ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
+		case 'XBMCLibraryClean':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=XBMCLibraryClean',
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Cleaning ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
 		case 'TorrentStartAll':
 			$.ajax({
 				method: 'get',

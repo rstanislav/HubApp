@@ -39,6 +39,10 @@ class XBMC extends Hub {
 		}
 	}
 	
+	function CleanLibrary() {
+		// Not implemented in the XBMC JSON RPC yet
+	}
+	
 	function Notification($Sender, $Message) {
 		try {
 			return $this->XBMCRPC->JSONRPC->NotifyAll(array('sender' => $Sender, 'message' => $Message));

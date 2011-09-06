@@ -16,6 +16,28 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'XBMCLibraryUpdate':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryUpdate')) {
+				$XBMCObj->Connect();
+				if(is_object($XBMCObj->XBMCRPC)) {
+					$XBMCObj->ScanForContent();
+					
+					$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
+				}
+			}
+		break;
+		
+		case 'XBMCLibraryClean':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryClean')) {
+				$XBMCObj->Connect();
+				if(is_object($XBMCObj->XBMCRPC)) {
+					$XBMCObj->CleanLibrary();
+					
+					$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Cleaned XBMC Library');
+				}
+			}
+		break;
+		
 		case 'TorrentStartAll':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStart')) {
 				$UTorrentObj->Connect();

@@ -659,7 +659,7 @@ function AjaxLink(Link) {
 						$(Link).html('<img src="images/icons/error.png" />');
 					}
 					else {
-						$(Link).html('<img src="images/icons/accept.png" />');
+						$(Link).html('<img src="images/icons/check.png" />');
 					}
 				}
 			});

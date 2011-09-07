@@ -620,6 +620,17 @@ class Series extends Hub {
 		Hub::AddLog(EVENT.'Series', 'Success', 'Rebuilt '.$EpisodesRebuilt.' episodes divided over '.sizeof($this->GetSeries()).' series.');
 	}
 	
+	function DeleteEpisode($ID) {
+		$Episode = $this->PDO->query('SELECT EpisodeFile FROM Episodes WHERE EpisodeID = "'.$ID.'"')->fetch();
+		
+		if($Episode['EpisodeFile']) {
+			$EpisodePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = "" AND TorrentKey = "" WHERE EpisodeID = :ID');
+			$EpisodePrep->execute(array(':ID' => $ID));
+		                             
+			Hub::AddLog(EVENT.'Series', 'Success', 'Deleted "'.$Episode['EpisodeFile'].'"');
+		}
+	}	
+	
 	function RebuildFolders() {
 		$Drives = Drives::GetDrives();
 		$Series = $this->GetSeries();

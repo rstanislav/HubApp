@@ -71,7 +71,8 @@ $(document).ready(function() {
 	'a[id|="TorrentPauseAll"],' +
 	'a[id|="TorrentStopAll"],' +
 	'a[id|="XBMCLibraryUpdate"],' +
-	'a[id|="XBMCLibraryClean"]').click(function(event) {
+	'a[id|="XBMCLibraryClean"],' +
+	'a[id|="DeleteEpisode"]').click(function(event) {
 		if($(this).hasClass('button')) {
 			if(!$(this).hasClass('disabled')) {
 				AjaxButton(this);
@@ -539,13 +540,13 @@ function AjaxLink(Link) {
 	
 	LinkVal = $(Link).html();
 	switch(Action) {
-		case 'ZoneDelete':
-			jPrompt('Are you sure you want to delete zone "' + $(Link).attr('rel') + '"?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Zone', function(response) {
-				if(response == 'delete') {
+		case 'DeleteEpisode':
+			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '"?', 'Delete Episode', function(response) {
+				if(response) {
 					$.ajax({
 						method: 'get',
 						url:    'load.php',
-						data:   'page=ZoneDelete&ZoneID=' + FirstID,
+						data:   'page=DeleteEpisode&EpisodeID=' + FirstID,
 						beforeSend: function() {
 							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
 						},
@@ -554,13 +555,35 @@ function AjaxLink(Link) {
 								$(Link).html('<img src="images/icons/error.png" />');
 							}
 							else {
-								$('#Zone-' + FirstID).slideUp('slow').remove();
+								$('#Episode-' + FirstID).slideUp('slow').remove();
 							}
 						}
 					});
 				}
 			});
 		break;
+			case 'ZoneDelete':
+				jPrompt('Are you sure you want to delete zone "' + $(Link).attr('rel') + '"?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Zone', function(response) {
+					if(response == 'delete') {
+						$.ajax({
+							method: 'get',
+							url:    'load.php',
+							data:   'page=ZoneDelete&ZoneID=' + FirstID,
+							beforeSend: function() {
+								$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+							},
+							success: function(Return) {
+								if(Return != '') {
+									$(Link).html('<img src="images/icons/error.png" />');
+								}
+								else {
+									$('#Zone-' + FirstID).slideUp('slow').remove();
+								}
+							}
+						});
+					}
+				});
+			break;
 		
 		case 'DriveActive':
 			$.ajax({

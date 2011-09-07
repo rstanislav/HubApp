@@ -16,6 +16,14 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'DeleteEpisode':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDeleteEpisode')) {
+				if(filter_has_var(INPUT_GET, 'EpisodeID')) {
+					$SeriesObj->DeleteEpisode($_GET['EpisodeID']);
+				}
+			}
+		break;
+		
 		case 'XBMCLibraryUpdate':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryUpdate')) {
 				$XBMCObj->Connect();

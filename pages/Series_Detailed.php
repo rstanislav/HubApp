@@ -103,7 +103,7 @@ if(is_array($Series)) {
 				$Episode['EpisodeFile'] = $HubObj->ConcatFilePath($Episode['EpisodeFile']);
 				
 				$PlayFileLink      = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))           ? '<a id="FilePlay-'.urlencode($Episode['EpisodeFile']).'"><img src="images/icons/control_play.png" title="Play '.$Episode['EpisodeFile'].'" /></a>' : '';
-				$DeleteEpisodeLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDeleteEpisode')) ? '<img src="images/icons/delete.png" />'       : '';
+				$DeleteEpisodeLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDeleteEpisode')) ? '<a id="DeleteEpisode-'.$Episode['EpisodeID'].'" rel="'.$Serie['SerieTitle'].' s'.sprintf('%02s', $Episode['EpisodeSeason']).'e'.sprintf('%02s', $Episode['EpisodeEpisode']).'"><img src="images/icons/delete.png" /></a>'       : '';
 				
 				$EpisodeControl = $PlayFileLink.' '.$DeleteEpisodeLink;
 				$OtherOptions = TRUE;
@@ -181,7 +181,7 @@ if(is_array($Series)) {
 			}
 		
 			echo '
-			<tr>
+			<tr id="Episode-'.$Episode['EpisodeID'].'">
 			 <td>'.sprintf("S%02sE%02s", $Episode['EpisodeSeason'], $Episode['EpisodeEpisode']).'</td>
 			 <td>'.$Episode['EpisodeTitle'].'</td>
 			 <td>'.date('d.m.y', $Episode['EpisodeAirDate']).'</td>

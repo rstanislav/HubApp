@@ -157,7 +157,12 @@ class UTorrent extends Hub {
 		$Torrents = self::GetTorrents();
 		
 		foreach($Torrents AS $Torrent) {
-			self::TorrentDelete($Torrent[UTORRENT_TORRENT_HASH]);
+			if($Torrent[UTORRENT_TORRENT_PROGRESS] != 1000) {
+				self::TorrentDeleteData($Torrent[UTORRENT_TORRENT_HASH]);
+			}
+			else {
+				self::TorrentDelete($Torrent[UTORRENT_TORRENT_HASH]);
+			}
 		}
 	}
 	

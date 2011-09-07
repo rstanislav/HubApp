@@ -233,8 +233,8 @@ else {
 						$EpisodeTorrents = $SeriesObj->GetSerieEpisodeTorrents($_GET['TheTVDBID']);
 					
 						if(is_array($EpisodeTorrents)) {
-							//$UTorrentObj->Connect();
-							//$UTorrentObj->DownloadTorrents($EpisodeTorrents);
+							$UTorrentObj->Connect();
+							$UTorrentObj->DownloadTorrents($EpisodeTorrents);
 						}
 					}
 					else {

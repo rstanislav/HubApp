@@ -507,6 +507,27 @@ function AjaxButton(Button, Extra) {
 				}
 			});
 		break;
+		
+		case 'TorrentDownload':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=TorrentDownload&TorrentID=' + ID,
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Downloading ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+					}
+					else {
+						//$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text('Downloaded!');
+					}
+				}
+			});
+		break;
 	}
 }
 

@@ -48,7 +48,7 @@ if(is_array($Permissions)) {
 		 <td class="editable" id="'.$Permission['PermissionID'].'-|-PermissionText">'.$Permission['PermissionText'].'</td>
 		 <td class="editable" id="'.$Permission['PermissionID'].'-|-PermissionAction">'.$Permission['PermissionAction'].'</td>
 		 <td>'.$Permission['PermissionValue'].'</td>
-		 <td><img src="images/icons/delete.png" /></td>
+		 <td></td>
 		</tr>'."\n";
 	}
 	echo '</table>'."\n";

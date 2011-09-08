@@ -3,14 +3,25 @@ $(document).ready(function() {
 	var ShiftDown = false;
 	$(document).keydown(function(event) {
 		if(event.shiftKey) {
-			$('a[id|="SerieAdd"]').contents().find('.label').text('Add & Download');
+			$('a[id|="SerieAdd"]').each(function() {
+				if(!$(this).hasClass('disabled')) {
+					$(this).contents().find('.label').text('Add & Download');
+				}
+			});
+					
 			ShiftDown = true;
 		}
 	});
 
 	$(document).keyup(function(event) {
 		if(!event.shiftKey) {
-			$('a[id|="SerieAdd"]').contents().find('.label').text('Add');
+			$('a[id|="SerieAdd"]').each(function() {
+				if(!$(this).hasClass('disabled')) {
+					if($(this).contents().find('.label').text() != 'Adding ...') {
+						$(this).contents().find('.label').text('Add');
+					}
+				}
+			});
 		
 			ShiftDown = false;
 		}

@@ -3,14 +3,25 @@ $(document).ready(function() {
 	var ShiftDown = false;
 	$(document).keydown(function(event) {
 		if(event.shiftKey) {
-			$('a[id|="TorrentRemove"]').contents().find('.label').text('Remove All');
+			$('a[id|="TorrentRemove"]').each(function() {
+				if(!$(this).hasClass('disabled')) {
+					$(this).contents().find('.label').text('Remove All');
+				}
+			});
+					
 			ShiftDown = true;
 		}
 	});
 
 	$(document).keyup(function(event) {
 		if(!event.shiftKey) {
-			$('a[id|="TorrentRemove"]').contents().find('.label').text('Remove All Finished');
+			$('a[id|="TorrentRemove"]').each(function() {
+				if(!$(this).hasClass('disabled')) {
+					if($(this).contents().find('.label').text() != 'Removing ...') {
+						$(this).contents().find('.label').text('Remove All Finished');
+					}
+				}
+			});
 		
 			ShiftDown = false;
 		}

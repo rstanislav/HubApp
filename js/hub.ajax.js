@@ -315,7 +315,7 @@ function AjaxButton(Button, Extra) {
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
-						$(ButtonObj).contents().find('.label').text(ButtonVal);
+						$(ButtonObj).contents().find('.label').text('Remove All Finished');
 					}
 				}
 			});

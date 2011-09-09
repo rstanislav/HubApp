@@ -1,3 +1,5 @@
+<script type="text/javascript" src="js/hub.torrentDownload.js"></script>
+
 <?php
 $Series = $SeriesObj->GetFutureSchedule();
 

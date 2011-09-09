@@ -597,7 +597,7 @@ class Series extends Hub {
 								
 								if(strlen($Serie['SerieID'])) {
 									if(is_file($Location.$File)) {
-										if(is_array($ParsedInfo['Episodes'])) {
+										if(array_key_exists('Episodes', $ParsedInfo)) {
 											foreach($ParsedInfo['Episodes'] AS $Episodes) {
 												$EpisodeUpdatePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = :EpisodeFile WHERE SeriesKey = :SeriesKey AND EpisodeSeason = :Season AND EpisodeEpisode = :Episode');
 												$EpisodeUpdatePrep->execute(array(':EpisodeFile' => $Location.$File,

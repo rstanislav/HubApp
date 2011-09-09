@@ -597,14 +597,16 @@ class Series extends Hub {
 								
 								if(strlen($Serie['SerieID'])) {
 									if(is_file($Location.$File)) {
-										foreach($ParsedInfo['Episodes'] AS $Episodes) {
-											$EpisodeUpdatePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = :EpisodeFile WHERE SeriesKey = :SeriesKey AND EpisodeSeason = :Season AND EpisodeEpisode = :Episode');
-											$EpisodeUpdatePrep->execute(array(':EpisodeFile' => $Location.$File,
-											                                  ':SeriesKey'   => $Serie['SerieID'],
-											                                  ':Season'      => $Episodes[0],
-											                                  ':Episode'     => $Episodes[1]));
+										if(is_array($ParsedInfo['Episodes'])) {
+											foreach($ParsedInfo['Episodes'] AS $Episodes) {
+												$EpisodeUpdatePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = :EpisodeFile WHERE SeriesKey = :SeriesKey AND EpisodeSeason = :Season AND EpisodeEpisode = :Episode');
+												$EpisodeUpdatePrep->execute(array(':EpisodeFile' => $Location.$File,
+											                                  	  ':SeriesKey'   => $Serie['SerieID'],
+											                                      ':Season'      => $Episodes[0],
+											                                      ':Episode'     => $Episodes[1]));
 											
-											$EpisodesRebuilt++;
+												$EpisodesRebuilt++;
+											}
 										}
 									}
 								}

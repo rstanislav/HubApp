@@ -7,7 +7,7 @@ $('a[id|="TorrentPause"],a[id|="TorrentStop"],a[id|="TorrentStart"],a[id|="Torre
 <?php
 $UTorrentObj->Connect();
 
-if(is_object($UTorrentObj->UTorrentAPI)) {
+if($UTorrentObj->UTorrentAPI->token) {
 	$Torrents = $UTorrentObj->GetTorrents();
 	
 	if(is_array($Torrents) && sizeof($Torrents)) {

@@ -102,8 +102,15 @@ else {
 		break;
 		
 		case 'LockStatus':
-			if($HubObj->CheckLock()) {
-				echo '<a><img src="images/icons/lock.png" /></a>';
+			$Settings = $HubObj->GetSettings();
+			
+			if($Settings['SettingHubKillSwitch']) {
+				echo '<a><img src="images/icons/lock_break.png" /></a>';
+			}
+			else {
+				if($HubObj->CheckLock()) {
+					echo '<a><img src="images/icons/lock.png" /></a>';
+				}
 			}
 		break;
 		

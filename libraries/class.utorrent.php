@@ -178,22 +178,24 @@ class UTorrent extends Hub {
 		$Torrents = $this->GetTorrents();
 		$TorrentSize = sizeof($Torrents);
 		
-		$TorrentFinishedSize = 0;
-		foreach($Torrents AS $Torrent) {
-			if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000) {
-				$TorrentFinishedSize++;
-				$TorrentSize--;
+		if($TorrentSize) {
+			$TorrentFinishedSize = 0;
+			foreach($Torrents AS $Torrent) {
+				if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000) {
+					$TorrentFinishedSize++;
+					$TorrentSize--;
+				}
 			}
-		}
 		
-		if($TorrentFinishedSize > 0 && $TorrentSize == 0) {
-			echo '<span class="badge single red">'.$TorrentFinishedSize.'</span>';
-		}
-		else if($TorrentFinishedSize > 0 && $TorrentSize > 0) {
-			echo '<span class="badge dual rightbadge blue">'.$TorrentSize.'</span><span class="badge dual leftbadge red">'.$TorrentFinishedSize.'</span>';
-		}
-		else if($TorrentSize > 0) {
-			echo '<span class="badge single blue">'.$TorrentSize.'</span>';
+			if($TorrentFinishedSize > 0 && $TorrentSize == 0) {
+				echo '<span class="badge single red">'.$TorrentFinishedSize.'</span>';
+			}
+			else if($TorrentFinishedSize > 0 && $TorrentSize > 0) {
+				echo '<span class="badge dual rightbadge blue">'.$TorrentSize.'</span><span class="badge dual leftbadge red">'.$TorrentFinishedSize.'</span>';
+			}
+			else if($TorrentSize > 0) {
+				echo '<span class="badge single blue">'.$TorrentSize.'</span>';
+			}
 		}
 	}
 }

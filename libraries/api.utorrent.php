@@ -76,6 +76,7 @@ class UTorrentAPI {
         //print "<code>$request</code>"; //DEBUG
         curl_setopt($ch, CURLOPT_URL, sprintf(self::$base, $this->host, $this->port, $request));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 1);
         curl_setopt($ch, CURLOPT_USERPWD, $this->user.":".$this->pass);
 
         $req = curl_exec($ch);

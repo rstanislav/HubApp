@@ -15,7 +15,7 @@ class UTorrent extends Hub {
 						                                     $Settings['SettingUTorrentPassword'],
 						                                     $Settings['SettingUTorrentPort']);
 						
-						if(!$this->UTorrentAPI->token) {
+						if(!$this->UTorrentAPI->Token) {
 							$this->Error[] = 'Unable to connect to uTorrent';
 						}
 					}
@@ -183,7 +183,7 @@ class UTorrent extends Hub {
 	}
 	
 	function GetBadge() {
-		if(!$this->UTorrentAPI->token) {
+		if(!$this->UTorrentAPI->Token) {
 			echo '<span class="badge single red"><img style="margin-top:2px" src="images/icons/offline.png" /></span>';
 		}
 		else {

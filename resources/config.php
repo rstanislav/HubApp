@@ -18,9 +18,5 @@ if(!is_dir(APP_PATH.'/screenshots/'))            { mkdir(APP_PATH.'/screenshots/
 if(!is_dir(APP_PATH.'/screenshots/thumbnails/')) { mkdir(APP_PATH.'/screenshots/thumbnails/'); }
 if(!is_dir(APP_PATH.'/tmp'))                     { mkdir(APP_PATH.'/tmp/');                    }
 
-define('DB_TYPE', 'mysql');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'hub');
+require_once APP_PATH.'/resources/db-config.php';
 ?>

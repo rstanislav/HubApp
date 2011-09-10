@@ -175,10 +175,13 @@ class UTorrent extends Hub {
 	}
 	
 	function GetBadge() {
-		$Torrents = $this->GetTorrents();
-		$TorrentSize = sizeof($Torrents);
+		if(!$this->UTorrentAPI) {
+			echo '<span class="badge single blue">!</span>';
+		}
+		else {
+			$Torrents = $this->GetTorrents();
+			$TorrentSize = sizeof($Torrents);
 		
-		if($TorrentSize) {
 			$TorrentFinishedSize = 0;
 			foreach($Torrents AS $Torrent) {
 				if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000) {

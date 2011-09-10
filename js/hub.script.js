@@ -245,7 +245,8 @@ function UpdateBadge(Badge, ID) {
 			
 			success: function(html) {
 				$('#RSS-' + ID).html(html);
-			}
+			},
+			timeout: 5000
 		});
 		
 		setTimeout('UpdateBadge("RSS", ' + ID + ')', 5000);
@@ -258,7 +259,8 @@ function UpdateBadge(Badge, ID) {
 			
 			success: function(html) {
 				$('#' + Badge + 'Badge').html(html);
-			}
+			},
+			timeout: 5000
 		});
 		
 		setTimeout('UpdateBadge("' + Badge + '")', 5000);
@@ -273,7 +275,8 @@ function LockStatus() {
 		
 		success: function(html) {
 			$('#LockStatus').html(html);
-		}
+		},
+		timeout: 5000
 	});
 	
 	setTimeout('LockStatus()', 5000);

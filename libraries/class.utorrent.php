@@ -183,7 +183,7 @@ class UTorrent extends Hub {
 	}
 	
 	function GetBadge() {
-		if(!$this->UTorrentAPI) {
+		if(!is_object($this->UTorrentAPI)) {
 			echo '<span class="badge single blue">!</span>';
 		}
 		else {

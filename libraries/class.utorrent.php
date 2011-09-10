@@ -156,13 +156,21 @@ class UTorrent extends Hub {
 	function TorrentRemoveAll() {
 		$Torrents = self::GetTorrents();
 		
+		$RemovedTorrents = $RemovedTorrentsSize = 0;
 		foreach($Torrents AS $Torrent) {
+			$RemovedTorrents++;
+			$RemovedTorrentsSize += $Torrent[UTORRENT_TORRENT_SIZE];
+			
 			if($Torrent[UTORRENT_TORRENT_PROGRESS] != 1000) {
 				self::TorrentDeleteData($Torrent[UTORRENT_TORRENT_HASH]);
 			}
 			else {
 				self::TorrentDelete($Torrent[UTORRENT_TORRENT_HASH]);
 			}
+		}
+	
+		if($RemovedTorrents) {
+			Hub::AddLog(EVENT.'uTorrent', 'Success', 'Removed '.$RemovedTorrents.' torrents totaling '.Hub::BytesToHuman($RemovedTorrentsSize));
 		}
 	}
 	

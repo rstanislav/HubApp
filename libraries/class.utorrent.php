@@ -15,8 +15,8 @@ class UTorrent extends Hub {
 						                                     $Settings['SettingUTorrentPassword'],
 						                                     $Settings['SettingUTorrentPort']);
 						
-						if(!$this->UTorrentAPI) {
-							$this->Error[] = 'Unable to get uTorrent token';
+						if(!is_object($this->UTorrentAPI)) {
+							$this->Error[] = 'Unable to connect to uTorrent';
 						}
 					}
 					else {
@@ -187,25 +187,28 @@ class UTorrent extends Hub {
 			echo '<span class="badge single blue">!</span>';
 		}
 		else {
-			$Torrents = $this->GetTorrents();
-			$TorrentSize = sizeof($Torrents);
+			$Torrents = self::GetTorrents();
+			
+			if(is_array($Torrents) && sizeof($Torrents)) {
+				$TorrentSize = sizeof($Torrents);
 		
-			$TorrentFinishedSize = 0;
-			foreach($Torrents AS $Torrent) {
-				if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000) {
-					$TorrentFinishedSize++;
-					$TorrentSize--;
+				$TorrentFinishedSize = 0;
+				foreach($Torrents AS $Torrent) {
+					if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000) {
+						$TorrentFinishedSize++;
+						$TorrentSize--;
+					}
 				}
-			}
 		
-			if($TorrentFinishedSize > 0 && $TorrentSize == 0) {
-				echo '<span class="badge single red">'.$TorrentFinishedSize.'</span>';
-			}
-			else if($TorrentFinishedSize > 0 && $TorrentSize > 0) {
-				echo '<span class="badge dual rightbadge blue">'.$TorrentSize.'</span><span class="badge dual leftbadge red">'.$TorrentFinishedSize.'</span>';
-			}
-			else if($TorrentSize > 0) {
-				echo '<span class="badge single blue">'.$TorrentSize.'</span>';
+				if($TorrentFinishedSize > 0 && $TorrentSize == 0) {
+					echo '<span class="badge single red">'.$TorrentFinishedSize.'</span>';
+				}
+				else if($TorrentFinishedSize > 0 && $TorrentSize > 0) {
+					echo '<span class="badge dual rightbadge blue">'.$TorrentSize.'</span><span class="badge dual leftbadge red">'.$TorrentFinishedSize.'</span>';
+				}
+				else if($TorrentSize > 0) {
+					echo '<span class="badge single blue">'.$TorrentSize.'</span>';
+				}
 			}
 		}
 	}

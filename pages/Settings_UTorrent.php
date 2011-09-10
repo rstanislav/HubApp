@@ -14,7 +14,7 @@
 
 <div class="head">Settings &raquo; uTorrent <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
 
-<form id="SettingsForm" name="SettingsUTorrent" method="post" action="?page=SaveSettings">
+<form id="SettingsForm" name="SettingsUTorrent" method="post" action="load.php?page=SaveSettings">
 <input type="hidden" name="SettingSection" value="UTorrent" />
 <table>
  <tbody>

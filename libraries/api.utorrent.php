@@ -70,7 +70,7 @@ class UTorrentAPI {
         $CurlResource = curl_init();
 
         curl_setopt_array($CurlResource, $OptionsArr);
-        if(!empty($this->token)) {
+        if(!empty($this->Token)) {
             // Check if we have a ?
             if(substr($Request, 0, 1) == '?') {
                 $Request = preg_replace('/^\?/', '?token='.$this->Token . '&', $Request);

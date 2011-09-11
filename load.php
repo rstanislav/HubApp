@@ -264,8 +264,12 @@ else {
 		
 		case 'SerieRefresh':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieRefresh')) {
-				$SeriesObj->ConnectTheTVDB();
-				$SeriesObj->RefreshSerie($_GET['SerieID']);
+				if($SeriesObj->ConnectTheTVDB()) {
+					$SeriesObj->RefreshSerie($_GET['SerieID']);
+				}
+				else {
+					$HubObj->AddLog(EVENT.'Series', 'Failure', 'Unable to connect to TheTVDB.com');
+				}
 			}
 			else {
 				$_SESSION['Error'] = 'You are not permitted to refresh series';

@@ -18,7 +18,11 @@ class TheTVDBAPI {
 		
 		try {
 			$this->SetTemporaryFolder();
-			$this->SetMirrors();
+			
+			if(!$this->SetMirrors()) {
+				return FALSE;
+			}
+			
 			$this->GetServerTime();
 		}
 		catch(Exception $e) {
@@ -50,9 +54,12 @@ class TheTVDBAPI {
 			$this->XMLMirror    = $XMLMirror[rand(0,    (sizeof($XMLMirror)    - 1))];
 			$this->BannerMirror = $BannerMirror[rand(0, (sizeof($BannerMirror) - 1))];
 			$this->ZipMirror    = $ZipMirror[rand(0,    (sizeof($ZipMirror)    - 1))];
+			
+			return TRUE;
 		}
 		else {
-			throw new Exception('Unable to load http://www.thetvdb.com/api/'.self::$APIKey.'/mirrors.xml');
+			return FALSE;
+			// throw new Exception('Unable to load http://www.thetvdb.com/api/'.self::$APIKey.'/mirrors.xml');
 		}
 	}
 	
@@ -97,44 +104,49 @@ class TheTVDBAPI {
 		*/
 		$Language = empty($this->Language) ? $this->Language : 'en';
 		
-		$ZipFile = $this->ZipMirror.'/api/'.self::$APIKey.'/series/'.$SerieID.'/all/'.$Language.'.zip';
-		
-		if(@copy($ZipFile, $this->TemporaryFolder.'/'.$SerieID.'.zip')) {
-			$zip = new ZipArchive;
-			if(@$zip->open($this->TemporaryFolder.'/'.$SerieID.'.zip') === TRUE) {
-		    	if(@$zip->extractTo($this->TemporaryFolder.'/'.$SerieID.'/')) {
-		    		$zip->close();
-		    	
-		    		if(!$SeriesInfo = @simplexml_load_file($this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml')) {
-		    			throw new Exception('Unable to load '.$this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml');
-		    		}
-		    	
-		    		if(is_dir($this->TemporaryFolder.'/'.$SerieID.'/')) {
-		    			if(!$this->RecursiveRmDir($this->TemporaryFolder.'/'.$SerieID.'/')) {
-		    				throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
-		    			}
-		    		}
-		    		
-		    	}
-		    	else {
-		    		throw new Exception('Unable to extract '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
-		    	}
-			}
-			else {
-		    	throw new Exception($this->TemporaryFolder.'/'.$SerieID.'.zip is an invalid zip file');
-			}
+		if($this->ZipMirror) {
+			$ZipFile = $this->ZipMirror.'/api/'.self::$APIKey.'/series/'.$SerieID.'/all/'.$Language.'.zip';
 			
-			if(is_file($this->TemporaryFolder.'/'.$SerieID.'.zip')) {
-				if(!unlink($this->TemporaryFolder.'/'.$SerieID.'.zip')) {
-					throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+			if(@copy($ZipFile, $this->TemporaryFolder.'/'.$SerieID.'.zip')) {
+				$zip = new ZipArchive;
+				if(@$zip->open($this->TemporaryFolder.'/'.$SerieID.'.zip') === TRUE) {
+			    	if(@$zip->extractTo($this->TemporaryFolder.'/'.$SerieID.'/')) {
+			    		$zip->close();
+			    	
+			    		if(!$SeriesInfo = @simplexml_load_file($this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml')) {
+			    			throw new Exception('Unable to load '.$this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml');
+			    		}
+			    	
+			    		if(is_dir($this->TemporaryFolder.'/'.$SerieID.'/')) {
+			    			if(!$this->RecursiveRmDir($this->TemporaryFolder.'/'.$SerieID.'/')) {
+			    				throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+			    			}
+			    		}
+			    		
+			    	}
+			    	else {
+			    		throw new Exception('Unable to extract '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+			    	}
+				}
+				else {
+			    	throw new Exception($this->TemporaryFolder.'/'.$SerieID.'.zip is an invalid zip file');
+				}
+				
+				if(is_file($this->TemporaryFolder.'/'.$SerieID.'.zip')) {
+					if(!unlink($this->TemporaryFolder.'/'.$SerieID.'.zip')) {
+						throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+					}
 				}
 			}
+			else {
+				throw new Exception('Unable to copy '.$ZipFile.' to '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+			}
+			
+			return $SeriesInfo;
 		}
 		else {
-			throw new Exception('Unable to copy '.$ZipFile.' to '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+			return FALSE;
 		}
-		
-		return $SeriesInfo;
 	}
 	
 	public function SetPreviousUpdateTime($Time = '') {

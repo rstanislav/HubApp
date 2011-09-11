@@ -11,6 +11,8 @@ class Series extends Hub {
 			
 			if(!is_object($this->TheTVDBAPI)) {
 				$this->Error[] = 'Unable to connect to TheTVDB API';
+				
+				return FALSE;
 			}
 			else {
 				$this->TheTVDBAPI->SetPreviousUpdateTime(time()); // Timestamp
@@ -20,6 +22,8 @@ class Series extends Hub {
 		else {
 			$this->Error[] = 'No API key available for TheTVDB';
 		}
+		
+		return TRUE;
 	}
 	
 	function SerieExists($SerieTitle) {
@@ -409,76 +413,79 @@ class Series extends Hub {
 				$this->DownloadPoster($SerieID);
 				
 				$SeriesInfo = $this->TheTVDBAPI->GetSeriesInfo($SerieTheTVDBID);
-				foreach($SeriesInfo AS $Serie) {
-					if($Serie->SeriesName) {
-						$Serie->SeriesName = str_replace(array(':', '\'', '(', ')', '*'), '', $Serie->SeriesName);
-						$Serie->Genre      = str_replace('|', ', ', trim($Serie->Genre, '|'));
-					
-						$SerieUpdatePrep = $this->PDO->prepare('UPDATE Series SET SerieTitle = :Title, SeriePlot = :Plot, SerieContentRating = :ContentRating, SerieIMDBID = :IMDBID, SerieRating = :Rating, SerieRatingCount = :RatingCount, SerieBanner = :Banner, SerieFanArt = :FanArt, SeriePoster = :Poster, SerieFirstAired = :FirstAired, SerieAirDay = :AirDay, SerieAirTime = :AirTime, SerieRuntime = :Runtime, SerieNetwork = :Network, SerieStatus = :Status, SerieGenre = :Genre WHERE SerieTheTVDBID = :TheTVDBID');
-					
-						$SerieUpdatePrep->execute(array(':Title'         => $Serie->SeriesName,
-					                                    ':Plot'          => $Serie->Overview,
-					                                    ':ContentRating' => $Serie->ContentRating,
-					                                    ':IMDBID'        => $Serie->IMDB_ID,
-					                                    ':Rating'        => $Serie->Rating,
-					                                    ':RatingCount'   => $Serie->RatingCount,
-					                                    ':Banner'        => $Serie->banner,
-					                                    ':FanArt'        => $Serie->fanart,
-					                                    ':Poster'        => $Serie->poster,
-					                                    ':FirstAired'    => strtotime($Serie->FirstAired),
-					                                    ':AirDay'        => $Serie->Airs_DayOfWeek,
-					                                    ':AirTime'       => $Serie->Airs_Time,
-					                                    ':Runtime'       => $Serie->Runtime,
-					                                    ':Network'       => $Serie->Network,
-					                                    ':Status'        => $Serie->Status,
-					                                    ':Genre'         => $Serie->Genre,
-					                                    ':TheTVDBID'     => $SerieTheTVDBID));
-		
-						$EpisodeAirTime = $Serie->Airs_Time;
-						$TimeZoneOffset = ($Serie->Network == 'BBC Two') ? '+1 hour' : '+6 hours';
-						$SeriesUpdated++;
-					}
-					else {
-						$Episode = $this->PDO->query('SELECT EpisodeTheTVDBID FROM Episodes WHERE EpisodeTheTVDBID = "'.$Serie->id.'"')->fetch();
-					
-						if(strlen($Episode['EpisodeTheTVDBID'])) {
-							$Date = date('d.m.Y', strtotime($Serie->FirstAired));
-							$Time = date('H:i',   strtotime($EpisodeAirTime));
-							$EpisodeAirDate =     strtotime($TimeZoneOffset, strtotime($Date.' '.$Time));
+				
+				if(is_array($SeriesInfo)) {
+					foreach($SeriesInfo AS $Serie) {
+						if($Serie->SeriesName) {
+							$Serie->SeriesName = str_replace(array(':', '\'', '(', ')', '*'), '', $Serie->SeriesName);
+							$Serie->Genre      = str_replace('|', ', ', trim($Serie->Genre, '|'));
+						
+							$SerieUpdatePrep = $this->PDO->prepare('UPDATE Series SET SerieTitle = :Title, SeriePlot = :Plot, SerieContentRating = :ContentRating, SerieIMDBID = :IMDBID, SerieRating = :Rating, SerieRatingCount = :RatingCount, SerieBanner = :Banner, SerieFanArt = :FanArt, SeriePoster = :Poster, SerieFirstAired = :FirstAired, SerieAirDay = :AirDay, SerieAirTime = :AirTime, SerieRuntime = :Runtime, SerieNetwork = :Network, SerieStatus = :Status, SerieGenre = :Genre WHERE SerieTheTVDBID = :TheTVDBID');
+						
+							$SerieUpdatePrep->execute(array(':Title'         => $Serie->SeriesName,
+						                                    ':Plot'          => $Serie->Overview,
+						                                    ':ContentRating' => $Serie->ContentRating,
+						                                    ':IMDBID'        => $Serie->IMDB_ID,
+						                                    ':Rating'        => $Serie->Rating,
+						                                    ':RatingCount'   => $Serie->RatingCount,
+						                                    ':Banner'        => $Serie->banner,
+						                                    ':FanArt'        => $Serie->fanart,
+						                                    ':Poster'        => $Serie->poster,
+						                                    ':FirstAired'    => strtotime($Serie->FirstAired),
+						                                    ':AirDay'        => $Serie->Airs_DayOfWeek,
+						                                    ':AirTime'       => $Serie->Airs_Time,
+						                                    ':Runtime'       => $Serie->Runtime,
+						                                    ':Network'       => $Serie->Network,
+						                                    ':Status'        => $Serie->Status,
+						                                    ':Genre'         => $Serie->Genre,
+						                                    ':TheTVDBID'     => $SerieTheTVDBID));
 			
-							$EpisodeUpdatePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeSeason = :Season, EpisodeEpisode = :Episode, EpisodeTitle = :Title, EpisodePlot = :Plot, EpisodeRating = :Rating, EpisodeRatingCount = :RatingCount, EpisodeBanner = :Banner, EpisodeAirDate = :AirDate WHERE EpisodeTheTVDBID = :TheTVDBID');
-							$EpisodeUpdatePrep->execute(array(':Season'      => $Serie->SeasonNumber,
-						                                      ':Episode'     => $Serie->EpisodeNumber,
-						                                      ':Title'       => $Serie->EpisodeName,
-						                                      ':Plot'        => $Serie->Overview,
-						                                      ':Rating'      => $Serie->Rating,
-						                                      ':RatingCount' => $Serie->RatingCount,
-						                                      ':Banner'      => $Serie->filename,
-						                                      ':AirDate'     => $EpisodeAirDate,
-						                                      ':TheTVDBID'   => $Serie->id));
-			
-						    $EpisodesUpdated++;
+							$EpisodeAirTime = $Serie->Airs_Time;
+							$TimeZoneOffset = ($Serie->Network == 'BBC Two') ? '+1 hour' : '+6 hours';
+							$SeriesUpdated++;
 						}
 						else {
-							$Date = date('d.m.Y', strtotime($Serie->FirstAired));
-							$Time = date('H:i',   strtotime($EpisodeAirTime));
-							$EpisodeAirDate =     strtotime($TimeZoneOffset, strtotime($Date.' '.$Time));
-			
-							$EpisodeAddPrep = $this->PDO->prepare('INSERT INTO Episodes (EpisodeID, EpisodeDate, EpisodeSeason, EpisodeEpisode, EpisodeTitle, EpisodePlot, EpisodeRating, EpisodeRatingCount, EpisodeBanner, EpisodeAirDate, SeriesKey, EpisodeTheTVDBID) VALUES (NULL, :Date, :Season, :Episode, :Title, :Plot, :Rating, :RatingCount, :Banner, :AirDate, :SeriesKey, :EpisodeTheTVDBID)');
+							$Episode = $this->PDO->query('SELECT EpisodeTheTVDBID FROM Episodes WHERE EpisodeTheTVDBID = "'.$Serie->id.'"')->fetch();
 						
-							$EpisodeAddPrep->execute(array(':Date'             => time(),
-						                                   ':Season'           => $Serie->SeasonNumber,
-						                                   ':Episode'          => $Serie->EpisodeNumber,
-						                                   ':Title'            => $Serie->EpisodeName,
-						                                   ':Plot'             => $Serie->Overview,
-						                                   ':Rating'           => $Serie->Rating,
-						                                   ':RatingCount'      => $Serie->RatingCount,
-						                                   ':Banner'           => $Serie->filename,
-						                                   ':AirDate'          => $EpisodeAirDate,
-						                                   ':SeriesKey'        => $SerieID,
-						                                   ':EpisodeTheTVDBID' => $Serie->id));
-			
-							$EpisodesAdded++;
+							if(strlen($Episode['EpisodeTheTVDBID'])) {
+								$Date = date('d.m.Y', strtotime($Serie->FirstAired));
+								$Time = date('H:i',   strtotime($EpisodeAirTime));
+								$EpisodeAirDate =     strtotime($TimeZoneOffset, strtotime($Date.' '.$Time));
+				
+								$EpisodeUpdatePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeSeason = :Season, EpisodeEpisode = :Episode, EpisodeTitle = :Title, EpisodePlot = :Plot, EpisodeRating = :Rating, EpisodeRatingCount = :RatingCount, EpisodeBanner = :Banner, EpisodeAirDate = :AirDate WHERE EpisodeTheTVDBID = :TheTVDBID');
+								$EpisodeUpdatePrep->execute(array(':Season'      => $Serie->SeasonNumber,
+							                                      ':Episode'     => $Serie->EpisodeNumber,
+							                                      ':Title'       => $Serie->EpisodeName,
+							                                      ':Plot'        => $Serie->Overview,
+							                                      ':Rating'      => $Serie->Rating,
+							                                      ':RatingCount' => $Serie->RatingCount,
+							                                      ':Banner'      => $Serie->filename,
+							                                      ':AirDate'     => $EpisodeAirDate,
+							                                      ':TheTVDBID'   => $Serie->id));
+				
+							    $EpisodesUpdated++;
+							}
+							else {
+								$Date = date('d.m.Y', strtotime($Serie->FirstAired));
+								$Time = date('H:i',   strtotime($EpisodeAirTime));
+								$EpisodeAirDate =     strtotime($TimeZoneOffset, strtotime($Date.' '.$Time));
+				
+								$EpisodeAddPrep = $this->PDO->prepare('INSERT INTO Episodes (EpisodeID, EpisodeDate, EpisodeSeason, EpisodeEpisode, EpisodeTitle, EpisodePlot, EpisodeRating, EpisodeRatingCount, EpisodeBanner, EpisodeAirDate, SeriesKey, EpisodeTheTVDBID) VALUES (NULL, :Date, :Season, :Episode, :Title, :Plot, :Rating, :RatingCount, :Banner, :AirDate, :SeriesKey, :EpisodeTheTVDBID)');
+							
+								$EpisodeAddPrep->execute(array(':Date'             => time(),
+							                                   ':Season'           => $Serie->SeasonNumber,
+							                                   ':Episode'          => $Serie->EpisodeNumber,
+							                                   ':Title'            => $Serie->EpisodeName,
+							                                   ':Plot'             => $Serie->Overview,
+							                                   ':Rating'           => $Serie->Rating,
+							                                   ':RatingCount'      => $Serie->RatingCount,
+							                                   ':Banner'           => $Serie->filename,
+							                                   ':AirDate'          => $EpisodeAirDate,
+							                                   ':SeriesKey'        => $SerieID,
+							                                   ':EpisodeTheTVDBID' => $Serie->id));
+				
+								$EpisodesAdded++;
+							}
 						}
 					}
 				}

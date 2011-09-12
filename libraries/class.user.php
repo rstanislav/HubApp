@@ -4,6 +4,7 @@ class User extends Hub {
 	public $User;
 	public $UserGroup;
 	public $UserGroupID;
+	public $UserEMail;
 	
 	function CheckStatus() {
 		if(filter_has_var(INPUT_COOKIE, 'HubUser')) {
@@ -14,6 +15,7 @@ class User extends Hub {
 				$this->User        = $User['UserName'];
 				$this->UserGroup   = $User['UserGroupName'];
 				$this->UserGroupID = $User['UserGroupID'];
+				$this->UserEMail   = $User['UserEMail'];
 			}
 			else {
 				self::Logout();

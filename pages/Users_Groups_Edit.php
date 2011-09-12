@@ -33,7 +33,7 @@ if($UserGroupID) {
 			<thead>
 		  	<tr>
 		  	 <th>'.$Group['UserGroupName'].'<input type="hidden" name="GroupID" value="'.$Group['UserGroupID'].'" /></th>
-		  	 <th style="text-align: center"><a id="CheckAllPermissions">All</th>
+		  	 <th style="text-align: center"><a id="CheckAllPermissions">All</a></th>
 		  	</tr>
 		  	</thead>
 		  	<tbody>'."\n";

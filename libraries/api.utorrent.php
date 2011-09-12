@@ -164,10 +164,10 @@ class UTorrentAPI {
     }
 
     // add a file to the list
-    public function torrentAdd($Filename, &$ErrorStr = false) {
+    public function torrentAdd($Filename, &$ErrorStr = FALSE) {
         $Split = explode(':', $Filename, 2);
         
-        if(count($split) > 1 && (stristr('|http|https|file|', '|'.$split[0].'|') !== FALSE)) {
+        if(count($Split) > 1 && (stristr('|http|https|file|', '|'.$Split[0].'|') !== FALSE)) {
             $this->makeRequest('?action=add-url&s='.urlencode($Filename), FALSE);
         }
         else if(file_exists($Filename)) {

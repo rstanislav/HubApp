@@ -1,5 +1,6 @@
 <?php
 require_once APP_PATH.'/libraries/api.thetvdb.php';
+require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
 	const HubVersion = '1.1.000';
@@ -18,6 +19,8 @@ class Hub {
 	
 	public $User;
 	
+	public $BoxcarAPI;
+	
 	function __construct() {
 		try {
 		    $this->PDO = new PDO(DB_TYPE.':host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
@@ -31,6 +34,8 @@ class Hub {
 		}
 		
 		User::CheckStatus();
+		
+		$this->BoxcarAPI = new BoxcarAPI();
 	}
 	
 	function CheckHub() {
@@ -63,6 +68,10 @@ class Hub {
 		else {
 			return FALSE;
 		}
+	}
+	
+	function NotifyUsers() {
+		//
 	}
 	
 	function RecursiveGlob($sDir, $sPattern, $nFlags = NULL) {

@@ -72,7 +72,9 @@ $(document).ready(function() {
 	'a[id|="TorrentStopAll"],' +
 	'a[id|="XBMCLibraryUpdate"],' +
 	'a[id|="XBMCLibraryClean"],' +
-	'a[id|="DeleteEpisode"]').click(function(event) {
+	'a[id|="DeleteEpisode"],' + 
+	'a[id|="MovieToggleGenre"],' + 
+	'a[id|="MovieTogglePath"]').click(function(event) {
 		if($(this).hasClass('button')) {
 			if(!$(this).hasClass('disabled')) {
 				AjaxButton(this);
@@ -195,6 +197,16 @@ function AjaxButton(Button, Extra) {
 	if(!ButtonClass)                      ButtonClass = 'positive';
 	
 	switch(Action) {
+		case 'MovieToggleGenre':
+			$('.MovieGenre').toggle();
+			SetCookie('MovieGenre', $('.MovieGenre').attr('style'), '999', '/', '', '' );
+		break;
+		
+		case 'MovieTogglePath':
+			$('.MoviePath').toggle();
+			SetCookie('MoviePath', $('.MoviePath').attr('style'), '999', '/', '', '' );
+		break;
+		
 		case 'XBMCLibraryUpdate':
 			$.ajax({
 				method: 'get',

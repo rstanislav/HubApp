@@ -1,3 +1,8 @@
+<div class="head-control">
+ <a id="MovieToggleGenre-0" class="button positive"><span class="inner"><span class="label" nowrap="">Toggle Genre</span></span></a>
+ <a id="MovieTogglePath-0" class="button positive"><span class="inner"><span class="label" nowrap="">Toggle File Path</span></span></a>
+</div>
+
 <div class="head">Recently added movies <small style="font-size: 12px;">(<a href="#!/Help/Movies">?</a>)</small></div>
 
 <?php
@@ -28,12 +33,15 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			
 			$MoviePoster = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'"><img class="poster" width="150" height="250" src="'.$Thumbnail.'" /></a>' : '<img class="poster" width="150" height="250" src="'.$Thumbnail.'" />';
 			
+			$GenreShow = (filter_has_var(INPUT_COOKIE, 'MovieGenre')) ? ' style="'.$_COOKIE['MovieGenre'].'"' : ' style="display: inline;"';
+			$PathShow = (filter_has_var(INPUT_COOKIE, 'MoviePath')) ? ' style="'.$_COOKIE['MoviePath'].'"' : ' style="display: inline;"';
+			
 			echo '
 			<td style="text-align: center">
 			 '.$MoviePoster.'<br />
-			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong><br />
-			 <em>'.$Genre.'</em><br />
-			 <small>'.$FilePath.'</small>
+			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
+			 <span class="MovieGenre"'.$GenreShow.'><br /><em>'.$Genre.'</em></span>
+			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span>
 			</td>'."\n";
 			
 			if($i++ % 3 == 0) {

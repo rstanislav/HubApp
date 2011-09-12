@@ -1,3 +1,5 @@
 <?php
-`git pull`;
+exec('git pull', $Response);
+
+echo $Response;
 ?>

@@ -455,12 +455,12 @@ class RSS extends Hub {
 					fwrite($FilePointer, $FileContents);
 					fclose($FilePointer);
 				
-					Hub::AddLog(EVENT.'Watch folder', 'Success', 'Downloaded '.urldecode($File));
+					Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
 				
 					return TRUE;
 				}
 				else {
-					Hub::AddLog(EVENT.'Watch folder', 'Failure', 'Failed to download '.urldecode($File));
+					Hub::AddLog(EVENT.'Watch Folder', 'Failure', 'Failed to download "'.urldecode($File).'"');
 				
 					return FALSE;
 				}

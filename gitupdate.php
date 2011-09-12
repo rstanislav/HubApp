@@ -1,5 +1,5 @@
 <?php
 exec('git pull', $Response);
 
-echo $Response;
+print_r($Response);
 ?>

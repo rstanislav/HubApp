@@ -157,7 +157,7 @@ class Drives extends Hub {
 			
 			$this->ActiveDrive = $Drive['DriveID'];
 			Hub::AddLog(EVENT.'File System', 'Success', 'Set "'.$DriveRootText.'" as active drive');
-			
+			Hub::NotifyUsers('NewActiveDrive', 'File System', 'Set "'.$DriveRootText.'" as active drive');
 			
 			if(!is_dir($DriveRoot.'/Downloads')) {
 				mkdir($DriveRoot.'/Downloads');

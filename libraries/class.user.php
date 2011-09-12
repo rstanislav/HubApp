@@ -2,6 +2,7 @@
 class User extends Hub {
 	public $LoggedIn = FALSE;
 	public $User;
+	public $UserID;
 	public $UserGroup;
 	public $UserGroupID;
 	public $UserEMail;
@@ -13,6 +14,7 @@ class User extends Hub {
 			if(is_array($User)) {
 				$this->LoggedIn    = TRUE;
 				$this->User        = $User['UserName'];
+				$this->UserID      = $User['UserID'];
 				$this->UserGroup   = $User['UserGroupName'];
 				$this->UserGroupID = $User['UserGroupID'];
 				$this->UserEMail   = $User['UserEMail'];
@@ -218,6 +220,31 @@ class User extends Hub {
 			else {
 				return FALSE;
 			}
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetNotifications() {
+		$NotificationPrep = $this->PDO->prepare('SELECT * FROM Notifications ORDER BY NotificationText');
+		$NotificationPrep->execute();
+		
+		if($NotificationPrep->rowCount()) {
+			return $NotificationPrep->fetchAll();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetUserNotification($NotificationID, $UserID) {
+		$UserNotificationPrep = $this->PDO->prepare('SELECT * FROM UserNotifications WHERE NotificationKey = :NotificationID AND UserKey = :UserID');
+		$UserNotificationPrep->execute(array(':NotificationID' => $NotificationID,
+		                                     ':UserID'         => $UserID));
+		
+		if($UserNotificationPrep->rowCount()) {
+			return $UserNotificationPrep->fetchAll();
 		}
 		else {
 			return FALSE;

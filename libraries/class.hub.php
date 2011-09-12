@@ -70,8 +70,18 @@ class Hub {
 		}
 	}
 	
-	function NotifyUsers() {
-		//
+	function NotifyUsers($NotificationAction, $Category, $Text) {
+		$UserNotificationPrep = $this->PDO->prepare('SELECT UserNotifications.UserKey, User.UserEMail, Notifications.NotificationID FROM UserNotifications, User, Notifications WHERE User.UserID = UserNotifications.UserKey AND Notifications.NotificationAction = :Action AND User.UserEMail != "" AND UserNotifications.NotificationKey = NotificationID');
+		$UserNotificationPrep->execute(array(':Action' => $NotificationAction));
+		
+		if($UserNotificationPrep->rowCount()) {
+			foreach($UserNotificationPrep->fetchAll() AS $Notification) {
+				$this->BoxcarAPI->Notify($Notification['UserEMail'], $Category, $Text);
+			}
+		}
+		else {
+			return FALSE;
+		}
 	}
 	
 	function RecursiveGlob($sDir, $sPattern, $nFlags = NULL) {
@@ -188,6 +198,23 @@ class Hub {
 				                                 ':HubBackup'               => $HubBackup,
 				                                 ':TheTVDBAPIKey'           => $_POST['SettingHubTheTVDBAPIKey'],
 				                                 ':HubKillSwitch'           => $HubKillSwitch));
+			break;
+			
+			case 'Notifications':
+				$UserInfo = User::GetUser($_COOKIE['HubUser']);
+				
+				$ClearNotificationsPrep = $this->PDO->prepare('DELETE FROM UserNotifications WHERE UserKey = :UserID');
+				$ClearNotificationsPrep->execute(array(':UserID' => $UserInfo['UserID']));
+				
+				Hub::d($_POST);
+				
+				if(is_array($_POST['Notification'])) {
+					foreach($_POST['Notification'] AS $NotificationID => $Notification) {
+						$AddNotificationPrep = $this->PDO->prepare('INSERT INTO UserNotifications (UserKey, NotificationKey) VALUES (:UserID, :NotificationID)');
+						$AddNotificationPrep->execute(array(':UserID'         => $UserInfo['UserID'],
+						                                    ':NotificationID' => $NotificationID));
+					}
+				}
 			break;
 			
 			case 'XBMC':

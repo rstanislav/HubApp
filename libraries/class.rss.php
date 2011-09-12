@@ -108,6 +108,7 @@ class RSS extends Hub {
 										if(is_file($Episode['EpisodeFile'])) {
 											if(unlink($Episode['EpisodeFile'])) {
 												Hub::AddLog(EVENT.'Series', 'Success', 'Deleted "'.$Episode['EpisodeFile'].'" in favour of "'.$TorrentTitle.'"', 0, 'clean');
+												Hub::NotifyUsers('FileHigherQuality', 'Series', 'Deleted "'.$Episode['EpisodeFile'].'" in favour of "'.$TorrentTitle.'"');
 											
 												$UpdateEpisodePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = "" WHERE EpisodeFile = :File');
 												$UpdateEpisodePrep->execute(array(':File' => $Episode['EpisodeFile']));
@@ -182,6 +183,7 @@ class RSS extends Hub {
 											if(is_file($Wishlist['WishlistFile'])) {
 												if(unlink($Wishlist['WishlistFile'])) {
 													Hub::AddLog(EVENT.'Wishlist', 'Success', 'Deleted "'.$Wishlist['WishlistFile'].'"  in favour of "'.$TorrentTitle.'"', 0, 'clean');
+													Hub::NotifyUsers('FileHigherQuality', 'Wishlist', 'Deleted "'.$Wishlist['WishlistFile'].'"  in favour of "'.$TorrentTitle.'"');
 											
 													$WishlistUpdatePrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = "" WHERE WishlistFile = :File');
 													$WishlistUpdatePrep->execute(array(':File' => $Wishlist['WishlistFile']));
@@ -265,6 +267,7 @@ class RSS extends Hub {
 			
 			if($NewItems) {
 				Hub::AddLog(EVENT.'RSS', 'Success', 'Added '.$NewItems.' torrents spread across '.sizeof($RSSFeeds).' RSS feeds');
+				Hub::NotifyUsers('TorrentNew', 'RSS', 'Added '.$NewItems.' torrents spread across '.sizeof($RSSFeeds).' RSS feeds');
 			}
 		}
 	}
@@ -456,7 +459,8 @@ class RSS extends Hub {
 					fclose($FilePointer);
 				
 					Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
-				
+					Hub::NotifyUsers('TorrentManualDownload', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
+					
 					return TRUE;
 				}
 				else {

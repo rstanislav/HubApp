@@ -55,6 +55,7 @@ class UTorrent extends Hub {
 							self::TorrentDeleteData($Torrent[UTORRENT_TORRENT_HASH]);
 							
 							Hub::AddLog(EVENT.'uTorrent', 'Success', 'Removed "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
+							Hub::NotifyUsers('FileHigherQuality', 'uTorrent', 'Removed "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
 						}
 						else {
 							$TorrentURI = FALSE;
@@ -73,6 +74,7 @@ class UTorrent extends Hub {
 						                            ':EpisodeID'  => $TorrentURI[1]));
 						
 						Hub::AddLog(EVENT.'Series', 'Success', 'Downloaded "'.$TorrentTitle.'"');
+						Hub::NotifyUsers('EpisodeNew', 'Series', 'Downloaded "'.$TorrentTitle.'"');
 					}
 				}
 				else {
@@ -82,6 +84,7 @@ class UTorrent extends Hub {
 					                             ':WishlistTitle' => $TorrentURI[3]));
 					
 					Hub::AddLog(EVENT.'Wishlist', 'Success', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
+					Hub::NotifyUsers('WishGranted', 'Wishlist', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
 				}
 			}
 		}
@@ -102,6 +105,7 @@ class UTorrent extends Hub {
 	
 		if($RemovedTorrents) {
 			Hub::AddLog(EVENT.'uTorrent', 'Success', 'Removed '.$RemovedTorrents.' torrents totaling '.Hub::BytesToHuman($RemovedTorrentsSize));
+			Hub::NotifyUsers('FinishedTorrentsRemoved', 'uTorrent', 'Removed '.$RemovedTorrents.' torrents totaling '.Hub::BytesToHuman($RemovedTorrentsSize));
 		}
 	}
 	

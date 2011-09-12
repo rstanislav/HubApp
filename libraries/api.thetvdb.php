@@ -17,13 +17,9 @@ class TheTVDBAPI {
 		$this->TemporaryFolder = APP_PATH.'/tmp';
 		
 		try {
-			$this->SetTemporaryFolder();
-			
-			if(!$this->SetMirrors()) {
+			if(!$this->SetMirrors() || !$this->GetServerTime() || !$this->SetTemporaryFolder()) {
 				return FALSE;
 			}
-			
-			$this->GetServerTime();
 		}
 		catch(Exception $e) {
 			echo '<strong>Exception:</strong> '.$e->getMessage().' in '.$e->getTraceAsString();
@@ -32,7 +28,9 @@ class TheTVDBAPI {
 	
 	private function SetTemporaryFolder() {
 		if(!is_dir($this->TemporaryFolder)) {
-			throw new Exception($this->TemporaryFolder.' does not exist');
+			return FALSE;
+			
+			// throw new Exception($this->TemporaryFolder.' does not exist');
 		}
 	}
 	
@@ -59,13 +57,16 @@ class TheTVDBAPI {
 		}
 		else {
 			return FALSE;
+			
 			// throw new Exception('Unable to load http://www.thetvdb.com/api/'.self::$APIKey.'/mirrors.xml');
 		}
 	}
 	
 	public function GetServerTime() {
 		if(!$ServerTime = @file_get_contents('http://www.thetvdb.com/api/Updates.php?type=none')) {
-			throw new Exception('Unable to get http://www.thetvdb.com/api/Updates.php?type=none');
+			return FALSE;
+			
+			// throw new Exception('Unable to get http://www.thetvdb.com/api/Updates.php?type=none');
 		}
 		
 		$this->TheTVDBServerTime = $ServerTime;
@@ -89,7 +90,9 @@ class TheTVDBAPI {
 		$Language = empty($this->Language) ? $this->Language : 'en';
 		
 		if(!$Series = @simplexml_load_file('http://www.thetvdb.com/api/GetSeries.php?seriesname='.$SearchStr.'&language='.$Language)) {
-			throw new Exception('Unable to get http://www.thetvdb.com/api/GetSeries.php?seriesname='.$SearchStr.'&language='.$Language);
+			return FALSE;
+			
+			// throw new Exception('Unable to get http://www.thetvdb.com/api/GetSeries.php?seriesname='.$SearchStr.'&language='.$Language);
 		}
 		
 		return $Series;
@@ -108,38 +111,51 @@ class TheTVDBAPI {
 			$ZipFile = $this->ZipMirror.'/api/'.self::$APIKey.'/series/'.$SerieID.'/all/'.$Language.'.zip';
 			
 			if(@copy($ZipFile, $this->TemporaryFolder.'/'.$SerieID.'.zip')) {
-				$zip = new ZipArchive;
-				if(@$zip->open($this->TemporaryFolder.'/'.$SerieID.'.zip') === TRUE) {
-			    	if(@$zip->extractTo($this->TemporaryFolder.'/'.$SerieID.'/')) {
-			    		$zip->close();
+				$ZipArchive = new ZipArchive;
+				
+				if(@$ZipArchive->open($this->TemporaryFolder.'/'.$SerieID.'.zip') === TRUE) {
+			    	if(@$ZipArchive->extractTo($this->TemporaryFolder.'/'.$SerieID.'/')) {
+			    		$ZipArchive->close();
 			    	
 			    		if(!$SeriesInfo = @simplexml_load_file($this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml')) {
-			    			throw new Exception('Unable to load '.$this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml');
+			    			return FALSE;
+			    			
+			    			// throw new Exception('Unable to load '.$this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml');
 			    		}
 			    	
 			    		if(is_dir($this->TemporaryFolder.'/'.$SerieID.'/')) {
 			    			if(!$this->RecursiveRmDir($this->TemporaryFolder.'/'.$SerieID.'/')) {
-			    				throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+			    				return FALSE;
+			    				
+			    				// throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
 			    			}
 			    		}
 			    		
 			    	}
 			    	else {
-			    		throw new Exception('Unable to extract '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+			    		return FALSE;
+			    		
+			    		// throw new Exception('Unable to extract '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
 			    	}
 				}
 				else {
-			    	throw new Exception($this->TemporaryFolder.'/'.$SerieID.'.zip is an invalid zip file');
+			    	return FALSE;
+			    	
+			    	// throw new Exception($this->TemporaryFolder.'/'.$SerieID.'.zip is an invalid zip file');
 				}
 				
 				if(is_file($this->TemporaryFolder.'/'.$SerieID.'.zip')) {
 					if(!unlink($this->TemporaryFolder.'/'.$SerieID.'.zip')) {
-						throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+						return FALSE;
+						
+						// throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
 					}
 				}
 			}
 			else {
-				throw new Exception('Unable to copy '.$ZipFile.' to '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+				return FALSE;
+				
+				// throw new Exception('Unable to copy '.$ZipFile.' to '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
 			}
 			
 			return $SeriesInfo;
@@ -150,9 +166,7 @@ class TheTVDBAPI {
 	}
 	
 	public function SetPreviousUpdateTime($Time = '') {
-		$Time = empty($Time) ? time() : $Time;
-		
-		$this->PreviousUpdateTime = $Time;
+		$this->PreviousUpdateTime = empty($Time) ? time() : $Time;
 	}
 	
 	private function RecursiveRmDir($dir) {
@@ -176,11 +190,11 @@ class TheTVDBAPI {
 	}
 	
 	public function GetBanner($Banner) {
-		return $this->BannerMirror.'/banners/'.$Banner;
+		return $this->BannerMirror.'/banners/_cache/'.$Banner;
 	}
 	
 	public function GetFanart($Fanart) {
-		return $this->BannerMirror.'/banners/'.$Fanart;
+		return $this->BannerMirror.'/banners/_cache/'.$Fanart;
 	}
 	
 	public function GetPoster($Poster) {
@@ -193,7 +207,9 @@ class TheTVDBAPI {
 		b. Process the returned XML and loop through each series (<seriesid>) and episode (<episodeid>) entry.
 		*/
 		if(!$Updates = @simplexml_load_file('http://www.thetvdb.com/api/Updates.php?type=all&time='.$this->PreviousUpdateTime)) {
-			throw new Exception('Unable to get http://www.thetvdb.com/api/Updates.php?type=all&time='.$this->PreviousUpdateTime);
+			return FALSE;
+			
+			// throw new Exception('Unable to get http://www.thetvdb.com/api/Updates.php?type=all&time='.$this->PreviousUpdateTime);
 		}
 		
 		return $Updates;
@@ -203,7 +219,9 @@ class TheTVDBAPI {
 		$Language = empty($this->Language) ? $this->Language : 'en';
 		
 		if(!$Series = @simplexml_load_file($this->XMLMirror.'/api/'.self::$APIKey.'/series/'.$SerieID.'/'.$Language.'.xml')) {
-			throw new Exception('Unable to load '.$this->XMLMirror.'/api/'.self::$APIKey.'/series/'.$SerieID.'/'.$Language.'.xml');
+			return FALSE;
+			
+			// throw new Exception('Unable to load '.$this->XMLMirror.'/api/'.self::$APIKey.'/series/'.$SerieID.'/'.$Language.'.xml');
 		}
 		
 		return $Series->Series;
@@ -213,7 +231,9 @@ class TheTVDBAPI {
 		$Language = empty($this->Language) ? $this->Language : 'en';
 		
 		if(!$Episodes = @simplexml_load_file($this->XMLMirror.'/api/'.self::$APIKey.'/episodes/'.$EpisodeID.'/'.$Language.'.xml')) {
-			throw new Exception('Unable to load '.$this->XMLMirror.'/api/'.self::$APIKey.'/episodes/'.$EpisodeID.'/'.$Language.'.xml');
+			return FALSE;
+			
+			// throw new Exception('Unable to load '.$this->XMLMirror.'/api/'.self::$APIKey.'/episodes/'.$EpisodeID.'/'.$Language.'.xml');
 		}
 		
 		return $Episodes->Episode;
@@ -228,7 +248,9 @@ class TheTVDBAPI {
 		*/
 		
 		if(!$PreferredLanguage = @simplexml_load_file($this->XMLMirror.'/api/User_PreferredLanguage.php?accountid='.$AccountID)) {
-			throw new Exception('Unable to get '.$this->XMLMirror.'/api/User_PreferredLanguage.php?accountid='.$AccountID);
+			return FALSE;
+			
+			// throw new Exception('Unable to get '.$this->XMLMirror.'/api/User_PreferredLanguage.php?accountid='.$AccountID);
 		}
 		
 		return $PreferredLanguage;
@@ -253,11 +275,15 @@ class TheTVDBAPI {
 		if(!empty($Type) && ($Type == 'add' || $Type == 'remove')) {
 			if(!empty($SeriesID) && is_int($SeriesID)) {
 				if(!$Favorites = @simplexml_load_file($APIPath.'&type='.$Type.'&seriesid='.$SeriesID)) {
-					throw new Exception('Unable to get '.$APIPath.'&type='.$Type.'&seriesid='.$SeriesID);
+					return FALSE;
+					
+					// throw new Exception('Unable to get '.$APIPath.'&type='.$Type.'&seriesid='.$SeriesID);
 				}
 			}
 			else {
-				throw new Exception('$SeriesID is required to add a new favorite');
+				return FALSE;
+				
+				// throw new Exception('$SeriesID is required to add a new favorite');
 			}
 		}
 		else {
@@ -265,7 +291,9 @@ class TheTVDBAPI {
 				return $Favorites;
 			}
 			else {
-				throw new Exception('Unable to get '.$APIPath);
+				return FALSE;
+				
+				// throw new Exception('Unable to get '.$APIPath);
 			}
 		}
 		
@@ -295,23 +323,33 @@ class TheTVDBAPI {
 				if($Rating <= 10 && $Rating >= 0) {
 					if($Rating = @simplexml_load_file($this->XMLMirror.'/api/User_Rating.php?accountid='.$AccountID.'&itemtype='.$ItemType.'&itemid='.$ItemID.'&rating='.$Rating)) {
 						if($Rating->result != 'rating updated') {
-							throw new Exception('Something went wrong with your rating update');
+							return FALSE;
+							
+							// throw new Exception('Something went wrong with your rating update');
 						}
 					}
 					else {
-						throw new Exception('Unable to get '.$this->XMLMirror.'/api/User_Favorites.php?accountid='.$AccountID);
+						return FALSE;
+						
+						// throw new Exception('Unable to get '.$this->XMLMirror.'/api/User_Favorites.php?accountid='.$AccountID);
 					}
 				}
 				else {
-					throw new Exception('$Rating has to be between 0-10');
+					return FALSE;
+					
+					// throw new Exception('$Rating has to be between 0-10');
 				}
 			}
 			else {
-				throw new Exception('$ItemID is not an integer value or is empty');
+				return FALSE;
+				
+				// throw new Exception('$ItemID is not an integer value or is empty');
 			}
 		}
 		else {
-			throw new Exception('$ItemType does not match either "series" nor "episode"');
+			return FALSE;
+			
+			// throw new Exception('$ItemType does not match either "series" nor "episode"');
 		}
 		
 		return TRUE;

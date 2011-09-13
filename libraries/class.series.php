@@ -517,8 +517,10 @@ class Series extends Hub {
 			$EpisodesUpdated += $RefreshStat[2];
 		}
 		
-		Hub::AddLog(EVENT.'Series', 'Success', 'Refreshed '.$SeriesUpdated.' series. Updated '.$EpisodesUpdated.' and added '.$EpisodesAdded.' episodes.');
-		Hub::NotifyUsers('SerieRefresh', 'Series', 'Refreshed '.$SeriesUpdated.' series. Updated '.$EpisodesUpdated.' and added '.$EpisodesAdded.' episodes.');
+		if(($SeriesUpdated + $EpisodesAdded + $EpisodesUpdated) > 0) {
+			Hub::AddLog(EVENT.'Series', 'Success', 'Refreshed '.$SeriesUpdated.' series. Updated '.$EpisodesUpdated.' and added '.$EpisodesAdded.' episodes.');
+			Hub::NotifyUsers('SerieRefresh', 'Series', 'Refreshed '.$SeriesUpdated.' series. Updated '.$EpisodesUpdated.' and added '.$EpisodesAdded.' episodes.');
+		}
 	}
 	
 	function GetSeriesDirectories($DriveRoot = '') {

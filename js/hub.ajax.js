@@ -75,6 +75,8 @@ $(document).ready(function() {
 	'a[id|="DeleteEpisode"],' + 
 	'a[id|="MovieToggleGenre"],' + 
 	'a[id|="MovieTogglePath"]').click(function(event) {
+		event.preventDefault();
+		
 		if($(this).hasClass('button')) {
 			if(!$(this).hasClass('disabled')) {
 				AjaxButton(this);

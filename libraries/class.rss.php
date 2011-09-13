@@ -335,7 +335,7 @@ class RSS extends Hub {
 	function RSSFeedAdd() { // $_POST
 		$AddError = FALSE;
 		foreach($_POST AS $PostKey => $PostValue) {
-			if(!filter_has_var(INPUT_POST, $PostKey) || empty($PostValue)) {
+			if(empty($PostKey) || empty($PostValue)) {
 				$AddError = TRUE;
 			}
 		}

@@ -43,6 +43,10 @@
  * Browse and download locally archived (just links) torrents from your RSS feeds
  * Search for torrents across all RSS feeds
 
+* iPhone Notifications
+ * Get notifications on your iPhone when a wish has been granted, new torrents are added, new episodes are available etc. using [Boxcar][5]
+ 
+####These are just some of the features of [Hub][6]!####
 
 [Hub][6] combines the best of all worlds. [TheTVDB][4] supplies the TV data, RSS feeds supplies the torrent data, [uTorrent][3] supplies the means to get new episodes/movies and [XBMC][1] supplies a beautiful interface to showcase them on. [Hub][6] glues all of these together so that you only have one place to control all of these.
 

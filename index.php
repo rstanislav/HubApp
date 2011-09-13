@@ -30,8 +30,7 @@ require_once './libraries/libraries.php';
   <meta http-equiv="Refresh" content="0;url=http://www.google.com/enable_javascript/" />
  </noscript> 
      
- <link rel="icon" href="favicon.ico" type="image/x-icon" /> 
- <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" /> 
+ <link rel="apple-touch-icon" href="images/logo-iphone.png" />
 
  <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
  <script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>

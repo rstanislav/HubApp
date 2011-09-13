@@ -31,6 +31,9 @@ require_once './libraries/libraries.php';
  </noscript> 
      
  <link rel="apple-touch-icon" href="images/logo-iphone.png" />
+ <link rel="apple-touch-icon" sizes="72x72" href="images/logo-ipad.png" />
+ <link rel="apple-touch-icon" sizes="114x114" href="images/logo-iphone4.png" />
+ <link rel="apple-touch-icon" sizes="144x144" href="images/logo-ipad3.png" />
 
  <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
  <script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>

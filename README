@@ -1,19 +1,63 @@
-This glue of PHP/JS/HTML/MySQL gives you complete control over your media center running XBMC on a Windows computer.
+##The Pitch##
+[Hub][6] gives you complete control over your media center running [XBMC][1] on a Windows computer. Using APIs from [XBMC][2], [uTorrent][3], [TheTVDB][4], [Boxcar][5] together with RSS feeds from your own torrent sites, you can control every aspect of your media center.
 
-Features:
-* Add TV series you would like to keep track of
-* Automatically download new episodes from RSS feeds with uTorrent based on your preferred quality requirement (HDTV, BRRip, 720p etc)
-* Effortlessly add new drives to your HTPC. Just plug in the drive and it will be available to add in the control panel. Required folders are created, XBMC sources are updated and folder structure is maintained.
-* View your XBMC movie library and start movies right from the control panel.
-* Add movies to your wishlist and it will automatically be added when it is available via RSS feeds
-* Add multiple RSS feeds
-* Downloaded files are extracted and moved to the appropriate place on your active drive.
-* View a detailed log of the actions Hub has taken while you were sleeping.
-* Add multiple XBMC "Zones" if you have more than one HTPC in your home running XBMC. You can control the living room while your kids are controlling the bed room!
-* Add users, assign them to a usergroup and give user groups permission. Fully customizable! You can give your guests a guest account and make sure they don't screw anything up.
-* Browse and download archived torrents
-* Control uTorrent directly from Hub
+##Features##
 
-Hub combines the best of all worlds. TheTVDB.com supplies the TV data, RSS feeds supplies the torrent data, uTorrent supplies the means to get new episodes/movies and XBMC supplies a beautiful interface to showcase them on. Hub glues all of these together so that you only have one place to control all of these.
+* TV Series
+ * Search for and add TV series you would like to keep track of
+ * New episodes are automatically downloaded when available via RSS feeds you provide
 
-Hub requires a local installation of Apache, PHP >5.3.0, MySQL, uTorrent (2.2 supported), XBMC and a working internet connection.
+* [Hub][6]
+ * Set your own preferred media quality range, from HDTV to 1080p
+ * Downloaded torrents are automatically extracted and moved to the appropriate folder on your active drive
+
+* Drive Control
+ * Add new drives by simply plugging them in to the computer and selecting them in the control panel!
+ * Required folder structure is automatically created and added to XBMC library sources
+ * Select a drive that will function as your "active drive" (where new files are added)
+ * [Hub][6] will automatically switch to a new drive when your free disk space reaches a user defined threshold
+ * View a detailed log of actions [Hub][6] has taken
+ 
+* Movies
+ * View your movie library and start movies directly from the control panel
+
+* Wishlist
+ * Maintain a movie wishlist
+ * Wishes are automatically downloaded when available via RSS feeds you provide
+ 
+* RSS Feeds
+ * Add as many RSS feeds as you like - [Hub][6] will choose torrents on a first-come first-served basis
+
+* Zones
+ * Add multiple zones if you have more than one HTPC
+ * Switch to a new zone with two clicks
+ * You can control the living room while your kids are controlling the bedroom!
+
+* Users
+ * Add as many users as you like
+ * User groups keeps your users easily organized
+ * Assign permissions to each user group
+ 
+* Torrents
+ * Control your torrents directly from the control panel
+ * Browse and download locally archived (just links) torrents from your RSS feeds
+ * Search for torrents across all RSS feeds
+
+
+[Hub][6] combines the best of all worlds. [TheTVDB][4] supplies the TV data, RSS feeds supplies the torrent data, [uTorrent][3] supplies the means to get new episodes/movies and [XBMC][1] supplies a beautiful interface to showcase them on. [Hub][6] glues all of these together so that you only have one place to control all of these.
+
+##Requirements##
+
+* XBMC (>10.1)
+* Apache
+* PHP (>5.3.5)
+ * cURL
+* MySQL
+* uTorrent (2.2 tested)
+
+[1]: http://xbmc.org/
+[2]: http://xbmc.org/
+[3]: http://utorrent.com/
+[4]: http://thetvdb.org/
+[5]: http://boxcar.io/
+[6]: http://hubapp.net/******

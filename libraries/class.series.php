@@ -414,7 +414,7 @@ class Series extends Hub {
 				
 				$SeriesInfo = $this->TheTVDBAPI->GetSeriesInfo($SerieTheTVDBID);
 				
-				if($SeriesInfo) {
+				if(is_array($SeriesInfo)) {
 					foreach($SeriesInfo AS $Serie) {
 						if($Serie->SeriesName) {
 							$Serie->SeriesName = str_replace(array(':', '\'', '(', ')', '*'), '', $Serie->SeriesName);

@@ -22,6 +22,17 @@ class Hub {
 	public $BoxcarAPI;
 	
 	function __construct() {
+		$ReqExts = array('gd', 'pdo', 'curl', 'SimpleXML', 'mysql', 'json', 'pdo_mysql');
+		$ExtError = FALSE;
+		foreach($ReqExts AS $ReqExt) {
+			if(!extension_loaded($ReqExt)) {
+				echo 'Required extension: "'.$ReqExt.'" is not loaded.<br />';
+				$ExtError = TRUE;
+			}
+		}
+		
+		if($ExtError) { die('Modify your php.ini to include the required extensions'); }
+		
 		try {
 		    $this->PDO = new PDO(DB_TYPE.':host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
 		    $this->PDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);

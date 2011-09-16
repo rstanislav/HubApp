@@ -267,7 +267,7 @@ class RSS extends Hub {
 			
 			if($NewItems) {
 				Hub::AddLog(EVENT.'RSS', 'Success', 'Added '.$NewItems.' torrents spread across '.sizeof($RSSFeeds).' RSS feeds');
-				Hub::NotifyUsers('TorrentNew', 'RSS', 'Added '.$NewItems.' torrents spread across '.sizeof($RSSFeeds).' RSS feeds');
+				Hub::NotifyUsers('NewRSSTorrents', 'RSS', 'Added '.$NewItems.' torrents spread across '.sizeof($RSSFeeds).' RSS feeds');
 			}
 		}
 	}
@@ -459,7 +459,7 @@ class RSS extends Hub {
 					fclose($FilePointer);
 				
 					Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
-					Hub::NotifyUsers('TorrentManualDownload', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
+					Hub::NotifyUsers('TorrentDownloadManual', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
 					
 					return TRUE;
 				}

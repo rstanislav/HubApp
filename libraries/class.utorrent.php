@@ -74,7 +74,7 @@ class UTorrent extends Hub {
 						                            ':EpisodeID'  => $TorrentURI[1]));
 						
 						Hub::AddLog(EVENT.'Series', 'Success', 'Downloaded "'.$TorrentTitle.'"');
-						Hub::NotifyUsers('EpisodeNew', 'Series', 'Downloaded "'.$TorrentTitle.'"');
+						Hub::NotifyUsers('NewUTorrentEpisode', 'uTorrent/Series', 'Downloaded "'.$TorrentTitle.'"');
 					}
 				}
 				else {
@@ -84,7 +84,7 @@ class UTorrent extends Hub {
 					                             ':WishlistTitle' => $TorrentURI[3]));
 					
 					Hub::AddLog(EVENT.'Wishlist', 'Success', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
-					Hub::NotifyUsers('WishGranted', 'Wishlist', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
+					Hub::NotifyUsers('NewUTorrentWish', 'uTorrent/Wishlist', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
 				}
 			}
 		}

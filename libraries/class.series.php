@@ -519,7 +519,7 @@ class Series extends Hub {
 		
 		if(($SeriesUpdated + $EpisodesAdded + $EpisodesUpdated) > 0) {
 			Hub::AddLog(EVENT.'Series', 'Success', 'Refreshed '.$SeriesUpdated.' series. Updated '.$EpisodesUpdated.' and added '.$EpisodesAdded.' episodes.');
-			Hub::NotifyUsers('SerieRefresh', 'Series', 'Refreshed '.$SeriesUpdated.' series. Updated '.$EpisodesUpdated.' and added '.$EpisodesAdded.' episodes.');
+			Hub::NotifyUsers('SerieDataRefresh', 'Series', 'Refreshed '.$SeriesUpdated.' series. Updated '.$EpisodesUpdated.' and added '.$EpisodesAdded.' episodes.');
 		}
 	}
 	
@@ -630,7 +630,7 @@ class Series extends Hub {
 		//}
 		
 		Hub::AddLog(EVENT.'Series', 'Success', 'Rebuilt '.$EpisodesRebuilt.' episodes divided over '.sizeof($this->GetSeries()).' series.');
-		Hub::NotifyUsers('EpisodeRebuild', 'Series', 'Rebuilt '.$EpisodesRebuilt.' episodes divided over '.sizeof($this->GetSeries()).' series.');
+		Hub::NotifyUsers('EpisodeDataRebuilt', 'Series', 'Rebuilt '.$EpisodesRebuilt.' episodes divided over '.sizeof($this->GetSeries()).' series.');
 	}
 	
 	function DeleteEpisode($ID) {

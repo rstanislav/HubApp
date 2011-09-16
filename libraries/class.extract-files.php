@@ -223,6 +223,8 @@ class ExtractFiles extends Hub {
 							                                  ':SerieID' => $Serie['SerieID'],
 							                                  ':Season'  => $ParsedEpisode[0],
 							                                  ':Episode' => $ParsedEpisode[1]));
+							                                  
+							Hub::NotifyUsers('NewLibraryEpisode', 'XBMC/Series', '"'.$ParsedFile['Title'].' S'.$ParsedEpisode[0].'E'.$ParsedEpisode[1].'" is now available on "'.$DriveRoot.'"');
 						}
 					}
 				}
@@ -232,6 +234,8 @@ class ExtractFiles extends Hub {
 				$WishlistUpdatePrep->execute(array(':File'  => $NewFolder.'/'.$NewFileName,
 				                                   ':Title' => $ParsedFile['Title'],
 				                                   ':Year'  => $ParsedFile['Year']));
+				                                   
+				Hub::NotifyUsers('NewLibraryMovie', 'XBMC/Movies', '"'.$ParsedFile['Title'].' ('.$ParsedFile['Year'].')" is now available on "'.$DriveRoot.'"');
 			}
 			
 			$LogEntry = 'Moved "'.$FileInfo['dirname'].'/'.$FileInfo['basename'].'" to "'.$NewFolder.'/'.$NewFileName.'"'.$AddLogEntry;

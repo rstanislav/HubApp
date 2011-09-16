@@ -135,7 +135,7 @@ class ExtractFiles extends Hub {
 				$NewFileName = $FileInfo['basename'];
 			}
 			else {
-				$NewFileName = $FileInfo['foldername'].'.'.$FileInfo['extension'];
+				$NewFileName = $FileInfo['filename'].'-'.mt_rand().'.'.$FileInfo['extension'];
 			}
 		}
 		
@@ -162,27 +162,14 @@ class ExtractFiles extends Hub {
 			}
 		}
 		else {
-			if(is_dir($DriveRoot)) {
+			if(is_dir($DriveRoot.'/Unsorted')) {
 				$NewFolder = $DriveRoot.'/Unsorted';
-				
-				if($NewFileName == $FileInfo['foldername'].'.'.$FileInfo['extension']) {
-					$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
-					$FilesNo = 0;
-					foreach($Files AS $File) {
-						if(self::GetFileSize($File) > (1024 * 1024 * 100)) {
-							$FilesNo++;
-						}
-					}
-					
-					if($FilesNo > 1) {
-						$NewFileName = $FileInfo['basename'];
-					}
-				}
 			}
 		}
 		
 		if(is_file($NewFolder.'/'.$NewFileName)) {
-			$NewFileName = 'DUPE-'.mt_rand().'-'.$NewFileName;
+			$NewFileInfo = pathinfo($NewFileName);
+			$NewFileName = $NewFileInfo['filename'].'-DUPE-'.mt_rand().'.'.$NewFileInfo['extension'];
 		}
 
 		if(rename($FileInfo['dirname'].'/'.$FileInfo['basename'], $NewFolder.'/'.$NewFileName)) {

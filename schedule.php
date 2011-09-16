@@ -1,4 +1,9 @@
 <?php
+error_reporting(E_ALL);
+
+ini_set('display_errors',     0); 
+ini_set('log_errors',         1);
+ini_set('error_log',          dirname(__FILE__) . '/tmp/schedule_error.log');
 ini_set('max_execution_time', (60 * 60 * 5));
 
 session_start();
@@ -7,10 +12,15 @@ require_once realpath(dirname(__FILE__)).'/libraries/libraries.php';
 
 $Settings = $HubObj->Settings;
 
-if($Settings['SettingHubKillSwitch'] || $HubObj->CheckLock()) {
-	die();
+if(strlen(EVENT)) {
+	if($Settings['SettingHubKillSwitch'] || $HubObj->CheckLock()) {
+		die();
+	}
+	else {
+		$HubObj->Lock();
+	}
 }
-else {
+else if(!$HubObj->CheckLock()) {
 	$HubObj->Lock();
 }
 

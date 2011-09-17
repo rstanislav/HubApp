@@ -14,13 +14,22 @@ if(is_array($UserGroups)) {
 	  </tr>
 	 </thead>'."\n";
 	foreach($UserGroups AS $UserGroup) {
+		if($UserGroup['UserGroupName'] != 'God') {
+			$UserGroupDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'UserGroupDelete')) ? '<a id="UserGroupDelete-'.$UserGroup['UserGroupID'].'" rel="'.$UserGroup['UserGroupName'].'"><img src="images/icons/delete.png" /></a>' : '';
+		}
+		else {
+			$UserGroupDeleteLink = '';
+		}
+		
+		$UserGroupEditLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'UserGroupEdit')) ? '<a id="UserGroupEdit-'.$UserGroup['UserGroupID'].'"><img src="images/icons/group_edit.png" /></a>' : '';
+		
 		echo '
-		<tr>
+		<tr id="UserGroup-'.$UserGroup['UserGroupID'].'">
 		 <td>'.date('d.m.y', $UserGroup['UserGroupDate']).'</td>
 		 <td>'.$UserGroup['UserGroupName'].'</td>
 		 <td>
-		  <a id="UserGroupEdit-'.$UserGroup['UserGroupID'].'"><img src="images/icons/group_edit.png" /></a>
-		  <img src="images/icons/delete.png" />
+		  '.$UserGroupEditLink.'
+		  '.$UserGroupDeleteLink.'
 		 </td>
 		</tr>'."\n";
 	}

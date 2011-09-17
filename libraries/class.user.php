@@ -58,6 +58,18 @@ class User extends Hub {
 		Hub::AddLog(EVENT.'Users', 'Success', 'Deleted user "'.$User['UserName'].'"');
 	}
 	
+	function UserGroupDelete($UserGroupID) {
+		$UserGroup = $this->GetUserGroupByID($UserGroupID);
+		
+		$UserGroupDeletePrep = $this->PDO->prepare('DELETE FROM UserGroups WHERE UserGroupID = :ID');
+		$UserGroupDeletePrep->execute(array(':ID' => $UserGroupID));
+		
+		$UserGroupUsersDeletePrep = $this->PDO->prepare('DELETE FROM User WHERE UserGroupKey = :ID');
+		$UserGroupUsersDeletePrep->execute(array(':ID' => $UserGroupID));
+		
+		Hub::AddLog(EVENT.'User Groups', 'Success', 'Deleted user group "'.$UserGroup['UserGroupName'].'" along with all users present in that group');
+	}
+	
 	function GetUserIP() {
 		return (filter_has_var(INPUT_SERVER, 'HTTP_X_FORWARDED_FOR')) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
 	}
@@ -278,6 +290,18 @@ class User extends Hub {
 		
 		if($UserPrep->rowCount()) {
 			return $UserPrep->fetch();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetUserGroupByID($UserGroupID) {
+		$UserGroupPrep = $this->PDO->prepare('SELECT * FROM UserGroups WHERE UserGroupID = :ID');
+		$UserGroupPrep->execute(array(':ID' => $UserGroupID));
+		
+		if($UserGroupPrep->rowCount()) {
+			return $UserGroupPrep->fetch();
 		}
 		else {
 			return FALSE;

@@ -75,7 +75,8 @@ $(document).ready(function() {
 	'a[id|="DeleteEpisode"],' + 
 	'a[id|="MovieToggleGenre"],' + 
 	'a[id|="MovieTogglePath"],' + 
-	'a[id|="UserDelete"]').click(function(event) {
+	'a[id|="UserDelete"],' + 
+	'a[id|="UserGroupDelete"]').click(function(event) {
 		event.preventDefault();
 		
 		if($(this).hasClass('button')) {
@@ -594,6 +595,29 @@ function AjaxLink(Link) {
 							}
 							else {
 								$('#User-' + FirstID).slideUp('slow').remove();
+							}
+						}
+					});
+				}
+			});
+		break;
+	
+		case 'UserGroupDelete':
+			jPrompt('Are you sure you want to delete "' + $(Link).attr('rel') + '"?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete User Group', function(response) {
+				if(response == 'delete') {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=DeleteUserGroup&UserGroupID=' + FirstID,
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
+							}
+							else {
+								$('#UserGroup-' + FirstID).slideUp('slow').remove();
 							}
 						}
 					});

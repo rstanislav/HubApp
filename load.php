@@ -723,6 +723,17 @@ else {
 			}
 		break;
 		
+		case 'DeleteUserGroup':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'UserGroupDelete')) {
+				if(filter_has_var(INPUT_GET, 'UserGroupID')) {
+					$UserObj->UserGroupDelete($_GET['UserGroupID']);
+				}
+			}
+			else {
+				$_SESSION['Error'] = 'You are not permitted to delete user groups';
+			}
+		break;
+		
 		case 'RSSFeedAdd':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'RSSFeedAdd')) {
 				$RSSObj->RSSFeedAdd();

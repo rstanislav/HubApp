@@ -118,7 +118,7 @@ else {
   <td id="navigation">
    <div id="navbuttons">
     <span id="LockStatus"></span>
-    <span id="TorrentSpeedSetting"></a></span>
+    <span id="TorrentSpeedSetting"></span>
     <?php
    	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewStatistics')) {
    		// echo '<a rel="Statistics" href="#!/Statistics"><img id="IconStat" src="images/icons/statistics_dark.png" /></a>'."\n";

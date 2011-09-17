@@ -57,6 +57,44 @@ class Hub {
 		RSS::CheckTLRSS();
 	}
 	
+	function CheckForDBUpgrade() {
+		$DB = $this->PDO->query('SELECT Value AS CurrentDBVersion FROM Hub WHERE Setting = "CurrentDBVersion"')->fetch();
+		
+		if(str_replace('.', '', $DB['CurrentDBVersion']) < str_replace('.', '', self::MinDBVersion)) {
+			foreach(glob('upgrade/db-*.php') AS $File) {
+				$NewDBVersion = str_replace('.php', '', str_replace('upgrade/db-', '', $File));
+				
+				if(str_replace('.', '', $NewDBVersion) >= str_replace('.', '', self::MinDBVersion)) {
+					$sql = '';
+			    	include_once $File;
+			    	
+			    	$IsUpgraded = FALSE;
+			    	if(is_array($sql)) {
+			    		foreach($sql AS $SQLUpgrade) {
+			    			$UpgradePrep = $this->PDO->prepare($SQLUpgrade);
+			    			$UpgradePrep->execute();
+			    			
+			    			$IsUpgraded = TRUE;
+			    		}
+			    	}
+			    	else if(is_string($sql)) {
+			    		$UpgradePrep = $this->PDO->prepare($sql);
+			    		$UpgradePrep->execute();
+			    		
+			    		$IsUpgraded = TRUE;
+			    	}
+			    	
+			    	if($IsUpgraded) {
+			    		Hub::AddLog(EVENT.'Database', 'Success', 'Upgraded database to "'.$NewDBVersion.'"');
+			    	}
+			    }
+			    else {
+			    	unlink($File);
+			    }
+			}
+		}
+	}
+	
 	function ShowError() {
 		echo '
 		<div id="error" style="">

@@ -10,6 +10,8 @@ session_start();
 require_once realpath(dirname(__FILE__)).'/resources/config.php';
 require_once realpath(dirname(__FILE__)).'/libraries/libraries.php';
 
+$HubObj->CheckForDBUpgrade();
+
 $Settings = $HubObj->Settings;
 
 if(strlen(EVENT)) {

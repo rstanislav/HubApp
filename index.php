@@ -79,7 +79,7 @@ else {
 <table class="main">
  <tr>
   <td class="header left">
-   <a href="#!/"><img src="images/logo.png" /></a>
+   <a href="#!/"><img src="images/logo.png" title="Hub Version: <?php echo $HubObj::HubVersion; ?>" /></a>
    <img src="images/blank.gif" id="divider" />
   </td>
   <td class="header middle">

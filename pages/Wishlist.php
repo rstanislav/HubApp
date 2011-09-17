@@ -55,7 +55,22 @@ if(is_array($Wishes)) {
 	echo '</table>'."\n";
 }
 else {
-	echo '<div class="notification">No data available</div>';
+	echo '
+	<table id="tbl-wishlist">
+	 <thead>
+	 <tr>
+	  <th>Title</th>
+	  <th style="width:50px">Year</th>
+	  <th style="width:150px">Since</th>
+	  <th style="width:36px">&nbsp;</th>
+	 </tr>
+	 </thead>
+	 <tr>
+      <td colspan="4">
+       <div class="notification">No data available</div>
+      </td>
+     </tr>
+    </table>'."\n";
 }
 ?>
 

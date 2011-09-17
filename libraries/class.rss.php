@@ -441,32 +441,40 @@ class RSS extends Hub {
 	}
 	
 	function TorrentDownload($ID) {
-		$Torrent = $this->PDO->query('SELECT TorrentURI FROM Torrents WHERE TorrentID = '.$ID)->fetch();
-		$URI = $Torrent['TorrentURI'];
+		$Torrent = $this->PDO->query('SELECT TorrentURI, TorrentTitle FROM Torrents WHERE TorrentID = '.$ID)->fetch();
 		
-		if($URI) {
-			$File = urlencode(substr($URI, (strrpos($URI, '/') + 1)));
-		
-			$FileHandle   = fopen($URI, 'rb');
-			$FileContents = stream_get_contents($FileHandle);
-			fclose($FileHandle);
-		
-			$Settings = Hub::GetSettings();
-			if(!is_file($Settings['SettingUTorrentWatchFolder'].'\\'.$File)) {
-				if(touch($Settings['SettingUTorrentWatchFolder'].'\\'.$File)) {
-					$FilePointer = fopen($Settings['SettingUTorrentWatchFolder'].'\\'.$File, 'w');
-					fwrite($FilePointer, $FileContents);
-					fclose($FilePointer);
+		if($Torrent['TorrentURI']) {
+			UTorrent::Connect();
+			
+			if(is_object($this->UTorrentAPI)) {
+				UTorrent::TorrentAdd(urldecode($Torrent['TorrentURI']));
 				
-					Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
-					Hub::NotifyUsers('TorrentDownloadManual', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
+				Hub::AddLog(EVENT.'uTorrent', 'Success', 'Downloaded "'.urldecode($Torrent['TorrentTitle']).'"');
+			}
+			else {
+				$File = urlencode(substr($Torrent['TorrentURI'], (strrpos($Torrent['TorrentURI'], '/') + 1)));
+			
+				$FileHandle   = fopen($Torrent['TorrentURI'], 'rb');
+				$FileContents = stream_get_contents($FileHandle);
+				fclose($FileHandle);
+			
+				$Settings = Hub::GetSettings();
+				if(!is_file($Settings['SettingUTorrentWatchFolder'].'\\'.$File)) {
+					if(touch($Settings['SettingUTorrentWatchFolder'].'\\'.$File)) {
+						$FilePointer = fopen($Settings['SettingUTorrentWatchFolder'].'\\'.$File, 'w');
+						fwrite($FilePointer, $FileContents);
+						fclose($FilePointer);
 					
-					return TRUE;
-				}
-				else {
-					Hub::AddLog(EVENT.'Watch Folder', 'Failure', 'Failed to download "'.urldecode($File).'"');
-				
-					return FALSE;
+						Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
+						Hub::NotifyUsers('TorrentDownloadManual', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
+						
+						return TRUE;
+					}
+					else {
+						Hub::AddLog(EVENT.'Watch Folder', 'Failure', 'Failed to download "'.urldecode($File).'"');
+					
+						return FALSE;
+					}
 				}
 			}
 		}

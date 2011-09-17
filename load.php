@@ -114,6 +114,41 @@ else {
 			}
 		break;
 		
+		case 'TorrentSpeedSetting':
+			$UTorrentObj->Connect();
+			if(is_object($UTorrentObj->UTorrentAPI)) {
+				$Settings = $HubObj->GetSettings();
+				
+				if($UTorrentObj->GetSetting('max_ul_rate') == $Settings['SettingUTorrentDefaultUpSpeed'] && $UTorrentObj->GetSetting('max_dl_rate') == $Settings['SettingUTorrentDefaultDownSpeed']) {
+					echo '<a><img src="images/icons/hippopotamus_dark.png" title="Limit uTorrent to '.$Settings['SettingUTorrentDefinedUpSpeed'].'/'.$Settings['SettingUTorrentDefinedDownSpeed'].' KiB/s" /></a>';
+				}
+				else {
+					echo '<a><img src="images/icons/hippopotamus.png" title="Limit uTorrent to '.$Settings['SettingUTorrentDefaultUpSpeed'].'/'.$Settings['SettingUTorrentDefaultDownSpeed'].' KiB/s" /></a>';
+				}
+			}
+		break;
+		
+		case 'TorrentSpeedSettingToggle':
+			$UTorrentObj->Connect();
+			if(is_object($UTorrentObj->UTorrentAPI)) {
+				$Settings = $HubObj->GetSettings();
+				
+				if($UTorrentObj->GetSetting('max_ul_rate') == $Settings['SettingUTorrentDefaultUpSpeed']) {
+					$UTorrentObj->SetSetting('max_ul_rate', $Settings['SettingUTorrentDefinedUpSpeed']);
+				}
+				else {
+					$UTorrentObj->SetSetting('max_ul_rate', $Settings['SettingUTorrentDefaultUpSpeed']);
+				}
+			
+				if($UTorrentObj->GetSetting('max_dl_rate') == $Settings['SettingUTorrentDefaultDownSpeed']) {
+					$UTorrentObj->SetSetting('max_dl_rate', $Settings['SettingUTorrentDefinedDownSpeed']);
+				}
+				else {
+					$UTorrentObj->SetSetting('max_dl_rate', $Settings['SettingUTorrentDefaultDownSpeed']);
+				}
+			}
+		break;
+		
 		case 'DriveActive':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) {
 				if(filter_has_var(INPUT_GET, 'DriveID')) {
@@ -674,6 +709,28 @@ else {
 			}
 			else {
 				include_once './pages/NoAccess.php';
+			}
+		break;
+		
+		case 'DeleteUser':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'UserDelete')) {
+				if(filter_has_var(INPUT_GET, 'UserID')) {
+					$UserObj->UserDelete($_GET['UserID']);
+				}
+			}
+			else {
+				$_SESSION['Error'] = 'You are not permitted to delete users';
+			}
+		break;
+		
+		case 'DeleteUserGroup':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'UserGroupDelete')) {
+				if(filter_has_var(INPUT_GET, 'UserGroupID')) {
+					$UserObj->UserGroupDelete($_GET['UserGroupID']);
+				}
+			}
+			else {
+				$_SESSION['Error'] = 'You are not permitted to delete user groups';
 			}
 		break;
 		

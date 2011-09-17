@@ -5,6 +5,7 @@ ob_start();
 
 require_once './resources/config.php';
 require_once './libraries/libraries.php';
+$HubObj->CheckForDBUpgrade();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
@@ -79,7 +80,7 @@ else {
 <table class="main">
  <tr>
   <td class="header left">
-   <a href="#!/"><img src="images/logo.png" /></a>
+   <a href="#!/"><img src="images/logo.png" title="Hub Version: <?php echo $HubObj::HubVersion; ?>" /></a>
    <img src="images/blank.gif" id="divider" />
   </td>
   <td class="header middle">
@@ -117,9 +118,10 @@ else {
   <td id="navigation">
    <div id="navbuttons">
     <span id="LockStatus"></span>
+    <span id="TorrentSpeedSetting"></a></span>
     <?php
    	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewStatistics')) {
-   		//echo '<a rel="Statistics" href="#!/Statistics"><img id="IconStat" src="images/icons/statistics_dark.png" /></a>'."\n";
+   		// echo '<a rel="Statistics" href="#!/Statistics"><img id="IconStat" src="images/icons/statistics_dark.png" /></a>'."\n";
    	}
    	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewSettings')) {
    		echo '<a rel="Settings" href="#!/Settings"><img id="IconSettings" src="images/icons/settings_dark.png" /></a>'."\n";

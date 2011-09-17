@@ -3,7 +3,7 @@ require_once APP_PATH.'/libraries/api.thetvdb.php';
 require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
-	const HubVersion   = '2.1.0';
+	const HubVersion   = '2.2.0';
 	const MinDBVersion = '2.0.0';
 	
 	public $PDO;
@@ -23,6 +23,17 @@ class Hub {
 	public $BoxcarAPI;
 	
 	function __construct() {
+		$ReqExts = array('gd', 'pdo', 'curl', 'SimpleXML', 'mysql', 'json', 'pdo_mysql');
+		$ExtError = FALSE;
+		foreach($ReqExts AS $ReqExt) {
+			if(!extension_loaded($ReqExt)) {
+				echo 'Required extension: "'.$ReqExt.'" is not loaded.<br />';
+				$ExtError = TRUE;
+			}
+		}
+		
+		if($ExtError) { die('Modify your php.ini to include the required extensions'); }
+		
 		try {
 		    $this->PDO = new PDO(DB_TYPE.':host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
 		    $this->PDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -44,6 +55,44 @@ class Hub {
 		Drives::GetActiveDrive();
 		Zones::GetCurrentZone();
 		RSS::CheckTLRSS();
+	}
+	
+	function CheckForDBUpgrade() {
+		$DB = $this->PDO->query('SELECT Value AS CurrentDBVersion FROM Hub WHERE Setting = "CurrentDBVersion"')->fetch();
+		
+		if(str_replace('.', '', $DB['CurrentDBVersion']) < str_replace('.', '', self::MinDBVersion)) {
+			foreach(glob('upgrade/db-*.php') AS $File) {
+				$NewDBVersion = str_replace('.php', '', str_replace('upgrade/db-', '', $File));
+				
+				if(str_replace('.', '', $NewDBVersion) >= str_replace('.', '', self::MinDBVersion)) {
+					$sql = '';
+			    	include_once $File;
+			    	
+			    	$IsUpgraded = FALSE;
+			    	if(is_array($sql)) {
+			    		foreach($sql AS $SQLUpgrade) {
+			    			$UpgradePrep = $this->PDO->prepare($SQLUpgrade);
+			    			$UpgradePrep->execute();
+			    			
+			    			$IsUpgraded = TRUE;
+			    		}
+			    	}
+			    	else if(is_string($sql)) {
+			    		$UpgradePrep = $this->PDO->prepare($sql);
+			    		$UpgradePrep->execute();
+			    		
+			    		$IsUpgraded = TRUE;
+			    	}
+			    	
+			    	if($IsUpgraded) {
+			    		Hub::AddLog(EVENT.'Database', 'Success', 'Upgraded database to "'.$NewDBVersion.'"');
+			    	}
+			    }
+			    else {
+			    	unlink($File);
+			    }
+			}
+		}
 	}
 	
 	function ShowError() {
@@ -227,12 +276,16 @@ class Hub {
 			break;
 			
 			case 'UTorrent':
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingUTorrentHostname = :Hostname, SettingUTorrentPort = :Port, SettingUTorrentUsername = :Username, SettingUTorrentPassword = :Password, SettingUTorrentWatchFolder = :WatchFolder');
-				$EditSettingsPrep->execute(array(':Hostname'    => $_POST['SettingUTorrentHostname'],
-				                                 ':Port'        => $_POST['SettingUTorrentPort'],
-				                                 ':Username'    => $_POST['SettingUTorrentUsername'],
-				                                 ':Password'    => $_POST['SettingUTorrentPassword'],
-				                                 ':WatchFolder' => $_POST['SettingUTorrentWatchFolder']));
+				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingUTorrentHostname = :Hostname, SettingUTorrentPort = :Port, SettingUTorrentUsername = :Username, SettingUTorrentPassword = :Password, SettingUTorrentWatchFolder = :WatchFolder, SettingUTorrentDefaultUpSpeed = :DefaultUpSpeed, SettingUTorrentDefaultDownSpeed = :DefaultDownSpeed, SettingUTorrentDefinedUpSpeed = :DefinedUpSpeed, SettingUTorrentDefinedDownSpeed = :DefinedDownSpeed');
+				$EditSettingsPrep->execute(array(':Hostname'         => $_POST['SettingUTorrentHostname'],
+				                                 ':Port'             => $_POST['SettingUTorrentPort'],
+				                                 ':Username'         => $_POST['SettingUTorrentUsername'],
+				                                 ':Password'         => $_POST['SettingUTorrentPassword'],
+				                                 ':WatchFolder'      => $_POST['SettingUTorrentWatchFolder'],
+				                                 ':DefaultUpSpeed'   => $_POST['SettingUTorrentDefaultUpSpeed'],
+				                                 ':DefaultDownSpeed' => $_POST['SettingUTorrentDefaultDownSpeed'],
+				                                 ':DefinedUpSpeed'   => $_POST['SettingUTorrentDefinedUpSpeed'],
+				                                 ':DefinedDownSpeed' => $_POST['SettingUTorrentDefinedDownSpeed']));
 			break;
 		}
 	}

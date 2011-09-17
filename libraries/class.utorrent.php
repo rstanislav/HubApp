@@ -74,7 +74,7 @@ class UTorrent extends Hub {
 						                            ':EpisodeID'  => $TorrentURI[1]));
 						
 						Hub::AddLog(EVENT.'Series', 'Success', 'Downloaded "'.$TorrentTitle.'"');
-						Hub::NotifyUsers('EpisodeNew', 'Series', 'Downloaded "'.$TorrentTitle.'"');
+						Hub::NotifyUsers('NewUTorrentEpisode', 'uTorrent/Series', 'Downloaded "'.$TorrentTitle.'"');
 					}
 				}
 				else {
@@ -84,7 +84,7 @@ class UTorrent extends Hub {
 					                             ':WishlistTitle' => $TorrentURI[3]));
 					
 					Hub::AddLog(EVENT.'Wishlist', 'Success', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
-					Hub::NotifyUsers('WishGranted', 'Wishlist', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
+					Hub::NotifyUsers('NewUTorrentWish', 'uTorrent/Wishlist', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
 				}
 			}
 		}
@@ -106,6 +106,20 @@ class UTorrent extends Hub {
 		if($RemovedTorrents) {
 			Hub::AddLog(EVENT.'uTorrent', 'Success', 'Removed '.$RemovedTorrents.' torrents totaling '.Hub::BytesToHuman($RemovedTorrentsSize));
 			Hub::NotifyUsers('FinishedTorrentsRemoved', 'uTorrent', 'Removed '.$RemovedTorrents.' torrents totaling '.Hub::BytesToHuman($RemovedTorrentsSize));
+		}
+	}
+	
+	function GetSettings() {
+		return $this->UTorrentAPI->getSettings();
+	}
+	
+	function GetSetting($Setting) {
+		$Settings = $this->GetSettings();
+		
+		foreach($Settings AS $SettingArr) {
+			if($SettingArr[0] == $Setting) {
+				return $SettingArr[2];
+			}
 		}
 	}
 	

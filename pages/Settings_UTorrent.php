@@ -53,10 +53,38 @@
  </tr>
  <tr>
   <th scope="row" class="column1">
-   Watch folder<br />
+   Watch Folder<br />
    <small>Where is your uTorrent watch folder located?</small>
   </th>
   <td><input name="SettingUTorrentWatchFolder" type="text" value="<?php echo $Settings['SettingUTorrentWatchFolder']; ?>" /></td>
+ </tr>
+ <tr>
+  <th scope="row" class="column1">
+   Default Upload Limit<br />
+   <small>Your day-to-day upload limit in KiB/s</small>
+  </th>
+  <td><input name="SettingUTorrentDefaultUpSpeed" type="text" value="<?php echo $Settings['SettingUTorrentDefaultUpSpeed']; ?>" /></td>
+ </tr>
+ <tr>
+  <th scope="row" class="column1">
+   Default Download Limit<br />
+   <small>Your day-to-day download limit in KiB/s</small>
+  </th>
+  <td><input name="SettingUTorrentDefaultDownSpeed" type="text" value="<?php echo $Settings['SettingUTorrentDefaultDownSpeed']; ?>" /></td>
+ </tr>
+ <tr>
+  <th scope="row" class="column1">
+   Defined Upload Limit<br />
+   <small>Your "slow" upload limit in KiB/s</small>
+  </th>
+  <td><input name="SettingUTorrentDefinedUpSpeed" type="text" value="<?php echo $Settings['SettingUTorrentDefinedUpSpeed']; ?>" /></td>
+ </tr>
+ <tr>
+  <th scope="row" class="column1">
+   Defined Download Limit<br />
+   <small>Your "slow" download limit in KiB/s</small>
+  </th>
+  <td><input name="SettingUTorrentDefinedDownSpeed" type="text" value="<?php echo $Settings['SettingUTorrentDefinedDownSpeed']; ?>" /></td>
  </tr>
  <tr> 
   <td colspan="2" style="text-align: right"><a id="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a></td> 

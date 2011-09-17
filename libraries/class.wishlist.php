@@ -33,14 +33,54 @@ class Wishlist extends Hub {
 		}
 		
 		if(!$AddError) {
-			$WishlistAddPrep = $this->PDO->prepare('INSERT INTO Wishlist (WishlistID, WishlistDate, WishlistTitle, WishlistYear) VALUES (NULL, :Date, :Title, :Year)');
-			$WishlistAddPrep->execute(array(':Date'   => time(),
-			                            	':Title' => $_POST['WishlistTitle'],
-			                            	':Year'   => $_POST['WishlistYear']));
+			$Wishlist = $this->PDO->query('SELECT * FROM Wishlist WHERE WishlistTitle = "'.$_POST['WishlistTitle'].'"')->fetch();
+			
+			if(!is_array($Wishlist)) {
+				$WishlistAddPrep = $this->PDO->prepare('INSERT INTO Wishlist (WishlistID, WishlistDate, WishlistTitle, WishlistYear) VALUES (NULL, :Date, :Title, :Year)');
+				$WishlistAddPrep->execute(array(':Date'  => time(),
+			                            		':Title' => self::ConvertCase($_POST['WishlistTitle']),
+			                            		':Year'  => $_POST['WishlistYear']));
+			}
+			else {
+				echo 'Duplicate entry!';
+			}
 		}
 		else {
 			echo 'You have to fill in all the fields';
 		}
+	}
+	
+	function ConvertCase($String) {
+		$Delimiters = array(' ', '-', '.', '\'', 'O\'', 'Mc');
+		$Exceptions = array('út', 'u', 's', 'és', 'utca', 'tér', 'krt', 'körút', 'sétány', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX', 'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXIX', 'XXX');
+	    
+	    $String = mb_convert_case($String, MB_CASE_TITLE, 'UTF-8');
+	
+		foreach($Delimiters AS $DelKey => $Delimiter) {
+			$Words    = explode($Delimiter, $String);
+			$NewWords = array();
+			
+			foreach($Words AS $WordKey => $Word){
+	            if(in_array(mb_strtoupper($Word, 'UTF-8'), $Exceptions)) {
+					// check exceptions list for any words that should be in upper case
+					$Word = mb_strtoupper($Word, 'UTF-8');
+				}
+				else if(in_array(mb_strtolower($Word, "UTF-8"), $Exceptions)) {
+					// check exceptions list for any words that should be in upper case
+					$Word = mb_strtolower($Word, 'UTF-8');
+				}
+				else if(!in_array($Word, $Exceptions)) {
+					// convert to uppercase (non-utf8 only)
+					$Word = ucfirst($Word);
+				}
+				
+				array_push($NewWords, $Word);
+			}
+			
+			$String = join($Delimiter, $NewWords);
+		}
+		
+		return $String;
 	}
 	
 	function WishlistEdit() { // $_POST

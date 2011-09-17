@@ -49,6 +49,15 @@ class User extends Hub {
 		}
 	}
 	
+	function UserDelete($UserID) {
+		$User = $this->GetUserByID($UserID);
+		
+		$UserDeletePrep = $this->PDO->prepare('DELETE FROM User WHERE UserID = :ID');
+		$UserDeletePrep->execute(array(':ID' => $UserID));
+		
+		Hub::AddLog(EVENT.'Users', 'Success', 'Deleted user "'.$User['UserName'].'"');
+	}
+	
 	function GetUserIP() {
 		return (filter_has_var(INPUT_SERVER, 'HTTP_X_FORWARDED_FOR')) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
 	}
@@ -254,6 +263,18 @@ class User extends Hub {
 	function GetUser($UserName) {
 		$UserPrep = $this->PDO->prepare('SELECT * FROM User, UserGroups WHERE UserName = :UserName AND UserGroupKey = UserGroupID');
 		$UserPrep->execute(array(':UserName' => $UserName));
+		
+		if($UserPrep->rowCount()) {
+			return $UserPrep->fetch();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetUserByID($UserID) {
+		$UserPrep = $this->PDO->prepare('SELECT * FROM User, UserGroups WHERE UserID = :ID AND UserGroupKey = UserGroupID');
+		$UserPrep->execute(array(':ID' => $UserID));
 		
 		if($UserPrep->rowCount()) {
 			return $UserPrep->fetch();

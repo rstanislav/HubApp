@@ -19,7 +19,7 @@ if(is_array($Users)) {
 		$UserDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'UserDelete')) ? '<a id="UserDelete-'.$User['UserID'].'" rel="'.$User['UserName'].'"><img src="images/icons/delete.png" /></a>' : '';
 		
 		echo '
-		<tr>
+		<tr id="User-'.$User['UserID'].'">
 		 <td>'.date('d.m.y', $User['UserDate']).'</td>
 		 <td>'.$User['UserName'].'</td>
 		 <td>'.$User['UserGroupName'].'</td>

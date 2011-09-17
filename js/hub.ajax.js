@@ -74,7 +74,8 @@ $(document).ready(function() {
 	'a[id|="XBMCLibraryClean"],' +
 	'a[id|="DeleteEpisode"],' + 
 	'a[id|="MovieToggleGenre"],' + 
-	'a[id|="MovieTogglePath"]').click(function(event) {
+	'a[id|="MovieTogglePath"],' + 
+	'a[id|="UserDelete"]').click(function(event) {
 		event.preventDefault();
 		
 		if($(this).hasClass('button')) {
@@ -576,28 +577,52 @@ function AjaxLink(Link) {
 				}
 			});
 		break;
-			case 'ZoneDelete':
-				jPrompt('Are you sure you want to delete zone "' + $(Link).attr('rel') + '"?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Zone', function(response) {
-					if(response == 'delete') {
-						$.ajax({
-							method: 'get',
-							url:    'load.php',
-							data:   'page=ZoneDelete&ZoneID=' + FirstID,
-							beforeSend: function() {
-								$(Link).html('<img src="images/spinners/ajax-light.gif" />');
-							},
-							success: function(Return) {
-								if(Return != '') {
-									$(Link).html('<img src="images/icons/error.png" />');
-								}
-								else {
-									$('#Zone-' + FirstID).slideUp('slow').remove();
-								}
+	
+		case 'UserDelete':
+			jPrompt('Are you sure you want to delete "' + $(Link).attr('rel') + '"?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete User', function(response) {
+				if(response == 'delete') {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=DeleteUser&UserID=' + FirstID,
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
 							}
-						});
-					}
-				});
-			break;
+							else {
+								$('#User-' + FirstID).slideUp('slow').remove();
+							}
+						}
+					});
+				}
+			});
+		break;
+		
+		case 'ZoneDelete':
+			jPrompt('Are you sure you want to delete zone "' + $(Link).attr('rel') + '"?' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Zone', function(response) {
+				if(response == 'delete') {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=ZoneDelete&ZoneID=' + FirstID,
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
+							}
+							else {
+								$('#Zone-' + FirstID).slideUp('slow').remove();
+							}
+						}
+					});
+				}
+			});
+		break;
 		
 		case 'DriveActive':
 			$.ajax({

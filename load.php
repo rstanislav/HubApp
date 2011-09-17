@@ -712,6 +712,17 @@ else {
 			}
 		break;
 		
+		case 'DeleteUser':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'UserDelete')) {
+				if(filter_has_var(INPUT_GET, 'UserID')) {
+					$UserObj->UserDelete($_GET['UserID']);
+				}
+			}
+			else {
+				$_SESSION['Error'] = 'You are not permitted to delete users';
+			}
+		break;
+		
 		case 'RSSFeedAdd':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'RSSFeedAdd')) {
 				$RSSObj->RSSFeedAdd();

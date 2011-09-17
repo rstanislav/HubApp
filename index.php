@@ -117,9 +117,10 @@ else {
   <td id="navigation">
    <div id="navbuttons">
     <span id="LockStatus"></span>
+    <span id="TorrentSpeedSetting"></a></span>
     <?php
    	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewStatistics')) {
-   		//echo '<a rel="Statistics" href="#!/Statistics"><img id="IconStat" src="images/icons/statistics_dark.png" /></a>'."\n";
+   		// echo '<a rel="Statistics" href="#!/Statistics"><img id="IconStat" src="images/icons/statistics_dark.png" /></a>'."\n";
    	}
    	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewSettings')) {
    		echo '<a rel="Settings" href="#!/Settings"><img id="IconSettings" src="images/icons/settings_dark.png" /></a>'."\n";

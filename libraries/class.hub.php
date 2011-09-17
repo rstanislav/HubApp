@@ -237,12 +237,16 @@ class Hub {
 			break;
 			
 			case 'UTorrent':
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingUTorrentHostname = :Hostname, SettingUTorrentPort = :Port, SettingUTorrentUsername = :Username, SettingUTorrentPassword = :Password, SettingUTorrentWatchFolder = :WatchFolder');
-				$EditSettingsPrep->execute(array(':Hostname'    => $_POST['SettingUTorrentHostname'],
-				                                 ':Port'        => $_POST['SettingUTorrentPort'],
-				                                 ':Username'    => $_POST['SettingUTorrentUsername'],
-				                                 ':Password'    => $_POST['SettingUTorrentPassword'],
-				                                 ':WatchFolder' => $_POST['SettingUTorrentWatchFolder']));
+				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingUTorrentHostname = :Hostname, SettingUTorrentPort = :Port, SettingUTorrentUsername = :Username, SettingUTorrentPassword = :Password, SettingUTorrentWatchFolder = :WatchFolder, SettingUTorrentDefaultUpSpeed = :DefaultUpSpeed, SettingUTorrentDefaultDownSpeed = :DefaultDownSpeed, SettingUTorrentDefinedUpSpeed = :DefinedUpSpeed, SettingUTorrentDefinedDownSpeed = :DefinedDownSpeed');
+				$EditSettingsPrep->execute(array(':Hostname'         => $_POST['SettingUTorrentHostname'],
+				                                 ':Port'             => $_POST['SettingUTorrentPort'],
+				                                 ':Username'         => $_POST['SettingUTorrentUsername'],
+				                                 ':Password'         => $_POST['SettingUTorrentPassword'],
+				                                 ':WatchFolder'      => $_POST['SettingUTorrentWatchFolder'],
+				                                 ':DefaultUpSpeed'   => $_POST['SettingUTorrentDefaultUpSpeed'],
+				                                 ':DefaultDownSpeed' => $_POST['SettingUTorrentDefaultDownSpeed'],
+				                                 ':DefinedUpSpeed'   => $_POST['SettingUTorrentDefinedUpSpeed'],
+				                                 ':DefinedDownSpeed' => $_POST['SettingUTorrentDefinedDownSpeed']));
 			break;
 		}
 	}

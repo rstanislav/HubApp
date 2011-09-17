@@ -114,6 +114,41 @@ else {
 			}
 		break;
 		
+		case 'TorrentSpeedSetting':
+			$UTorrentObj->Connect();
+			if(is_object($UTorrentObj->UTorrentAPI)) {
+				$Settings = $HubObj->GetSettings();
+				
+				if($UTorrentObj->GetSetting('max_ul_rate') == $Settings['SettingUTorrentDefaultUpSpeed'] && $UTorrentObj->GetSetting('max_dl_rate') == $Settings['SettingUTorrentDefaultDownSpeed']) {
+					echo '<a><img src="images/icons/hippopotamus_dark.png" title="Limit uTorrent to '.$Settings['SettingUTorrentDefinedUpSpeed'].'/'.$Settings['SettingUTorrentDefinedDownSpeed'].' KiB/s" /></a>';
+				}
+				else {
+					echo '<a><img src="images/icons/hippopotamus.png" title="Limit uTorrent to '.$Settings['SettingUTorrentDefaultUpSpeed'].'/'.$Settings['SettingUTorrentDefaultDownSpeed'].' KiB/s" /></a>';
+				}
+			}
+		break;
+		
+		case 'TorrentSpeedSettingToggle':
+			$UTorrentObj->Connect();
+			if(is_object($UTorrentObj->UTorrentAPI)) {
+				$Settings = $HubObj->GetSettings();
+				
+				if($UTorrentObj->GetSetting('max_ul_rate') == $Settings['SettingUTorrentDefaultUpSpeed']) {
+					$UTorrentObj->SetSetting('max_ul_rate', $Settings['SettingUTorrentDefinedUpSpeed']);
+				}
+				else {
+					$UTorrentObj->SetSetting('max_ul_rate', $Settings['SettingUTorrentDefaultUpSpeed']);
+				}
+			
+				if($UTorrentObj->GetSetting('max_dl_rate') == $Settings['SettingUTorrentDefaultDownSpeed']) {
+					$UTorrentObj->SetSetting('max_dl_rate', $Settings['SettingUTorrentDefinedDownSpeed']);
+				}
+				else {
+					$UTorrentObj->SetSetting('max_dl_rate', $Settings['SettingUTorrentDefaultDownSpeed']);
+				}
+			}
+		break;
+		
 		case 'DriveActive':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) {
 				if(filter_has_var(INPUT_GET, 'DriveID')) {

@@ -99,6 +99,7 @@ $(document).ready(function() {
 	});
 	
 	LockStatus();
+	TorrentSpeedSetting();
 	
 	$('#LockStatus').click(function() {
 		jConfirm('Are you sure you wish to unlock Hub? Only do this if you are sure that it has stalled!', 'Unlock', function(response) {
@@ -119,6 +120,25 @@ $(document).ready(function() {
 						}
 					}
 				});
+			}
+		});
+	});
+	
+	$('#TorrentSpeedSetting').click(function() {
+		$.ajax({
+			method: 'get',
+			url:    'load.php',
+			data:   'page=TorrentSpeedSettingToggle',
+			beforeSend: function() {
+				$(this).html('<img src="images/spinners/ajax-light.gif" />');
+			},
+			success: function(Return) {
+				if(Return != '') {
+					$(this).html('<img src="images/icons/error.png" />');
+				}
+				else {
+					$(this).html();
+				}
 			}
 		});
 	});
@@ -280,6 +300,21 @@ function LockStatus() {
 	});
 	
 	setTimeout('LockStatus()', 5000);
+}
+
+function TorrentSpeedSetting() {
+	$.ajax({
+		method: 'get',
+		url:    'load.php',
+		data:   'page=TorrentSpeedSetting',
+		
+		success: function(html) {
+			$('#TorrentSpeedSetting').html(html);
+		},
+		timeout: 5000
+	});
+	
+	setTimeout('TorrentSpeedSetting()', 5000);
 }
 
 function SetCookie(name, value, expires, path, domain, secure) {

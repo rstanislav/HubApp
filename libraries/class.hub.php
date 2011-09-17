@@ -85,7 +85,7 @@ class Hub {
 			    	}
 			    	
 			    	if($IsUpgraded) {
-			    		$DBUpgradePrep = $this->PDO->prepare('UPDATE Hub SET Setting = "CurrentDBVersion", Value = :NewVersion');
+			    		$DBUpgradePrep = $this->PDO->prepare('UPDATE Hub SET Value = :NewVersion WHERE Setting = "CurrentDBVersion"');
 			    		$DBUpgradePrep->execute(array(':NewVersion' => $NewDBVersion));
 			    		
 			    		Hub::AddLog(EVENT.'Database', 'Success', 'Upgraded database to "'.$NewDBVersion.'"');

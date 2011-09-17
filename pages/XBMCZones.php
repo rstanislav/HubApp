@@ -46,28 +46,40 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneAdd')) {
  </tr>
  </thead>
 <?php
-foreach($ZonesObj->GetZones() AS $Zone) {
-	if($Zone['ZoneName'] == $ZonesObj->CurrentZone) {
-		$SwitchButton = 'disabled';
-		$SwitchButtonText = 'Current';
-	}
-	else {
-		$SwitchButton = 'positive';
-		$SwitchButtonText = 'Switch to';
-	}
+$Zones = $ZonesObj->GetZones();
+
+if(is_array($Zones)) {
+	foreach($Zones AS $Zone) {
+		if($Zone['ZoneName'] == $ZonesObj->CurrentZone) {
+			$SwitchButton = 'disabled';
+			$SwitchButtonText = 'Current';
+		}
+		else {
+			$SwitchButton = 'positive';
+			$SwitchButtonText = 'Switch to';
+		}
 	
-	$ZoneDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneDelete')) ? '<a id="ZoneDelete-'.$Zone['ZoneID'].'" rel="'.$Zone['ZoneName'].'"><img src="images/icons/delete.png" /></a>' : '';
+		$ZoneDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneDelete')) ? '<a id="ZoneDelete-'.$Zone['ZoneID'].'" rel="'.$Zone['ZoneName'].'"><img src="images/icons/delete.png" /></a>' : '';
 	
+		echo '
+		 <tr id="Zone-'.$Zone['ZoneID'].'">
+		  <td>'.date('d.m.y', $Zone['ZoneDate']).'</td>
+		  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneName">'.$Zone['ZoneName'].'</td>
+		  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneXBMCHost">'.$Zone['ZoneXBMCHost'].'</td>
+		  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneXBMCPort">'.$Zone['ZoneXBMCPort'].'</td>
+		  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneXBMCUsername">'.$Zone['ZoneXBMCUsername'].'</td>
+		  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneXBMCPassword" style="font-style: italic;">hidden</td>
+		  <td style="text-align:right">
+		   '.$ZoneDeleteLink.'
+		  </td>
+		 </tr>'."\n";
+	}
+}
+else {
 	echo '
-	 <tr id="Zone-'.$Zone['ZoneID'].'">
-	  <td>'.date('d.m.y', $Zone['ZoneDate']).'</td>
-	  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneName">'.$Zone['ZoneName'].'</td>
-	  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneXBMCHost">'.$Zone['ZoneXBMCHost'].'</td>
-	  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneXBMCPort">'.$Zone['ZoneXBMCPort'].'</td>
-	  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneXBMCUsername">'.$Zone['ZoneXBMCUsername'].'</td>
-	  <td class="editable" id="'.$Zone['ZoneID'].'-|-ZoneXBMCPassword" style="font-style: italic;">hidden</td>
-	  <td style="text-align:right">
-	   '.$ZoneDeleteLink.'
+	 <tr>
+	  <td colspan="7">
+	   <div class="notification">No zones added</div>
 	  </td>
 	 </tr>'."\n";
 }

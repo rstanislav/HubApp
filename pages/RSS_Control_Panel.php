@@ -56,6 +56,21 @@ if(is_array($RSSFeeds)) {
 	echo '</table>'."\n";
 }
 else {
-	echo '<div class="notification">No data available</div>';
+	echo '
+	<table id="tbl-rss">
+	 <thead>
+	 <tr>
+	  <th style="text-align: center">Since</th>
+	  <th>Title</th>
+	  <th>Feed</th>
+	  <th>&nbsp;</th>
+	 </tr>
+	 </thead>
+	 <tr>
+	  <td colspan="4">
+	   <div class="notification">No data available</div>
+	  </td>
+	 </tr>
+	</table>'."\n";
 }
 ?>

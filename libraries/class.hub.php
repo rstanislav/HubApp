@@ -3,7 +3,7 @@ require_once APP_PATH.'/libraries/api.thetvdb.php';
 require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
-	const HubVersion   = '2.2.0';
+	const HubVersion   = '2.2.1';
 	const MinDBVersion = '2.0.0';
 	
 	public $PDO;
@@ -85,6 +85,9 @@ class Hub {
 			    	}
 			    	
 			    	if($IsUpgraded) {
+			    		$DBUpgradePrep = $this->PDO->prepare('UPDATE Hub SET Setting = "CurrentDBVersion", Value = :NewVersion');
+			    		$DBUpgradePrep->execute(array(':NewVersion' => $NewDBVersion));
+			    		
 			    		Hub::AddLog(EVENT.'Database', 'Success', 'Upgraded database to "'.$NewDBVersion.'"');
 			    	}
 			    }

@@ -27,26 +27,27 @@ class Drives extends Hub {
 						}
 					}
 				}
-				
-				if(is_dir($DriveRoot.'/Downloads')) {
-					UTorrent::SetSetting('dir_active_download', $Drive['DriveLetter'].'/Downloads');
-				}
 				else {
-					die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Incomplete Downloads folder: "'.$Drive['DriveLetter'].'/Downloads" does not exist'));
-				}
-				
-				if(is_dir($DriveRoot.'/Completed')) {
-					UTorrent::SetSetting('dir_completed_download', $Drive['DriveLetter'].'/Completed');
-				}
-				else {
-					die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Completed Downloads folder: "'.$Drive['DriveLetter'].'/Completed" does not exist'));
-				}
-				
-				if($Settings['SettingUTorrentWatchFolder'] && is_dir($Settings['SettingUTorrentWatchFolder'])) {
-					UTorrent::SetSetting('dir_autoload', $Settings['SettingUTorrentWatchFolder']);
-				}
-				else {
-					die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Watch folder: "'.$Settings['SettingUTorrentWatchFolder'].'" does not exist'));
+					if(is_dir($DriveRoot.'/Downloads')) {
+						UTorrent::SetSetting('dir_active_download', $Drive['DriveLetter'].'/Downloads');
+					}
+					else {
+						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Incomplete Downloads folder: "'.$Drive['DriveLetter'].'/Downloads" does not exist'));
+					}
+					
+					if(is_dir($DriveRoot.'/Completed')) {
+						UTorrent::SetSetting('dir_completed_download', $Drive['DriveLetter'].'/Completed');
+					}
+					else {
+						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Completed Downloads folder: "'.$Drive['DriveLetter'].'/Completed" does not exist'));
+					}
+					
+					if($Settings['SettingUTorrentWatchFolder'] && is_dir($Settings['SettingUTorrentWatchFolder'])) {
+						UTorrent::SetSetting('dir_autoload', $Settings['SettingUTorrentWatchFolder']);
+					}
+					else {
+						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Watch folder: "'.$Settings['SettingUTorrentWatchFolder'].'" does not exist'));
+					}
 				}
 			}
 			else {

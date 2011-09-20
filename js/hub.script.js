@@ -149,6 +149,12 @@ $(document).ready(function() {
 		$(this).attr('src', 'images/icons/statistics_dark.png');
 	});
 	
+	$('#IconProfile').mouseover(function() {
+		$(this).attr('src', 'images/icons/profile.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/profile_dark.png');
+	});
+	
 	$('#IconSettings').mouseover(function() {
 		$(this).attr('src', 'images/icons/settings.png');
 	}).mouseout(function() {

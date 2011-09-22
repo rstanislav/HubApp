@@ -413,7 +413,7 @@ function AjaxButton(Button, Extra) {
 							$(ButtonObj).contents().find('.label').text('Updating ...');
 						},
 						success: function(Return) {
-							if(Return != 'OK') {
+							if(Return != '') {
 								$(ButtonObj).contents().find('.label').text('Error!');
 							}
 							else {

@@ -16,6 +16,20 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'Profile':
+			require_once './pages/Profile.php';
+		break;
+		
+		case 'ProfileSave':
+			$UserObj->ProfileSave();
+		break;
+		
+		case 'UserAdd':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'UserAdd')) {
+				$UserObj->UserAdd();
+			}
+		break;
+		
 		case 'DeleteEpisode':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDeleteEpisode')) {
 				if(filter_has_var(INPUT_GET, 'EpisodeID')) {

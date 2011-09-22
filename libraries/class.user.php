@@ -45,7 +45,7 @@ class User extends Hub {
 			$this->LoggedIn = TRUE;
 			$this->User     = $UserInfo['UserName'];
 			
-			setcookie('HubUser',        $_POST['HubUser'],        (time() + (3600 * 24 * 31)));
+			setcookie('HubUser', $_POST['HubUser'], (time() + (3600 * 24 * 31)));
 		}
 	}
 	
@@ -124,6 +124,82 @@ class User extends Hub {
 			return FALSE;
 		}
 	}
+	
+	function ProfileSave() {
+		if(!filter_var($_POST['UserEMail'], FILTER_VALIDATE_EMAIL)) {
+			echo 'The supplied e-mail adress is not valid';
+		}
+		else {
+			if(!empty($_POST['UserCurrentPass'])) {
+				$User = $this->PDO->query('SELECT * FROM User WHERE UserPassword = "'.md5($_POST['UserCurrentPass']).'"')->fetch();
+				
+				if(is_array($User)) {
+					if(empty($_POST['UserNewPass1']) || empty($_POST['UserNewPass2'])) {
+						echo 'You have to type in both new password fields in order to change password';
+					}
+					else if($_POST['UserNewPass1'] != $_POST['UserNewPass2']) {
+						echo 'The new password does not match each other';
+					}
+					else {
+						$UserEditPrep = $this->PDO->prepare('UPDATE User SET UserEMail = :EMail, UserPassword = :Password WHERE UserID = :UserID');
+						$UserEditPrep->execute(array(':EMail'    => $_POST['UserEMail'],
+						                    		 ':Password' => md5($_POST['UserNewPass1']),
+						                    		 ':UserID'   => $this->UserID));
+						                    		 
+						Hub::AddLog(EVENT.'Users', 'Success', 'User "'.$this->User.'" updated their profile');
+					}
+				}
+				else {
+					echo 'You typed the wrong password';
+				}
+			}
+			else if(!empty($_POST['UserNewPass1']) || !empty($_POST['UserNewPass2'])) {
+				echo 'You need to type in your current password in order to change it';
+			}
+			else {
+				$UserEditPrep = $this->PDO->prepare('UPDATE User SET UserEMail = :EMail WHERE UserID = :UserID');
+				$UserEditPrep->execute(array(':EMail'  => $_POST['UserEMail'],
+				                    		 ':UserID' => $this->UserID));
+				                    		 
+				Hub::AddLog(EVENT.'Users', 'Success', 'User "'.$this->User.'" updated their profile');
+			}
+		}		
+	}
+	
+	function UserAdd() {// $_POST
+		$AddError = FALSE;
+		foreach($_POST AS $PostKey => $PostValue) {
+			if(!filter_has_var(INPUT_POST, $PostKey) || empty($PostValue)) {
+				$AddError = TRUE;
+			}
+		}
+		
+		if(!$AddError) {
+			$User = $this->PDO->query('SELECT * FROM User WHERE UserName = "'.$_POST['UserName'].'" OR UserEMail = "'.$_POST['UserEMail'].'"')->fetch();
+			
+			if(!is_array($User)) {
+				if(!filter_var($_POST['UserEMail'], FILTER_VALIDATE_EMAIL)) {
+					echo 'The supplied e-mail adress is not valid';
+				}
+				else {
+					$UserAddPrep = $this->PDO->prepare('INSERT INTO User (UserID, UserDate, UserName, UserPassword, UserEMail, UserGroupKey) VALUES (NULL, :Date, :UserName, :Password, :EMail, :GroupID)');
+					$UserAddPrep->execute(array(':Date'     => time(),
+			                            		':UserName' => $_POST['UserName'],
+			                            		':Password' => md5(strtolower($_POST['UserName'])),
+			                            		':EMail'    => $_POST['UserEMail'],
+			                            		':GroupID'  => $_POST['UserGroup']));
+			                            		
+			    	Hub::AddLog(EVENT.'Users', 'Success', 'Added "'.$_POST['UserName'].'" with e-mail address "'.$_POST['UserEMail'].'"');
+				}
+			}
+			else {
+				echo 'A user already exists with that combination';
+			}
+		}
+		else {
+			echo 'You have to fill in all the fields';
+		}
+	}	
 	
 	function GetUserGroups() {
 		$UserGroupPrep = $this->PDO->prepare('SELECT * FROM UserGroups');

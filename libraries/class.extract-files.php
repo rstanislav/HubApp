@@ -149,6 +149,8 @@ class ExtractFiles extends Hub {
 		if($ParsedFile['Type'] == 'TV') {
 			$Serie = $this->PDO->query('SELECT SerieTitle, SerieTitleAlt, SerieID FROM Series WHERE SerieTitle = "'.$ParsedFile['Title'].'" OR SerieTitleAlt = "'.$ParsedFile['Title'].'"')->fetch();
 			
+			$SerieTitle = (!empty($Serie['SerieTitleAlt'])) ? $Serie['SerieTitleAlt'] : $Serie['SerieTitle'];
+			
 			if(!empty($Serie['SerieTitle']) && is_dir($DriveRoot.'/Media/TV/'.$Serie['SerieTitle'])) {
 				$NewFolder = $DriveRoot.'/Media/TV/'.$Serie['SerieTitle'];
 			}
@@ -211,7 +213,7 @@ class ExtractFiles extends Hub {
 							                                  ':Season'  => $ParsedEpisode[0],
 							                                  ':Episode' => $ParsedEpisode[1]));
 							                                  
-							Hub::NotifyUsers('NewLibraryEpisode', 'XBMC/Series', '"'.$ParsedFile['Title'].' S'.$ParsedEpisode[0].'E'.$ParsedEpisode[1].'" is now available on "'.$DriveRoot.'"');
+							Hub::NotifyUsers('NewLibraryEpisode', 'XBMC/Series', '"'.$SerieTitle.' s'.sprintf('%02s', $ParsedEpisode[0]).'e'.sprintf('%02s', $ParsedEpisode[1]).'" is now available on "'.$DriveRoot.'"');
 						}
 					}
 				}

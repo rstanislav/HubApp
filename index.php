@@ -126,6 +126,7 @@ else {
    	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewSettings')) {
    		echo '<a rel="Settings" href="#!/Settings"><img id="IconSettings" src="images/icons/settings_dark.png" /></a>'."\n";
    	}
+   	echo '<a rel="Profile" href="#!/Profile"><img id="IconProfile" src="images/icons/profile_dark.png" /></a>'."\n";
    	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewUsers')) {
    		echo '<a rel="Users" href="#!/Users"><img id="IconUsers" src="images/icons/users_dark.png" /></a>'."\n";
    	}

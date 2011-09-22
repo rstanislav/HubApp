@@ -28,8 +28,6 @@ if($UTorrentObj->UTorrentAPI->Token) {
 	
 		$TotalSize = $TotalDownloaded = $TotalSpeed = 0;
 		foreach($Torrents AS $Torrent) {
-			$TimeRemaining = ($Torrent[UTORRENT_TORRENT_DOWNSPEED]) ? $HubObj->ConvertSeconds(($Torrent[UTORRENT_TORRENT_SIZE] - $Torrent[UTORRENT_TORRENT_DOWNLOADED]) / $Torrent[UTORRENT_TORRENT_DOWNSPEED]) : '∞';
-		
 			$TCPause   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentPause')) ? '<a id="TorrentPause-'.$Torrent[UTORRENT_TORRENT_HASH].'" rel="'.$Torrent[UTORRENT_TORRENT_NAME].'"><img src="images/icons/control_pause.png" /></a>' : '';
 			$TCStop    = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStop')) ? '<a id="TorrentStop-'.$Torrent[UTORRENT_TORRENT_HASH].'" rel="'.$Torrent[UTORRENT_TORRENT_NAME].'"><img src="images/icons/control_stop.png" /></a>' : '';
 			$TCStart   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentStart')) ? '<a id="TorrentStart-'.$Torrent[UTORRENT_TORRENT_HASH].'" rel="'.$Torrent[UTORRENT_TORRENT_NAME].'"><img src="images/icons/control_play.png" /></a>' : '';
@@ -75,10 +73,12 @@ if($UTorrentObj->UTorrentAPI->Token) {
 				$TorrentControls = $TCStop.$TCPause.$TCDelete;
 			}
 		
+			$TimeRemaining = ($Torrent[UTORRENT_TORRENT_DOWNSPEED] > (20 * 1024) && $TorrentStatus == 'Downloading') ? $HubObj->ConvertSeconds(($Torrent[UTORRENT_TORRENT_SIZE] - $Torrent[UTORRENT_TORRENT_DOWNLOADED]) / $Torrent[UTORRENT_TORRENT_DOWNSPEED]) : '∞';
+			
 			$TotalSize       += $Torrent[UTORRENT_TORRENT_SIZE];
 			$TotalDownloaded += $Torrent[UTORRENT_TORRENT_DOWNLOADED];
 			$TotalSpeed      += $Torrent[UTORRENT_TORRENT_DOWNSPEED];
-		
+			
 			echo '
 			<tr>
 			 <td>'.$Torrent[UTORRENT_TORRENT_NAME].'</td>
@@ -94,7 +94,7 @@ if($UTorrentObj->UTorrentAPI->Token) {
 			</tr>'."\n";
 		}
 		
-		$TotalTimeRemaining = ($TotalSpeed) ? $HubObj->ConvertSeconds(($TotalSize - $TotalDownloaded) / $TotalSpeed) : '∞';
+		$TotalTimeRemaining = ($TotalSpeed > (20 * 1024)) ? $HubObj->ConvertSeconds(($TotalSize - $TotalDownloaded) / $TotalSpeed) : '∞';
 		echo '
 		 <tfoot>
 		 <tr>

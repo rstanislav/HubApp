@@ -8,8 +8,8 @@ $('#tbl-unsorted .editable').editable('load.php?page=UnsortedFileRename', {
 		ID = Action[1];
 		
 		return {
-			FilePath: ""+$('#FilePath-' + ID).attr('value')+"",
-			DefaultFile: ""+$('#DefaultFile-' + ID).attr('value')+""
+			FilePath: ""+$('#FilePath-' + ID).html()+"",
+			DefaultFile: ""+$('#File-' + ID).html()+""
 		};
 	},
 	onblur: 'submit',

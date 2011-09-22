@@ -64,4 +64,4 @@
 [3]: http://utorrent.com/
 [4]: http://thetvdb.org/
 [5]: http://boxcar.io/
-[6]: http://hubapp.net/******
+[6]: http://hubapp.net/

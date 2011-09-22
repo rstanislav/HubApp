@@ -95,7 +95,7 @@ class UTorrent extends Hub {
 		
 		$RemovedTorrents = $RemovedTorrentsSize = 0;
 		foreach($Torrents AS $Torrent) {
-			if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000) {
+			if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000 && $Torrent[UTORRENT_TORRENT_STATUS] == 136) {
 				$RemovedTorrents++;
 				$RemovedTorrentsSize += $Torrent[UTORRENT_TORRENT_SIZE];
 			

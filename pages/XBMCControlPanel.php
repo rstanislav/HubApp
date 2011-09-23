@@ -66,7 +66,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 	$XBMC = $XBMCObj->MakeRequest('System', 'GetInfoLabels', $InfoLabelParams);
 
 	if($ActivePlayer['video']) {
-		$HubObj->d($XBMCObj->MakeRequest('VideoPlayer', 'State'));
+		//$HubObj->d($XBMCObj->MakeRequest('VideoPlayer', 'State'));
 	
 		if($XBMC['VideoPlayer.TVShowTitle']) { // TV Episode Playing
 			echo '
@@ -161,7 +161,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			*/
 		}
 	
-		print_r($XBMCObj->d($XBMC));
+		//print_r($XBMCObj->d($XBMC));
 	}
 	else {
 		// info about lists

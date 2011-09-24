@@ -67,7 +67,7 @@ class RSS extends Hub {
 				$Parsed = RSS::ParseRelease($Torrent['TorrentTitle']);
 				
 				if(is_array($Parsed) && $Parsed['Type'] == 'TV') {
-					if(!stristr($Torrent['TorrentTitle'], 'german') && !stristr($Torrent['TorrentTitle'], 'hebsub')) {
+					if(!preg_match("/\bgerman\b|\bhebsub\b|\bhebrew\b|\bsample\b/i", $Torrent['TorrentTitle'])) {
 						$SerieTitle = $Parsed['Title'];
 						
 						$EpisodePrep = $this->PDO->prepare('SELECT Series.*, Episodes.* FROM Series, Episodes WHERE Episodes.SeriesKey = Series.SerieID AND (Series.SerieTitle = :Title OR Series.SerieTitleAlt = :Title) AND Episodes.EpisodeSeason = :Season AND Episodes.EpisodeEpisode = :Episode GROUP BY Series.SerieTitle');
@@ -110,7 +110,7 @@ class RSS extends Hub {
 												Hub::AddLog(EVENT.'Series', 'Success', 'Deleted "'.$Episode['EpisodeFile'].'" in favour of "'.$TorrentTitle.'"', 0, 'clean');
 												Hub::NotifyUsers('FileHigherQuality', 'Series', 'Deleted "'.$Episode['EpisodeFile'].'" in favour of "'.$TorrentTitle.'"');
 											
-												$UpdateEpisodePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = "" WHERE EpisodeFile = :File');
+												$UpdateEpisodePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = "", TorrentKey = "" WHERE EpisodeFile = :File');
 												$UpdateEpisodePrep->execute(array(':File' => $Episode['EpisodeFile']));
 												
 												$DownloadArr[$DownloadArrID][0] = $Torrent['TorrentURI'];

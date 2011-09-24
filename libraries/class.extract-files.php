@@ -132,7 +132,12 @@ class ExtractFiles extends Hub {
 		}
 		else {
 			if(RSS::ParseRelease($FileInfo['basename'])) {
-				$NewFileName = $FileInfo['basename'];
+				if(RSS::GetQualityRank($FileInfo['foldername']) >= RSS::GetQualityRank($FileInfo['basename'])) {
+					$NewFileName = $FileInfo['foldername'].'.'.$FileInfo['extension'];
+				}
+				else {
+					$NewFileName = $FileInfo['basename'];
+				}
 			}
 			else {
 				if(RSS::ParseRelease($FileInfo['foldername'])) {

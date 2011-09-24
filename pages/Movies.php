@@ -37,7 +37,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$PathShow = (filter_has_var(INPUT_COOKIE, 'MoviePath')) ? ' style="'.$_COOKIE['MoviePath'].'"' : ' style="display: inline;"';
 			
 			echo '
-			<td style="text-align: center">
+			<td style="text-align: center; width:33%;">
 			 '.$MoviePoster.'<br />
 			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
 			 <span class="MovieGenre"'.$GenreShow.'><br /><em>'.$Genre.'</em></span>

@@ -125,7 +125,7 @@ class Zones extends Hub {
 	}
 	
 	function GetZones() {
-		return $this->PDO->query('SELECT * FROM Zones');
+		return $this->PDO->query('SELECT * FROM Zones')->fetchAll();
 	}
 }
 ?>

@@ -124,7 +124,8 @@ if(is_array($UnsortedFiles)) {
 	 			$ParsedFile = $RSSObj->ParseRelease($UnsortedFile);
 	 			$ParsedFile['Title'] = str_replace($FilePath, '', $ParsedFile['Title']);
 	 			
-	 			switch($ParsedFile['Type']) {
+	 			$Type = (array_key_exists('Type', $ParsedFile)) ? $ParsedFile['Type'] : '';
+	 			switch($Type) {
 	 				case 'TV':
 	 					$Selector = 'TV';
 	 				break;

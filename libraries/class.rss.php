@@ -512,11 +512,16 @@ class RSS extends Hub {
 	    			$ReleaseEpisodes[] = array((int) $ReleaseSeason, (int) $ReleaseEpisode);
 	    		}
 	  		}
-	  
-	  		return array('Type'     => 'TV',
-	  		             'Title'    => $ReleaseTitle,
-	    				 'Episodes' => $ReleaseEpisodes,
-	    				 'Quality'  => $ReleaseQuality);
+	  		
+	  		if(!empty($ReleaseTitle)) {
+	  			return array('Type'     => 'TV',
+	  		             	 'Title'    => $ReleaseTitle,
+	    				 	 'Episodes' => $ReleaseEpisodes,
+	    				 	 'Quality'  => $ReleaseQuality);
+	    	}
+	    	else {
+	    		return FALSE;
+	    	}
 		}
 		else if(preg_match($TalkShowRegEx, $Release, $Match)) {
 			return array('Type'  => 'Talk Show',

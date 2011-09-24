@@ -135,7 +135,12 @@ class ExtractFiles extends Hub {
 				$NewFileName = $FileInfo['basename'];
 			}
 			else {
-				$NewFileName = $FileInfo['filename'].'-'.mt_rand().'.'.$FileInfo['extension'];
+				if(RSS::ParseRelease($FileInfo['foldername'])) {
+					$NewFileName = $FileInfo['foldername'].'.'.$FileInfo['extension'];
+				}
+				else {
+					$NewFileName = $FileInfo['filename'].'-'.mt_rand().'.'.$FileInfo['extension'];
+				}
 			}
 		}
 		

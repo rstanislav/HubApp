@@ -92,25 +92,7 @@ else {
   </td>
   <td class="header right">
    <?php
-   if($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneSwitch')) {
-   ?>
-   <form method="post" action="">
-   <select name="zoneSelect" id="zoneSelect">
-    <?php
-    $Zones = $ZonesObj->GetZones();
-    foreach($Zones AS $Zone) {
-    	$ZoneSelected = ($Zone['ZoneName'] == $HubObj->CurrentZone) ? ' selected="selected"' : '';
-    	
-    	echo '<option value=""'.$ZoneSelected.'>'.$Zone['ZoneName'].'</option>'."\n";
-    }
-    ?>
-   </select>
-   </form>
-   <?php
-   }
-   else {
-       echo '<span style="padding-right:10px; color: white; font-weight: bold">'.$HubObj->CurrentZone.'</span>';
-   }
+   require_once './pages/ZoneSwitch.php';
    ?>
   </td>
  </tr>

@@ -398,7 +398,7 @@ class RSS extends Hub {
 	}
 	
 	function GetTorrents($Category = '', $RSSKey) {
-		if($Category == 'undefined') {
+		if($Category == 'undefined' || empty($Category)) {
 			$TorrentPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE RSSKey = :RSSKey ORDER BY TorrentPubDate DESC LIMIT 100');
 			$TorrentPrep->execute(array(':RSSKey' => $RSSKey));
 		}

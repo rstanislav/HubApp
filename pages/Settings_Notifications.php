@@ -45,6 +45,9 @@ if($UserObj->UserEMail) {
 	}
 }
 else {
-	echo '<div class="notification">You need to have an e-mail address in order to get notifications</div>';
+	echo '
+	<div class="notification">
+	 You need to have an e-mail address in order to get notifications. You can setup one <a href="#!/Profile">here</a>
+	</div>';
 }
 ?>

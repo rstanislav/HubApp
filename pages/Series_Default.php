@@ -14,6 +14,11 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieRebuildFolders')) {
 
 <div class="head">Series <small style="font-size: 12px;">(<a href="#!/Help/Series">?</a>)</small></div>
 
+<?php
+$Series = $SeriesObj->GetSeries();
+
+if(is_array($Series)) {
+?>
 <table>
  <thead>
  <tr>
@@ -28,8 +33,6 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieRebuildFolders')) {
  </thead>
  
 <?php
-$Series = $SeriesObj->GetSeries();
-
 foreach($Series AS $Serie) {
 	$Serie['SerieTitleAlt'] = (strlen($Serie['SerieTitleAlt'])) ? '/'.$Serie['SerieTitleAlt'] : '';
 	$Serie['FirstAired']    = ($Serie['SerieFirstAired']) ? date('d.m.y', $Serie['SerieFirstAired']) : '';
@@ -55,3 +58,9 @@ foreach($Series AS $Serie) {
 }
 ?>
 </table>
+<?php
+}
+else {
+	echo '<div class="notification">No data available</div>';
+}
+?>

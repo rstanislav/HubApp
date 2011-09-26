@@ -67,7 +67,7 @@ class RSS extends Hub {
 				$Parsed = RSS::ParseRelease($Torrent['TorrentTitle']);
 				
 				if(is_array($Parsed) && $Parsed['Type'] == 'TV') {
-					if(!preg_match("/\bgerman\b|\bhebsub\b|\bhebrew\b|\bsample\b/i", $Torrent['TorrentTitle'])) {
+					if(!preg_match("/\bgerman\b|\bhebsub\b|\bhebrew\b|\bsample\b|\bsubs\b/i", $Torrent['TorrentTitle'])) {
 						$SerieTitle = $Parsed['Title'];
 						
 						$EpisodePrep = $this->PDO->prepare('SELECT Series.*, Episodes.* FROM Series, Episodes WHERE Episodes.SeriesKey = Series.SerieID AND (Series.SerieTitle = :Title OR Series.SerieTitleAlt = :Title) AND Episodes.EpisodeSeason = :Season AND Episodes.EpisodeEpisode = :Episode GROUP BY Series.SerieTitle');

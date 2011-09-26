@@ -10,6 +10,11 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
 
 <div class="head">Drives <small style="font-size: 12px;">(<a href="#!/Help/Drives">?</a>)</small></div>
 
+<?php
+$Drives = $DrivesObj->GetDrives();
+
+if(is_array($Drives)) {
+?>
 <table>
  <thead>
  <tr>
@@ -23,8 +28,6 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
  </thead>
  
 <?php
-$Drives = $DrivesObj->GetDrives();
-
 $TotalFreeSpace = $TotalSpace = 0;
 foreach($Drives AS $Drive) {
 	$DriveRoot       = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
@@ -69,3 +72,9 @@ foreach($Drives AS $Drive) {
  </tr>
  </tfoot>
 </table>
+<?php
+}
+else {
+	echo '<div class="notification">Unable to get drive data</div>';
+}
+?>

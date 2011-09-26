@@ -110,15 +110,22 @@ class UTorrent extends Hub {
 	}
 	
 	function GetSettings() {
-		return $this->UTorrentAPI->getSettings();
+		if(is_object($this->UTorrentAPI)) {
+			return $this->UTorrentAPI->getSettings();
+		}
+		else {
+			return FALSE;
+		}
 	}
 	
 	function GetSetting($Setting) {
 		$Settings = $this->GetSettings();
 		
-		foreach($Settings AS $SettingArr) {
-			if($SettingArr[0] == $Setting) {
-				return $SettingArr[2];
+		if(is_array($Settings)) {
+			foreach($Settings AS $SettingArr) {
+				if($SettingArr[0] == $Setting) {
+					return $SettingArr[2];
+				}
 			}
 		}
 	}

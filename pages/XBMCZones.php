@@ -48,7 +48,7 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneAdd')) {
 <?php
 $Zones = $ZonesObj->GetZones();
 
-if(is_array($Zones)) {
+if(sizeof($Zones)) {
 	foreach($Zones AS $Zone) {
 		if($Zone['ZoneName'] == $ZonesObj->CurrentZone) {
 			$SwitchButton = 'disabled';

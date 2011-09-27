@@ -15,17 +15,7 @@ class Drives extends Hub {
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
 				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) <= $Settings['SettingHubMinimumActiveDiskPercentage']) {
-					$Drives = Drives::GetDrives();
-					
-					if(is_array($Drives)) {
-						foreach($Drives AS $Drive) {
-							if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) > $Settings['SettingHubMinimumActiveDiskPercentage']) {
-								self::SetActiveDrive($Drive['DriveID']);
-								
-								break;
-							}
-						}
-					}
+					self::DetermineNewActiveDrive();
 				}
 				else {
 					if(is_dir($DriveRoot.'/Downloads')) {
@@ -51,11 +41,25 @@ class Drives extends Hub {
 				}
 			}
 			else {
-				die(Hub::AddLog(EVENT.'Drives', 'Failure', 'Unable to get drives from database'));
+				self::DetermineNewActiveDrive();
 			}
 		}
 		else {
 			die(Hub::AddLog(EVENT.'Drives', 'Failure', 'No active drive has been set'));
+		}
+	}
+	
+	function DetermineNewActiveDrive() {
+		$Drives = Drives::GetDrivesFromDB();
+		
+		if(is_array($Drives)) {
+			foreach($Drives AS $Drive) {
+				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) > $Settings['SettingHubMinimumActiveDiskPercentage']) {
+					self::SetActiveDrive($Drive['DriveID']);
+					
+					break;
+				}
+			}
 		}
 	}
 	
@@ -71,7 +75,49 @@ class Drives extends Hub {
 	}
 	
 	function GetDrives() {
+		$Drives = array();
+		for($ASCII = 68; $ASCII <= 90; $ASCII++) {
+			$DriveLetter = chr($ASCII).':';
+		
+			if(is_dir($DriveLetter)) {
+				$SpaceFree  = @disk_free_space($DriveLetter);
+				$SpaceTotal = @disk_total_space($DriveLetter);
+				
+				//if($SpaceFree != 0 && $SpaceTotal > ((1024 * 1024 * 1024) * 100)) {
+					$Drives[] = $DriveLetter;
+				//}
+			}
+		}
+		
+		return $Drives;
+	}
+	
+	function GetDriveByLetter($DriveLetter) {
+		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveLetter = :Letter');
+		$DrivePrep->execute(array(':Letter' => $DriveLetter));
+		
+		if($DrivePrep->rowCount()) {
+			return $DrivePrep->fetch();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetDrivesFromDB() {
 		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives ORDER BY DriveDate');
+		$DrivePrep->execute();
+		
+		if($DrivePrep->rowCount()) {
+			return $DrivePrep->fetchAll();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetDrivesNetwork() {
+		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveNetwork = 1 ORDER BY DriveDate');
 		$DrivePrep->execute();
 		
 		if($DrivePrep->rowCount()) {
@@ -117,19 +163,19 @@ class Drives extends Hub {
 	
 	function GetFreeSpace($DriveLetter, $AsBytes = FALSE) {
 		if($AsBytes) {
-			return disk_free_space($DriveLetter);
+			return @disk_free_space($DriveLetter);
 		}
 		else {
-			return $this->BytesToHuman(disk_free_space($DriveLetter));
+			return $this->BytesToHuman(@disk_free_space($DriveLetter));
 		}
 	}
 	
 	function GetTotalSpace($DriveLetter, $AsBytes = FALSE) {
 		if($AsBytes) {
-			return disk_total_space($DriveLetter);
+			return @disk_total_space($DriveLetter);
 		}
 		else {
-			return $this->BytesToHuman(disk_total_space($DriveLetter));
+			return $this->BytesToHuman(@disk_total_space($DriveLetter));
 		}
 	}
 	

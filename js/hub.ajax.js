@@ -45,7 +45,6 @@ $(document).ready(function() {
 	'a[id|="FoldersRebuild"],' +
 	'a[id|="EpisodesRebuild"],' +
 	'a[id|="SerieRefreshAll"],' +
-	'a[id|="DriveActive"],' +
 	'a[id|="DriveRemove"],' +
 	'a[id|="MovieInfo"],' +
 	'a[id|="MoviePlay"],' +
@@ -100,6 +99,28 @@ $(document).ready(function() {
 			NewButtonContent = 'All Seasons';
 		}
 		$('#seasons-button').contents().find('.label').text(NewButtonContent);
+	});
+	
+	$('a[id|="DriveActive"]').click(function(event) {
+		DriveID = $(this).attr('id').replace('DriveActive-', '');
+		Link = this;
+		$.ajax({
+			method: 'get',
+			url:    'load.php',
+			data:   'page=DriveActive&DriveID=' + DriveID,
+			beforeSend: function() {
+				$(Link).contents().attr('src', 'images/spinners/ajax-light.gif');
+			},
+			success: function(html) {
+				$(Link).contents().attr('src', 'images/icons/drive_active.png');
+				
+				$('a[id|="DriveActive"]').each(function(index) {
+					if($(this).attr('id').replace('DriveActive-', '') != DriveID) {
+						$(this).contents().attr('src', 'images/icons/drive_active_off.png');
+					}
+				});
+			}
+		});
 	});
 	
 	$('a[id|="zoneSwitch"]').click(function(event) {

@@ -31,7 +31,7 @@ class ExtractFiles extends Hub {
 	} 
 	
 	function GetFiles() {
-		$Drives = Drives::GetDrives();
+		$Drives = Drives::GetDrivesFromDB();
 		
 		$CompletedFiles = array();
 		if(is_array($Drives)) {
@@ -281,7 +281,7 @@ class ExtractFiles extends Hub {
 	}
 	
 	function CleanDownloadsFolder() {
-		$Drives = Drives::GetDrives();
+		$Drives = Drives::GetDrivesFromDB();
 		
 		if(is_array($Drives)) {
 			$FoldersDeleted = $FoldersSizeDeleted = 0;

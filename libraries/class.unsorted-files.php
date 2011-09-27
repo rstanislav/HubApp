@@ -1,7 +1,7 @@
 <?php
 class UnsortedFiles extends Hub {
 	function GetUnsortedFiles() {
-		$Drives = Drives::GetDrives();
+		$Drives = Drives::GetDrivesFromDB();
 		
 		if(is_array($Drives)) {
 			$UnsortedFiles = array();

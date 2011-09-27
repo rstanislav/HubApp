@@ -94,12 +94,14 @@ class UTorrent extends Hub {
 		$Torrents = self::GetTorrents();
 		
 		$RemovedTorrents = $RemovedTorrentsSize = 0;
-		foreach($Torrents AS $Torrent) {
-			if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000 && $Torrent[UTORRENT_TORRENT_STATUS] == 136) {
-				$RemovedTorrents++;
-				$RemovedTorrentsSize += $Torrent[UTORRENT_TORRENT_SIZE];
+		if(is_array($Torrents)) {
+			foreach($Torrents AS $Torrent) {
+				if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000 && $Torrent[UTORRENT_TORRENT_STATUS] == 136) {
+					$RemovedTorrents++;
+					$RemovedTorrentsSize += $Torrent[UTORRENT_TORRENT_SIZE];
 			
-				self::TorrentDelete($Torrent[UTORRENT_TORRENT_HASH]);
+					self::TorrentDelete($Torrent[UTORRENT_TORRENT_HASH]);
+				}
 			}
 		}
 	

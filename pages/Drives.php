@@ -30,20 +30,37 @@ if(is_array($Drives)) {
 <?php
 $TotalFreeSpace = $TotalSpace = 0;
 foreach($Drives AS $Drive) {
-	$DriveRoot       = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
-	$DriveRootText   = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'].' ('.$Drive['DriveLetter'].')' : $Drive['DriveLetter'];
+	$DriveDB = $DrivesObj->GetDriveByLetter($Drive);
 	
-	if($Drive['DriveID'] == $HubObj->ActiveDrive) {
-		$DriveActiveLink = '';
-		$DriveRemoveLink = '';
+	if(is_array($DriveDB)) {
+		$DriveRoot     = ($DriveDB['DriveNetwork']) ? $DriveDB['DriveRoot']                                : $DriveDB['DriveLetter'];
+		$DriveRootText = ($DriveDB['DriveNetwork']) ? $DriveDB['DriveRoot'].' ('.$DriveDB['DriveLetter'].')' : $DriveDB['DriveLetter'];
+	
+		$DriveAdd = '';
+		
+		if($DriveDB['DriveID'] == $HubObj->ActiveDrive) {
+			$DriveActiveLink = '<a id="DriveActive-'.$DriveDB['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active.png" /></a>';
+		}
+		else {
+			$DriveActiveLink = '<a id="DriveActive-'.$DriveDB['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active_off.png" /></a>';
+		}
+		
+		$DriveRemoveLink = '<a id="DriveRemove-'.$DriveDB['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_remove.png" /></a>';
+		
+		$DriveActiveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) ? $DriveActiveLink : '';
+		$DriveRemoveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) ? $DriveRemoveLink : '';
+		
+		$DriveDate = date('d.m.y', $DriveDB['DriveDate']);
+		$DriveID = $DriveDB['DriveID'];
 	}
 	else {
-		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active.png" /></a>';
-		$DriveRemoveLink = '<a id="DriveRemove-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_remove.png" /></a>';
+		$DriveID = rand();
+		$DriveRoot = $DriveRootText = $Drive;
+		$DriveAdd = '<img src="images/icons/drive_add.png" />';
+		$DriveActiveLink = '';
+		$DriveRemoveLink = '';
+		$DriveDate = '';
 	}
-	
-	$DriveActiveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) ? $DriveActiveLink : '';
-	$DriveRemoveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) ? $DriveRemoveLink : '';
 	
 	$FreeSpace       = $DrivesObj->GetFreeSpace($DriveRoot, TRUE);
 	$Space           = $DrivesObj->GetTotalSpace($DriveRoot, TRUE);
@@ -51,13 +68,52 @@ foreach($Drives AS $Drive) {
 	$TotalSpace     += $Space;
 	
 	echo '
-	<tr id="Drive-'.$Drive['DriveID'].'">
-	 <td style="text-align: center;">'.date('d.m.y', $Drive['DriveDate']).'</td>
+	<tr id="Drive-'.$DriveID.'">
+	 <td style="text-align: center;">'.$DriveDate.'</td>
 	 <td>'.$DriveRootText.'</td>
 	 <td>'.$DrivesObj->BytesToHuman($FreeSpace).'</td>
 	 <td>'.$DrivesObj->BytesToHuman($Space).'</td>
 	 <td>'.$DrivesObj->GetFreeSpacePercentage($FreeSpace, $TotalSpace).'% free</td>
-	 <td style="text-align:center">'.$DriveActiveLink.' '.$DriveRemoveLink.'</td>
+	 <td style="text-align:center">'.$DriveActiveLink.' '.$DriveRemoveLink.' '.$DriveAdd.'</td>
+	</tr>'."\n";
+}
+
+$DrivesNetwork = $DrivesObj->GetDrivesNetwork();
+
+foreach($DrivesNetwork AS $Drive) {
+	$DriveRoot     = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
+	$DriveRootText = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'].' ('.$Drive['DriveLetter'].')' : $Drive['DriveLetter'];
+
+	$DriveAdd = '';
+	
+	if($Drive['DriveID'] == $HubObj->ActiveDrive) {
+		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active.png" /></a>';
+	}
+	else {
+		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active_off.png" /></a>';
+	}
+	
+	$DriveRemoveLink = '<a id="DriveRemove-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_remove.png" /></a>';
+	
+	$DriveActiveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) ? $DriveActiveLink : '';
+	$DriveRemoveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) ? $DriveRemoveLink : '';
+	
+	$DriveDate = date('d.m.y', $Drive['DriveDate']);
+	$DriveID = $Drive['DriveID'];
+	
+	$FreeSpace       = $DrivesObj->GetFreeSpace($DriveRoot, TRUE);
+	$Space           = $DrivesObj->GetTotalSpace($DriveRoot, TRUE);
+	$TotalFreeSpace += $FreeSpace;
+	$TotalSpace     += $Space;
+	
+	echo '
+	<tr id="Drive-'.$DriveID.'">
+	 <td style="text-align: center;">'.$DriveDate.'</td>
+	 <td>'.$DriveRootText.'</td>
+	 <td>'.$DrivesObj->BytesToHuman($FreeSpace).'</td>
+	 <td>'.$DrivesObj->BytesToHuman($Space).'</td>
+	 <td>'.$DrivesObj->GetFreeSpacePercentage($FreeSpace, $TotalSpace).'% free</td>
+	 <td style="text-align:center">'.$DriveActiveLink.' '.$DriveRemoveLink.' '.$DriveAdd.'</td>
 	</tr>'."\n";
 }
 ?>

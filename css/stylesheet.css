@@ -227,7 +227,7 @@ table.main {
   	margin: 0px 0px 0px 0px;
   	background: url('../images/header/divider.png') no-repeat;
 }
-
+/*
 .notification {
 	width: 100%;
 	padding-top: 5px;
@@ -238,7 +238,7 @@ table.main {
 	font-size: 120%;
 	font-weight: bold;
 	color: #9c7c1a;
-}
+}*/
 .poster {
 	border: 1px solid #000;
 	-moz-box-shadow: 1px 1px rgba(0,0,0,0.5);
@@ -1040,4 +1040,137 @@ a {
 
 #search {
 	width: 100px;
+}
+
+.notification {
+	cursor: pointer;
+	clear: both;
+	height: 40px;
+	font-size: 11px;
+	position: relative;
+	margin: 15px 0px 15px 0px;
+	padding: 10px 20px 10px 60px;
+	-moz-border-radius:4px;
+	-webkit-border-radius: 4px;	
+	color: #333; line-height: 40px;
+}
+
+.warning {
+	background-image: url('../images/notifications/error.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #FFC140;
+	background-color: #FFE1A4;
+}
+
+.success {
+	background-image: url('../images/notifications/accept.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #99C600;
+	background-color: #ECFFAA;
+}
+
+.failure {
+	background-image: url('../images/notifications/exclamation.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #EB5339;
+	background-color: #F8CBC2;
+}
+
+.information {
+	background-image: url('../images/notifications/information.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #418ACC;
+	background-color: #CFE0F1;
+}
+
+.lightbulb {
+	background-image: url('../images/notifications/lightbulb.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #D3A350;
+	background-color: #FEEFCB;
+}
+
+.reminder {
+	background-image: url('../images/notifications/bell.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #E7C785;
+	background-color: #FEFBF1;
+}
+
+.basket {
+	background-image: url('../images/notifications/basket.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #75D6FF;
+	background-color: #F4F4F4;
+}
+
+.addresses {
+	background-image: url('../images/notifications/book_addresses.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #DC9C56;
+	background-color: #F0E0CA;
+}
+
+.settings {
+	background-image: url('../images/notifications/cog.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #999;
+	background-color: #EAEBEC;
+}
+
+.comment {
+	background-image: url('../images/notifications/comment.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #B4DEFF;
+	background-color: #E5F9FF;
+}
+
+.date {
+	background-image: url('../images/notifications/date.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #F4A088;
+	background-color: #F2F2F3;
+}
+
+.delete {
+	background-image: url('../images/notifications/delete.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #F4A088;
+	background-color: #F9BFB5;
+}
+
+.email {
+	background-image: url('../images/notifications/email.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #BAE3FF;
+	background-color: #EAFFFF;
+}
+
+.help {
+	background-image: url('../images/notifications/help.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #5696D1;
+	background-color: #B4D2EF;
+}
+
+.user {
+	background-image: url('../images/notifications/user_green.png');
+	background-position: 15px center;
+	background-repeat: no-repeat;
+	border: 2px solid #8CC000;
+	background-color: #D8FF7D;
 }

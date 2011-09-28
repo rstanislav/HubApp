@@ -258,6 +258,15 @@ class ExtractFiles extends Hub {
 	}
 	
 	function ExtractAndMoveAllFiles() {
+		if(!strlen(EVENT)) {
+			if(Hub::CheckLock()) {
+				return FALSE;
+			}
+			else {
+				Hub::Lock();
+			}
+		}
+		
 		$Files = self::GetFiles();
 		if(is_array($Files) && sizeof($Files)) {
 			if(array_key_exists('Extract', $Files)) {
@@ -278,6 +287,10 @@ class ExtractFiles extends Hub {
 		}
 		
 		self::CleanDownloadsFolder();
+			
+		if(!strlen(EVENT)) {
+			Hub::Unlock();
+		}
 	}
 	
 	function CleanDownloadsFolder() {

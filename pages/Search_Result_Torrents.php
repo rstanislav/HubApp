@@ -26,6 +26,9 @@ if(is_array($Torrents)) {
 	</table>'."\n";
 }
 else {
-	echo '<div class="notification">No results</div>';
+	echo '
+	<div class="notification information">
+	 <strong>INFORMATION:</strong> No results
+	</div>';
 }
 ?>

@@ -195,10 +195,16 @@ if(is_array($Series)) {
 		echo '</table>'."\n";
 	}
 	else {
-		echo '<div class="notification">No data available</div>';
+		echo '
+		<div class="notification information">
+		 <strong>INFORMATION:</strong> >No data available
+		</div>';
 	}
 }
 else {
-	echo '<div class="notification">No data available</div>';
+	echo '
+	<div class="notification information">
+	 <strong>INFORMATION:</strong> >No data available
+	</div>';
 }
 ?>

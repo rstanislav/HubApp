@@ -111,10 +111,16 @@ if($UTorrentObj->UTorrentAPI->Token) {
 		</table>'."\n";
 	}
 	else {
-		echo '<div class="notification">No torrents loaded</div>';
+		echo '
+		<div class="notification information">
+		 <strong>INFORMATION:</strong> No torrents loaded
+		</div>';
 	}
 }
 else {
-	echo '<div class="notification">Unable to connect to uTorrent</div>';
+	echo '
+	<div class="notification warning">
+	 <strong>WARNING:</strong> Unable to connect to uTorrent
+	</div>';
 }
 ?>

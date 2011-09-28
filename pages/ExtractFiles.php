@@ -3,7 +3,10 @@
 <?php
 if(!strlen(EVENT)) {
 	if($HubObj->CheckLock()) {
-		echo '<div class="notification">Hub is currently locked</div>';
+		echo '
+		<div class="notification information">
+		 <strong>INFORMATION:</strong> Hub is currently locked
+		</div>';
 	}
 	else {
 		$HubObj->Lock();
@@ -72,7 +75,10 @@ if(!strlen(EVENT)) {
 			}
 		}
 		else {
-			echo '<div class="notification">No files to move/extract</div>';
+			echo '
+			<div class="notification information">
+			 <strong>INFORMATION:</strong> No files to move/extract
+			</div>';
 		}
 	}
 }

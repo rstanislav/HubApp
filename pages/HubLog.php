@@ -25,6 +25,9 @@ if(is_array($Logs) && sizeof($Logs)) {
 	echo '</table>'."\n";
 }
 else {
-	echo '<div class="notification">No data available</div>';
+	echo '
+	<div class="notification information">
+	 <strong>INFORMATION:</strong> No data available
+	</div>';
 }
 ?>

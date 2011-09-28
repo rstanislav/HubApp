@@ -68,7 +68,9 @@ else {
 	 </thead>
 	 <tr>
 	  <td colspan="4">
-	   <div class="notification">No data available</div>
+	   <div class="notification information">
+	    <strong>INFORMATION:</strong> No data available
+	   </div>
 	  </td>
 	 </tr>
 	</table>'."\n";

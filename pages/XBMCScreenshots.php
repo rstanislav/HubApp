@@ -33,6 +33,9 @@ if(sizeof($Screenshots)) {
 	</table>';
 }
 else {
-	echo '<div class="notification">No screenshots available</div>';
+	echo '
+	<div class="notification information">
+	 <strong>INFORMATION:</strong> No screenshots available
+	</div>';
 }
 ?>

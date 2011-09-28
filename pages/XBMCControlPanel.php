@@ -165,10 +165,16 @@ if(is_object($XBMCObj->XBMCRPC)) {
 	}
 	else {
 		// info about lists
-		echo '<div class="notification">Nothing is playing right now</div>';
+		echo '
+		<div class="notification information">
+		 <strong>INFORMATION:</strong> Nothing is playing right now
+		</div>';
 	}
 }
 else {
-	echo '<div class="notification">Unable to connect to XBMC</div>';
+	echo '
+	<div class="notification warning">
+	 <strong>WARNING:</strong> Unable to connect to XBMC
+	</div>';
 }
 ?>

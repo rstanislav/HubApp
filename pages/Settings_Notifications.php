@@ -12,7 +12,9 @@ if($UserObj->UserEMail) {
 	
 	if(is_array($Notifications)) {
 		echo '
-		<div class="notification">This feature requires an account at <a href="http://boxcar.io/">Boxcar</a> using "'.$UserObj->UserEMail.'" and a subscription to the <a href="http://boxcar.io/services/provider_services/new?provider_id=994" target="_blank">Hub service</a></div><br />
+		<div class="notification information">
+		 <strong>INFORMATION:</strong> This feature requires an account at <a href="http://boxcar.io/">Boxcar</a> using "'.$UserObj->UserEMail.'" and a subscription to the <a href="http://boxcar.io/services/provider_services/new?provider_id=994" target="_blank">Hub service</a>
+		</div>
 		
 		<form id="SettingsForm" name="SettingsNotifications" method="post" action="load.php?page=SaveSettings">
 		<input type="hidden" name="SettingSection" value="Notifications" />
@@ -46,8 +48,8 @@ if($UserObj->UserEMail) {
 }
 else {
 	echo '
-	<div class="notification">
-	 You need to have an e-mail address in order to get notifications. You can setup one <a href="#!/Profile">here</a>
+	<div class="notification information">
+	 <strong>INFORMATION:</strong> You need to have an e-mail address in order to get notifications. You can setup one <a href="#!/Profile">here</a>
 	</div>';
 }
 ?>

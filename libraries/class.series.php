@@ -157,7 +157,7 @@ class Series extends Hub {
 					$Serie->SeriesName = str_replace(array(':', '\'', '(', ')', '*'), '', $Serie->SeriesName);
 					$Serie->Genre      = str_replace('|', ', ', trim($Serie->Genre, '|'));
 				
-					$Drives = Drives::GetDrives();
+					$Drives = Drives::GetDrivesFromDB();
 					if(is_array($Drives)) {
 						foreach($Drives AS $Drive) {
 							$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
@@ -292,7 +292,7 @@ class Series extends Hub {
 	}
 	
 	function DeleteSerie($SerieID) {
-		$Drives = Drives::GetDrives();
+		$Drives = Drives::GetDrivesFromDB();
 		
 		if(is_array($Drives)) {
 			$Serie = $this->PDO->query('SELECT SerieTitle, SerieTitleAlt FROM Series WHERE SerieID = "'.$SerieID.'"')->fetch();
@@ -533,7 +533,7 @@ class Series extends Hub {
 			}
 		}
 		else {
-			$Drives = Drives::GetDrives();
+			$Drives = Drives::GetDrivesFromDB();
 			if(is_array($Drives)) {
 				foreach($Drives AS $Drive) {
 					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
@@ -584,7 +584,7 @@ class Series extends Hub {
 			
 			$RebuildTimeStart = time();
 			$EpisodesRebuilt = 0;
-			$Drives = Drives::GetDrives();
+			$Drives = Drives::GetDrivesFromDB();
 			if(is_array($Drives)) {
 				$EpisodesPrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = ""');
 				$EpisodesPrep->execute();
@@ -645,7 +645,7 @@ class Series extends Hub {
 	}	
 	
 	function RebuildFolders() {
-		$Drives = Drives::GetDrives();
+		$Drives = Drives::GetDrivesFromDB();
 		$Series = $this->GetSeries();
 		if(is_array($Drives) && is_array($Series)) {
 			$RebuiltFolders = 0;

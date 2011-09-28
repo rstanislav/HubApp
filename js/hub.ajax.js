@@ -45,7 +45,6 @@ $(document).ready(function() {
 	'a[id|="FoldersRebuild"],' +
 	'a[id|="EpisodesRebuild"],' +
 	'a[id|="SerieRefreshAll"],' +
-	'a[id|="DriveActive"],' +
 	'a[id|="DriveRemove"],' +
 	'a[id|="MovieInfo"],' +
 	'a[id|="MoviePlay"],' +
@@ -76,6 +75,7 @@ $(document).ready(function() {
 	'a[id|="MovieToggleGenre"],' + 
 	'a[id|="MovieTogglePath"],' + 
 	'a[id|="UserDelete"],' + 
+	'a[id|="DriveAdd"],' +
 	'a[id|="UserGroupDelete"]').click(function(event) {
 		event.preventDefault();
 		
@@ -100,6 +100,28 @@ $(document).ready(function() {
 			NewButtonContent = 'All Seasons';
 		}
 		$('#seasons-button').contents().find('.label').text(NewButtonContent);
+	});
+	
+	$('a[id|="DriveActive"]').click(function(event) {
+		DriveID = $(this).attr('id').replace('DriveActive-', '');
+		Link = this;
+		$.ajax({
+			method: 'get',
+			url:    'load.php',
+			data:   'page=DriveActive&DriveID=' + DriveID,
+			beforeSend: function() {
+				$(Link).contents().attr('src', 'images/spinners/ajax-light.gif');
+			},
+			success: function(html) {
+				$(Link).contents().attr('src', 'images/icons/drive_active.png');
+				
+				$('a[id|="DriveActive"]').each(function(index) {
+					if($(this).attr('id').replace('DriveActive-', '') != DriveID) {
+						$(this).contents().attr('src', 'images/icons/drive_active_off.png');
+					}
+				});
+			}
+		});
 	});
 	
 	$('a[id|="zoneSwitch"]').click(function(event) {
@@ -166,11 +188,15 @@ function ajaxSubmitResponse(responseText, statusText, xhr, $form)  {
 		$('#' + $form.attr('name') + ' input').each(function(index) {
 			$(this).replaceWith($(this).val());
 		});
+	
+		$('#' + $form.attr('name') + ' select').each(function(index) {
+			$(this).replaceWith('(' + $(this).val() + ')');
+		});
 		
 		$('#' + $form.attr('name') + ' img').each(function(index) {
-			if(index == 0) {
+			//if(index == 0) {
 				$(this).replaceWith();
-			}
+			//}
 		});
 	}
 	else {
@@ -648,6 +674,25 @@ function AjaxLink(Link) {
 			});
 		break;
 		
+		case 'DriveAdd':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=DriveAdd&DriveLetter='+ FirstID,
+				beforeSend: function() {
+					$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(Link).html('<img src="images/icons/error.png" />');
+					}
+					else {
+						$(Link).html('<img src="images/icons/check.png" />');
+					}
+				}
+			});
+		break;
+		
 		case 'DriveActive':
 			$.ajax({
 				method: 'get',
@@ -687,7 +732,7 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'DriveRemove':
-			jConfirm('Are you sure you want to remove "' + $(Link).attr('rel') + '"?', 'Remove Drive', function(response) {
+			jConfirm('Are you sure you want to remove "' + $(Link).attr('rel') + '"?' + "\n\n" + 'This will only delete the drive from the database and remove any links to Sources.xml. Your data will stay intact.', 'Remove Drive', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',
@@ -701,7 +746,11 @@ function AjaxLink(Link) {
 								$(Link).html('<img src="images/icons/error.png" />');
 							}
 							else {
-								$('#Drive-' + FirstID).slideUp('slow').remove();
+								$(Link).parent().find('a').each(function() {
+									$(this).html('');
+								});
+								
+								$(Link).html('<img src="images/icons/check.png" />');
 							}
 						}
 					});

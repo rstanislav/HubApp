@@ -15,17 +15,7 @@ class Drives extends Hub {
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
 				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) <= $Settings['SettingHubMinimumActiveDiskPercentage']) {
-					$Drives = Drives::GetDrives();
-					
-					if(is_array($Drives)) {
-						foreach($Drives AS $Drive) {
-							if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) > $Settings['SettingHubMinimumActiveDiskPercentage']) {
-								self::SetActiveDrive($Drive['DriveID']);
-								
-								break;
-							}
-						}
-					}
+					self::DetermineNewActiveDrive();
 				}
 				else {
 					if(is_dir($DriveRoot.'/Downloads')) {
@@ -51,11 +41,31 @@ class Drives extends Hub {
 				}
 			}
 			else {
-				die(Hub::AddLog(EVENT.'Drives', 'Failure', 'Unable to get drives from database'));
+				self::DetermineNewActiveDrive();
 			}
 		}
 		else {
 			die(Hub::AddLog(EVENT.'Drives', 'Failure', 'No active drive has been set'));
+		}
+	}
+	
+	function DetermineNewActiveDrive() {
+		$Settings = Hub::GetSettings();
+		$Drives = Drives::GetDrivesFromDB();
+		
+		if(is_array($Drives)) {
+			foreach($Drives AS $Drive) {
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				
+				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
+				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
+				
+				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) > $Settings['SettingHubMinimumActiveDiskPercentage']) {
+					self::SetActiveDrive($Drive['DriveID']);
+					
+					break;
+				}
+			}
 		}
 	}
 	
@@ -70,8 +80,63 @@ class Drives extends Hub {
 		}
 	}
 	
+	function GetUnusedDriveLetters() {
+		$Drives = array();
+		for($ASCII = 68; $ASCII <= 90; $ASCII++) {
+			$DriveLetter = chr($ASCII).':';
+		
+			if(!is_dir($DriveLetter) && !self::GetDriveByLetter($DriveLetter)) {
+				$Drives[] = $DriveLetter;
+			}
+		}
+		
+		return $Drives;
+	}
+	
 	function GetDrives() {
+		$Drives = array();
+		for($ASCII = 68; $ASCII <= 90; $ASCII++) {
+			$DriveLetter = chr($ASCII).':';
+		
+			if(is_dir($DriveLetter)) {
+				$SpaceFree  = @disk_free_space($DriveLetter);
+				$SpaceTotal = @disk_total_space($DriveLetter);
+				
+				if($SpaceFree != 0 && $SpaceTotal > ((1024 * 1024 * 1024) * 100)) {
+					$Drives[] = $DriveLetter;
+				}
+			}
+		}
+		
+		return $Drives;
+	}
+	
+	function GetDriveByLetter($DriveLetter) {
+		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveLetter = :Letter');
+		$DrivePrep->execute(array(':Letter' => $DriveLetter));
+		
+		if($DrivePrep->rowCount()) {
+			return $DrivePrep->fetch();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetDrivesFromDB() {
 		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives ORDER BY DriveDate');
+		$DrivePrep->execute();
+		
+		if($DrivePrep->rowCount()) {
+			return $DrivePrep->fetchAll();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetDrivesNetwork() {
+		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveNetwork = 1 ORDER BY DriveDate');
 		$DrivePrep->execute();
 		
 		if($DrivePrep->rowCount()) {
@@ -117,19 +182,19 @@ class Drives extends Hub {
 	
 	function GetFreeSpace($DriveLetter, $AsBytes = FALSE) {
 		if($AsBytes) {
-			return disk_free_space($DriveLetter);
+			return @disk_free_space($DriveLetter);
 		}
 		else {
-			return $this->BytesToHuman(disk_free_space($DriveLetter));
+			return $this->BytesToHuman(@disk_free_space($DriveLetter));
 		}
 	}
 	
 	function GetTotalSpace($DriveLetter, $AsBytes = FALSE) {
 		if($AsBytes) {
-			return disk_total_space($DriveLetter);
+			return @disk_total_space($DriveLetter);
 		}
 		else {
-			return $this->BytesToHuman(disk_total_space($DriveLetter));
+			return $this->BytesToHuman(@disk_total_space($DriveLetter));
 		}
 	}
 	
@@ -176,9 +241,153 @@ class Drives extends Hub {
 	}
 	
 	function RemoveDrive($DriveID) {
+		$Settings = Hub::GetSettings();
+		
+		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveID = :ID');
+		$DrivePrep->execute(array(':ID' => $DriveID));
+		
+		$Drive = $DrivePrep->fetch();
+		$DriveRoot = ($Drive['DriveNetwork']) ? 'smb:'.$Drive['DriveRoot'] : $Drive['DriveLetter'];
+		
+		if(!empty($DriveRoot)) {
+			$DriveDeletePrep = $this->PDO->prepare('DELETE FROM Drives WHERE DriveID = :ID');
+			$DriveDeletePrep->execute(array(':ID' => $DriveID));
+		
+			Hub::AddLog(EVENT.'File System', 'Success', 'Deleted "'.$Drive['DriveLetter'].'" from database');
+		
+			if($Drive['DriveActive']) {
+				self::DetermineNewActiveDrive();
+			}
+			
+			if(is_file($Settings['SettingXBMCSourcesFile'])) {
+				$DocObj = new DOMDocument();
+				$DocObj->load($Settings['SettingXBMCSourcesFile']);
+		
+				$Sources = $DocObj->getElementsByTagName('source');
+				$PathArr = array();
+				
+				$LogPaths = array();
+				foreach($Sources AS $Source) {
+					$Names = $Source->getElementsByTagName('name');
+					$Name  = $Names->item(0)->nodeValue;
+					
+					$DriveChk = $DriveRoot.'/Media/'.$Name.'/';
+					
+					$Paths = $Source->getElementsByTagName('path');
+					foreach($Paths AS $Path) {
+						if($Path->nodeValue == $DriveChk) {
+							$Source->removeChild($Path);
+							
+							$LogPaths[] = $DriveChk;
+						}
+					}
+				}
+			
+				$DocObj->save($Settings['SettingXBMCSourcesFile']);
+				
+				if(sizeof($LogPaths)) {
+					Hub::AddLog(EVENT.'XBMC', 'Success', 'Removed "'.implode(', ', $LogPaths).'" from Sources.xml');
+				}
+			}
+			else {
+				echo $Settings['SettingXBMCSourcesFile'].' does not exist.';
+			}
+		}
 	}
 	
-	function AddDrive($DriveRoot) {
+	function AddDrive($DriveLetter, $DriveRoot = '') {
+		$Settings = Hub::GetSettings();
+		
+		if(!$Settings['SettingXBMCSourcesFile'] || !is_file($Settings['SettingXBMCSourcesFile'])) {
+			die('no such file');
+		}
+		
+		$Drive = ($DriveRoot) ? $DriveRoot : $DriveLetter;
+		
+		$RequiredFolders = array('Completed', 
+		                         'Downloads', 
+		                         'Media', 
+		                         'Media/Misc', 
+		                         'Media/Movies', 
+		                         'Media/TV', 
+		                         'Unsorted');
+		
+		if(isset($Drive) && !empty($Drive)) {
+			if(is_dir($Drive)) {
+				$LogFolders = array();
+				foreach($RequiredFolders AS $RequiredFolder) {
+					if(!is_dir($Drive.'/'.$RequiredFolder)) {
+						if(mkdir($Drive.'/'.$RequiredFolder)) {
+							$LogFolders[] = $RequiredFolder;
+						}
+					}
+				}
+				
+				if(sizeof($LogFolders)) {
+					Hub::AddLog(EVENT.'Drives', 'Success', 'Created folders: "'.implode(', ', $LogFolders).'" on "'.$Drive.'"');
+				}
+			}
+		}
+		
+		$DriveNetwork = (!empty($DriveRoot)) ? 1 : 0;
+		
+		$DriveAddPrep = $this->PDO->prepare('INSERT INTO Drives (DriveID, DriveDate, DriveRoot, DriveNetwork, DriveLetter, DriveActive) VALUES (NULL, :Date, :Root, :Network, :Letter, :Active)');
+		$DriveAddPrep->execute(array(':Date'    => time(),
+		                             ':Root'    => $DriveRoot,
+		                             ':Network' => $DriveNetwork,
+		                             ':Letter'  => $DriveLetter,
+		                             ':Active'  => 0));
+		
+		Hub::AddLog(EVENT.'Drives', 'Success', 'Added "'.$DriveLetter.'" to the database');
+		
+		if(is_file($Settings['SettingXBMCSourcesFile'])) {
+			if($DriveNetwork) {
+				$DriveRoot = 'smb:'.$DriveRoot;
+			}
+			else {
+				$DriveRoot = $DriveLetter;
+			}
+			
+			$DocObj = new DOMDocument();
+			$DocObj->load($Settings['SettingXBMCSourcesFile']);
+		
+			$Sources = $DocObj->getElementsByTagName('source');
+			$PathArr = array();
+			$LogSources = array();
+			foreach($Sources AS $Source) {
+				$Names = $Source->getElementsByTagName('name');
+				$Name  = $Names->item(0)->nodeValue;
+			
+				$Paths = $Source->getElementsByTagName('path');
+				foreach($Paths AS $Path) {
+					$PathArr[$Name][] = $Path->nodeValue;
+				}
+				
+				if(@!in_array($DriveRoot.'/'.'Media'.'/'.$Name.'/', @$PathArr[$Name])) {
+					$PathElement = $DocObj->createElement('path', $DriveRoot.'/'.'Media'.'/'.$Name.'/');
+					$Source->appendChild($PathElement);
+			
+					$PathAttr = $DocObj->createAttribute('pathversion');
+					$PathElement->appendChild($PathAttr);
+				
+					$PathAttrText = $DocObj->createTextNode('1');
+					$PathAttr->appendChild($PathAttrText);
+					
+					$LogSources[] = $DriveRoot.'/'.'Media'.'/'.$Name.'/';
+				}
+			}
+			
+			$DocObj->save($Settings['SettingXBMCSourcesFile']);
+			
+			if(sizeof($LogSources)) {
+				Hub::AddLog(EVENT.'XBMC', 'Success', 'Added "'.implode(', ', $LogSources).'" to Sources.xml');
+			}
+			
+			// Update library
+		}
+		else {
+			echo $Settings['SettingXBMCSourcesFile'].' does not exist.';
+		}
 	}
 }
 ?>

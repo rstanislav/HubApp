@@ -102,26 +102,35 @@ $(document).ready(function() {
 	TorrentSpeedSetting();
 	
 	$('#LockStatus').click(function() {
-		jConfirm('Are you sure you wish to unlock Hub? Only do this if you are sure that it has stalled!', 'Unlock', function(response) {
-			if(response) {
-				$.ajax({
-					method: 'get',
-					url:    'load.php',
-					data:   'page=Unlock',
-					beforeSend: function() {
-						$(this).html('<img src="images/spinners/ajax-light.gif" />');
-					},
-					success: function(Return) {
-						if(Return != '') {
-							$(this).html('<img src="images/icons/error.png" />');
+		CurrentStatus = $('#LockStatus a img').attr('src');
+		
+		if(CurrentStatus == 'images/icons/lock_break.png') {
+			jAlert('Hub is currently blocked from running in the background.' + "\n\n" + 'You can enable background services again by going to "Settings"', 'Kill Switch');
+		}
+		else {
+			jConfirm('Are you sure you wish to unlock Hub? Only do this if you are sure that it has stalled!', 'Unlock', function(response) {
+				if(response) {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=Unlock',
+						beforeSend: function() {
+							$('#LockStatus a img').attr('src', 'images/spinners/ajax-light.gif');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$('#LockStatus a img').attr('src', 'images/icons/error.png');
+							}
+							else {
+								if(CurrentStatus == 'images/icons/lock.png') {
+									$('#LockStatus a').remove();
+								}
+							}
 						}
-						else {
-							$(this).html();
-						}
-					}
-				});
-			}
-		});
+					});
+				}
+			});
+		}
 	});
 	
 	$('#TorrentSpeedSetting').click(function() {

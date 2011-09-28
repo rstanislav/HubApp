@@ -8,8 +8,8 @@ $('#newPermission').click(function(event) {
 	    '<tr id="' + PermissionID + '">' +
 		 '<form name="' + PermissionID + '" method="post" action="load.php?page=PermissionAdd" style="display:none">' +
 		  '<td>Now</td>' +
-		  '<td><input name="PermissionText" style="width:250px" type="text" /></td>' +
-		  '<td><input name="PermissionAction" style="width:115px" type="text" /></td>' +
+		  '<td><input name="PermissionText" style="width:250px" placeholder="text" type="text" /></td>' +
+		  '<td><input name="PermissionAction" style="width:115px" placeholder="action" type="text" /></td>' +
 		  '<td><input name="PermissionValue" style="width:50px" type="hidden" value="1" /></td>' +
 		  '<td style="text-align:right">' +
 	 	   '<a onclick="javascript:ajaxSubmit(\'' + PermissionID + '\');"><img src="images/icons/add.png" /></a>' +

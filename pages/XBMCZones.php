@@ -8,11 +8,11 @@ $('#newZone').click(function(event) {
 	    '<tr id="' + ZoneID + '">' +
 		 '<form name="' + ZoneID + '" method="post" action="load.php?page=ZoneAdd">' +
 		  '<td>Now</td>' +
-		  '<td><input name="ZoneName" style="width:145px" type="text" /></td>' +
-		  '<td><input name="ZoneHost" style="width:115px" type="text" /></td>' +
-		  '<td><input name="ZonePort" style="width:35px" type="text" /></td>' +
-		  '<td><input name="ZoneUser" style="width:65px" type="text" /></td>' +
-		  '<td><input name="ZonePass" style="width:65px" type="text" /></td>' +
+		  '<td><input name="ZoneName" style="width:145px" placeholder="name" type="text" /></td>' +
+		  '<td><input name="ZoneHost" style="width:115px" placeholder="host" type="text" /></td>' +
+		  '<td><input name="ZonePort" style="width:35px" placeholder="port" type="text" /></td>' +
+		  '<td><input name="ZoneUser" style="width:65px" placeholder="user" type="text" /></td>' +
+		  '<td><input name="ZonePass" style="width:65px" placeholder="password" type="text" /></td>' +
 		  '<td style="text-align:right">' +
 	 	   '<a onclick="javascript:ajaxSubmit(\'' + ZoneID + '\');"><img src="images/icons/add.png" /></a>' +
 	 	   '<a onclick="javascript:$(\'#' + ZoneID + '\').remove();"><img src="images/icons/delete.png" /></a>' +

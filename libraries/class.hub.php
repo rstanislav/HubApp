@@ -3,7 +3,7 @@ require_once APP_PATH.'/libraries/api.thetvdb.php';
 require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
-	const HubVersion   = '2.2.11';
+	const HubVersion   = '2.3.0';
 	const MinDBVersion = '2.0.0';
 	
 	public $PDO;

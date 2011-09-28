@@ -75,6 +75,7 @@ $(document).ready(function() {
 	'a[id|="MovieToggleGenre"],' + 
 	'a[id|="MovieTogglePath"],' + 
 	'a[id|="UserDelete"],' + 
+	'a[id|="DriveAdd"],' +
 	'a[id|="UserGroupDelete"]').click(function(event) {
 		event.preventDefault();
 		
@@ -187,11 +188,15 @@ function ajaxSubmitResponse(responseText, statusText, xhr, $form)  {
 		$('#' + $form.attr('name') + ' input').each(function(index) {
 			$(this).replaceWith($(this).val());
 		});
+	
+		$('#' + $form.attr('name') + ' select').each(function(index) {
+			$(this).replaceWith('(' + $(this).val() + ')');
+		});
 		
 		$('#' + $form.attr('name') + ' img').each(function(index) {
-			if(index == 0) {
+			//if(index == 0) {
 				$(this).replaceWith();
-			}
+			//}
 		});
 	}
 	else {
@@ -669,6 +674,25 @@ function AjaxLink(Link) {
 			});
 		break;
 		
+		case 'DriveAdd':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=DriveAdd&DriveLetter='+ FirstID,
+				beforeSend: function() {
+					$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(Link).html('<img src="images/icons/error.png" />');
+					}
+					else {
+						$(Link).html('<img src="images/icons/check.png" />');
+					}
+				}
+			});
+		break;
+		
 		case 'DriveActive':
 			$.ajax({
 				method: 'get',
@@ -708,7 +732,7 @@ function AjaxLink(Link) {
 		break;
 		
 		case 'DriveRemove':
-			jConfirm('Are you sure you want to remove "' + $(Link).attr('rel') + '"?', 'Remove Drive', function(response) {
+			jConfirm('Are you sure you want to remove "' + $(Link).attr('rel') + '"?' + "\n\n" + 'This will only delete the drive from the database and remove any links to Sources.xml. Your data will stay intact.', 'Remove Drive', function(response) {
 				if(response) {
 					$.ajax({
 						method: 'get',
@@ -722,7 +746,11 @@ function AjaxLink(Link) {
 								$(Link).html('<img src="images/icons/error.png" />');
 							}
 							else {
-								$('#Drive-' + FirstID).slideUp('slow').remove();
+								$(Link).parent().find('a').each(function() {
+									$(this).html('');
+								});
+								
+								$(Link).html('<img src="images/icons/check.png" />');
 							}
 						}
 					});

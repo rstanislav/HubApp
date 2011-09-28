@@ -174,6 +174,38 @@ else {
 			}
 		break;
 		
+		case 'DriveAdd':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
+				if(filter_has_var(INPUT_GET, 'DriveLetter')) {
+					$DrivesObj->AddDrive($_GET['DriveLetter']);
+				}
+			}
+			else {
+				$_SESSION['Error'] = 'You are not allowed to add drives';
+			}
+		break;
+		
+		case 'DriveNetworkAdd':
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
+				$AddError = FALSE;
+				foreach($_POST AS $PostKey => $PostValue) {
+					if(!filter_has_var(INPUT_POST, $PostKey) || empty($PostValue)) {
+						$AddError = TRUE;
+					}
+				}
+				
+				if(!$AddError) {
+					$DrivesObj->AddDrive($_POST['DriveNetworkLetter'], '//'.$_POST['DriveNetworkComputer'].'/'.$_POST['DriveNetworkShare']);
+				}
+				else {
+					echo 'You have to fill in all the fields';
+				}
+			}
+			else {
+				$_SESSION['Error'] = 'You are not allowed to add drives';
+			}
+		break;
+		
 		case 'DriveRemove':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) {
 				if(filter_has_var(INPUT_GET, 'DriveID')) {

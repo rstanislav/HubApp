@@ -125,19 +125,26 @@ $(document).ready(function() {
 	});
 	
 	$('#TorrentSpeedSetting').click(function() {
+		CurrentStatus = $('#TorrentSpeedSetting a img').attr('src');
+		
 		$.ajax({
 			method: 'get',
 			url:    'load.php',
 			data:   'page=TorrentSpeedSettingToggle',
 			beforeSend: function() {
-				$(this).html('<img src="images/spinners/ajax-light.gif" />');
+				$('#TorrentSpeedSetting a img').attr('src', 'images/spinners/ajax-light.gif');
 			},
 			success: function(Return) {
 				if(Return != '') {
-					$(this).html('<img src="images/icons/error.png" />');
+					$('#TorrentSpeedSetting a img').attr('src', 'images/icons/error.png');
 				}
 				else {
-					$(this).html();
+					if(CurrentStatus == 'images/icons/hippopotamus_dark.png') {
+						$('#TorrentSpeedSetting a img').attr('src', 'images/icons/hippopotamus.png');
+					}
+					else {
+						$('#TorrentSpeedSetting a img').attr('src', 'images/icons/hippopotamus_dark.png');
+					}
 				}
 			}
 		});

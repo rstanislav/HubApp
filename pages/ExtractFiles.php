@@ -80,6 +80,8 @@ if(!strlen(EVENT)) {
 			 <strong>INFORMATION:</strong> No files to move/extract
 			</div>';
 		}
+		
+		$HubObj->Unlock();
 	}
 }
 ?>

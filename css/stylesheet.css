@@ -27,6 +27,7 @@ html, body {
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	user-select: none;
+	cursor: default;
 }
 
 /*
@@ -1173,4 +1174,13 @@ a {
 	background-repeat: no-repeat;
 	border: 2px solid #8CC000;
 	background-color: #D8FF7D;
+}
+
+.text-select {
+	cursor: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-o-user-select: text;
+	user-select: text;
 }

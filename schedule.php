@@ -43,6 +43,23 @@ if(is_object($UTorrentObj->UTorrentAPI)) {
 	$UTorrentObj->DeleteFinishedTorrents();
 }
 
+// Extract and/or move completed downloads across all drives
+$ExtractFilesObj->ExtractAndMoveAllFiles();
+
+// Check previous log entries and update library if new content is available
+$LogActivity = $HubObj->PDO->query('SELECT LogDate AS NewContent FROM Log WHERE LogAction = "update" ORDER BY LogDate DESC LIMIT 1')->fetch();
+$XBMCActivity = $HubObj->PDO->query('SELECT LogDate AS LastUpdate FROM Log WHERE LogType = "Success" AND LogEvent LIKE "%XBMC" AND (LogText LIKE "Updated XBMC Library%") ORDER BY LogDate DESC LIMIT 1')->fetch();
+
+if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
+	$XBMCObj->Connect();
+	if(is_object($XBMCObj->XBMCRPC)) {
+		$XBMCObj->ScanForContent();
+		// $XBMCObj->Notification('Hub', 'Adding new content');
+			
+		$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
+	}
+}
+
 $FolderRebuild = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastFolderRebuild"')->fetch();
 $SerieRefresh  = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRefresh"')->fetch();
 $SerieRebuild  = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRebuild"')->fetch();
@@ -63,23 +80,6 @@ if((date('G') > 3 && date('G') < 7) || (time() - $LatestUpdate) >= (60 * 60 * 24
 		if(is_object($SeriesObj->TheTVDBAPI)) {
 			$SeriesObj->RebuildEpisodes();
 		}
-	}
-}
-
-// Extract and/or move completed downloads across all drives
-$ExtractFilesObj->ExtractAndMoveAllFiles();
-
-// Check previous log entries and update library if new content is available
-$LogActivity = $HubObj->PDO->query('SELECT LogDate AS NewContent FROM Log WHERE LogAction = "update" ORDER BY LogDate DESC LIMIT 1')->fetch();
-$XBMCActivity = $HubObj->PDO->query('SELECT LogDate AS LastUpdate FROM Log WHERE LogType = "Success" AND LogEvent LIKE "%XBMC" AND (LogText LIKE "Updated XBMC Library%") ORDER BY LogDate DESC LIMIT 1')->fetch();
-
-if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
-	$XBMCObj->Connect();
-	if(is_object($XBMCObj->XBMCRPC)) {
-		$XBMCObj->ScanForContent();
-		// $XBMCObj->Notification('Hub', 'Adding new content');
-			
-		$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
 	}
 }
 

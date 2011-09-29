@@ -223,7 +223,7 @@ class ExtractFiles extends Hub {
 							                                  ':Season'  => $ParsedEpisode[0],
 							                                  ':Episode' => $ParsedEpisode[1]));
 							                                  
-							Hub::NotifyUsers('NewLibraryEpisode', 'XBMC/Series', '"'.$SerieTitle.' s'.sprintf('%02s', $ParsedEpisode[0]).'e'.sprintf('%02s', $ParsedEpisode[1]).'" is now available on "'.$DriveRoot.'"');
+							Hub::NotifyUsers('NewLibraryEpisode', 'XBMC/Series', '"'.$SerieTitle.' '.$ParsedEpisode[0]).'x'.$ParsedEpisode[1].'" is now available on "'.$DriveRoot.'"');
 						}
 					}
 				}

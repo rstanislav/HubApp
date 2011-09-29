@@ -5,7 +5,7 @@ $Logs = $HubObj->GetLogs();
 
 if(is_array($Logs) && sizeof($Logs)) {
 	echo '
-	<table>
+	<table class="text-select">
 	 <thead>
 	 <tr>
 	  <th width="70">Date</th>

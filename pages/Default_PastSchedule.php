@@ -59,6 +59,9 @@ if($Series) {
 	echo '</table>'."\n";
 }
 else {
-	echo 'No episodes in the last '.$Days.' days';
+	echo '
+	<div class="notification information">
+	 <strong>INFORMATION:</strong> No episodes in the last '.$Days.' days
+	</div>';
 }
 ?>

@@ -222,14 +222,25 @@ class Hub {
 	}
 	
 	function Lock() {
-		$LockPrep = $this->PDO->prepare('UPDATE Hub SET Value = 1 WHERE Setting = "IsLocked"');
-		$LockPrep->execute();
+		$LockPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "IsLocked"');
+		$LockPrep->execute(array(':Time' => time()));
 	}
 	
 	function CheckLock() {
 		$Lock = $this->PDO->query('SELECT Value AS IsLocked FROM Hub WHERE Setting = "IsLocked"')->fetch();
 		
-		return $Lock['IsLocked'];
+		if($Lock['IsLocked'] > strtotime('-4 hours')) {
+			return TRUE;
+		}
+		else if($Lock['IsLocked'] != 0 && $Lock['IsLocked'] < strtotime('-4 hours')) {
+			Hub::Unlock();
+			Hub::AddLog(EVENT.'Hub', 'Success', 'Lock was removed due to 4 hour timeout');
+			
+			return FALSE;
+		}
+		else {
+			return FALSE;
+		}
 	}
 	
 	function Unlock() {

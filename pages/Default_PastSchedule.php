@@ -30,7 +30,7 @@ if($Series) {
 			$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.$Serie['EpisodeFile'].'"><img src="images/icons/control_play.png" title="Play '.$Serie['EpisodeFile'].'" /></a>' : '';
 		}
 		else if($Serie['TorrentKey']) {
-			$FileAction = '<img src="images/icons/downloaded.png" title="Episode has been added to uTorrent" />';
+			$FileAction = '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'"><img src="images/icons/downloaded.png" title="Episode has been added to uTorrent. Click to re-download" /></a>';
 		}
 		else if($RSSTorrents) {
 			if(sizeof($RSSTorrents) > 1) {
@@ -59,9 +59,6 @@ if($Series) {
 	echo '</table>'."\n";
 }
 else {
-	echo '
-	<div class="notification information">
-	 <strong>INFORMATION:</strong> No episodes in the last '.$Days.' days
-	</div>';
+	echo '<div class="notification information">No episodes in the last '.$Days.' days</div>';
 }
 ?>

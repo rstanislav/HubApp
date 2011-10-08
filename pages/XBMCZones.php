@@ -79,9 +79,7 @@ else {
 	echo '
 	 <tr>
 	  <td colspan="7">
-	   <div class="notification information">
-	    <strong>INFORMATION:</strong> No zones added
-	   </div>
+	   <div class="notification information">No zones added</div>
 	  </td>
 	 </tr>'."\n";
 }

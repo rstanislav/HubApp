@@ -51,9 +51,6 @@ if($Series) {
 	echo '</table>'."\n";
 }
 else {
-	echo '
-	<div class="notification information">
-	 <strong>INFORMATION:</strong> No upcoming episodes data
-	</div>';
+	echo '<div class="notification information">No upcoming episodes data</div>';
 }
 ?>

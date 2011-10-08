@@ -168,9 +168,6 @@ foreach($DrivesNetwork AS $Drive) {
 <?php
 }
 else {
-	echo '
-	<div class="notification warning">
-	 <strong>WARNING:</strong> Unable to get drive data
-	</div>';
+	echo '<div class="notification warning">Unable to get drive data</div>';
 }
 ?>

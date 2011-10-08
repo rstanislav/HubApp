@@ -105,16 +105,10 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		echo '</table>'."\n";
 	}
 	else {
-		echo '
-		<div class="notification information">
-		 <strong>INFORMATION:</strong> No data available
-		</div>';
+		echo '<div class="notification information">No data available</div>';
 	}
 }
 else {
-	echo '
-	<div class="notification warning">
-	 <strong>WARNING:</strong> Unable to connect to XBMC
-	</div>';
+	echo '<div class="notification warning">Unable to connect to XBMC</div>';
 }
 ?>

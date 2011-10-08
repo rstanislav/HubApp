@@ -1046,19 +1046,22 @@ a {
 .notification {
 	cursor: default;
 	clear: both;
-	height: 40px;
+	height: 30px;
 	font-size: 12px;
+	font-weight: bold;
+	text-transform: uppercase;
 	position: relative;
-	margin: 15px 0px 15px 0px;
-	padding: 10px 20px 10px 60px;
-	-moz-border-radius:4px;
-	-webkit-border-radius: 4px;	
-	color: #333; line-height: 40px;
+	//margin: 15px 0px 15px 0px;
+	padding: 10px 20px 10px 55px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;	
+	color: #333;
+	line-height: 30px;
 }
 
 .warning {
 	background-image: url('../images/notifications/error.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #FFC140;
 	background-color: #FFE1A4;
@@ -1066,7 +1069,7 @@ a {
 
 .success {
 	background-image: url('../images/notifications/accept.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #99C600;
 	background-color: #ECFFAA;
@@ -1074,7 +1077,7 @@ a {
 
 .failure {
 	background-image: url('../images/notifications/exclamation.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #EB5339;
 	background-color: #F8CBC2;
@@ -1082,7 +1085,7 @@ a {
 
 .information {
 	background-image: url('../images/notifications/information.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #418ACC;
 	background-color: #CFE0F1;
@@ -1090,7 +1093,7 @@ a {
 
 .lightbulb {
 	background-image: url('../images/notifications/lightbulb.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #D3A350;
 	background-color: #FEEFCB;
@@ -1098,7 +1101,7 @@ a {
 
 .reminder {
 	background-image: url('../images/notifications/bell.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #E7C785;
 	background-color: #FEFBF1;
@@ -1106,7 +1109,7 @@ a {
 
 .basket {
 	background-image: url('../images/notifications/basket.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #75D6FF;
 	background-color: #F4F4F4;
@@ -1114,7 +1117,7 @@ a {
 
 .addresses {
 	background-image: url('../images/notifications/book_addresses.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #DC9C56;
 	background-color: #F0E0CA;
@@ -1122,7 +1125,7 @@ a {
 
 .settings {
 	background-image: url('../images/notifications/cog.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #999;
 	background-color: #EAEBEC;
@@ -1130,7 +1133,7 @@ a {
 
 .comment {
 	background-image: url('../images/notifications/comment.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #B4DEFF;
 	background-color: #E5F9FF;
@@ -1138,7 +1141,7 @@ a {
 
 .date {
 	background-image: url('../images/notifications/date.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #F4A088;
 	background-color: #F2F2F3;
@@ -1146,7 +1149,7 @@ a {
 
 .delete {
 	background-image: url('../images/notifications/delete.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #F4A088;
 	background-color: #F9BFB5;
@@ -1154,7 +1157,7 @@ a {
 
 .email {
 	background-image: url('../images/notifications/email.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #BAE3FF;
 	background-color: #EAFFFF;
@@ -1162,7 +1165,7 @@ a {
 
 .help {
 	background-image: url('../images/notifications/help.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #5696D1;
 	background-color: #B4D2EF;
@@ -1170,7 +1173,7 @@ a {
 
 .user {
 	background-image: url('../images/notifications/user_green.png');
-	background-position: 15px center;
+	background-position: 10px center;
 	background-repeat: no-repeat;
 	border: 2px solid #8CC000;
 	background-color: #D8FF7D;

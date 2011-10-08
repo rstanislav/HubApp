@@ -39,7 +39,7 @@ class Series extends Hub {
 	}
 	
 	function GetPastSchedule($Days) {
-		$SchedulePrep = $this->PDO->prepare('SELECT Series.*, Episodes.* FROM Series, Episodes WHERE Episodes.SeriesKey = Series.SerieID AND EpisodeAirDate <= :CurrentTime AND EpisodeAirDate >= :DayOffset AND EpisodeSeason != 0 ORDER BY EpisodeAirDate DESC');
+		$SchedulePrep = $this->PDO->prepare('SELECT Series.*, Episodes.* FROM Series, Episodes WHERE Episodes.SeriesKey = Series.SerieID AND EpisodeAirDate <= :CurrentTime AND EpisodeAirDate >= :DayOffset AND EpisodeSeason != 0 AND EpisodeEpisode != 0 ORDER BY EpisodeAirDate DESC');
 		$SchedulePrep->execute(array(':CurrentTime' => time(),
 		                          ':DayOffset'   => strtotime('-'.$Days.' days')));
 		
@@ -54,7 +54,7 @@ class Series extends Hub {
 	function GetFutureSchedule() {
 		$SchedulePrep = $this->PDO->prepare('SELECT S.*,E.* FROM Series S
 		JOIN (SELECT SeriesKey, MIN(EpisodeAirDate) MinDate FROM Episodes
-		    WHERE EpisodeAirDate > :CurrentTime AND EpisodeSeason != 0 GROUP BY SeriesKey) M
+		    WHERE EpisodeAirDate > :CurrentTime AND EpisodeSeason != 0 AND EpisodeEpisode != 0 GROUP BY SeriesKey) M
 		    ON M.SeriesKey = S.SerieID
 		JOIN Episodes E ON E.SeriesKey = S.SerieID AND E.EpisodeAirDate = M.MinDate ORDER BY E.EpisodeAirDate');
 		$SchedulePrep->execute(array(':CurrentTime' => time()));

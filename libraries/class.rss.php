@@ -552,7 +552,7 @@ class RSS extends Hub {
 		$TorrentSize = $TorrentQuery['TorrentSize'];
 		
 		if($TorrentSize >= 1000) {
-			$KSize = str_replace('000', 'K', round($TorrentSize, -3));
+			$KSize = str_replace('000', '', round($TorrentSize, -3)).'K';
 		}
 		else {
 			$KSize = $TorrentSize;

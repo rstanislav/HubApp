@@ -20,6 +20,12 @@ $(document).ready(function() {
 		});
 	});
 	
+	$('div[id|="Cover"]').mouseover(function() {
+		$('#CoverControl-' + $(this).attr('id').split('-')[1]).css('display', 'block');
+	}).mouseout(function() {
+		$('#CoverControl-' + $(this).attr('id').split('-')[1]).css('display', 'none');
+	});
+	
 	$('#TorrentViewButton').click(function() {
 		$('#TorrentViewForm').submit();
 	});

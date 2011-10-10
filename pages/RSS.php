@@ -95,7 +95,7 @@ if(is_array($Torrents)) {
 			
 			case 'Movie':
 				$FavButton = '<a href="http://www.imdb.com/search/title?release_date='.$ParsedRelease['Year'].','.$ParsedRelease['Year'].'&title='.urlencode($ParsedRelease['Title']).'" target="_blank"><img src="images/icons/imdb.png" /></a> ';
-				$FavButton .= '<a href="http://www.youtube.com/results?search_query='.urlencode($ParsedRelease['Title'].' '.$ParsedRelease['Year'].' trailer').'&aq=f" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>';
+				$FavButton .= '<a href="http://www.youtube.com/results?search_query='.urlencode($ParsedRelease['Title'].' '.$ParsedRelease['Year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>';
 			break;
 			
 			default;

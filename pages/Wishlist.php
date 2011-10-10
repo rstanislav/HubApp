@@ -48,7 +48,7 @@ if(is_array($Wishes)) {
 		 <td class="editable" id="'.$Wish['WishlistID'].'-|-WishlistYear">'.$Wish['WishlistYear'].'</td>
 		 <td>'.date('d.m.y H:i', $Wish['WishlistDate']).'</td>
 		 <td style="text-align: center">
-		  <a href="http://www.youtube.com/results?search_query='.urlencode($Wish['WishlistTitle'].' '.$Wish['WishlistYear'].' trailer').'&aq=f" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
+		  <a href="http://www.youtube.com/results?search_query='.urlencode($Wish['WishlistTitle'].' '.$Wish['WishlistYear'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 		  '.$WishlistDeleteLink.'
 		 </td>
 		</tr>'."\n";
@@ -126,7 +126,7 @@ if(is_array($Wishes)) {
 		 <td style="text-align: center;width:54px">
 		  '.$WishListStatusImg.'
 		  '.$WishlistPlayLink.'
-		  <a href="http://www.youtube.com/results?search_query='.urlencode($Wish['WishlistTitle'].' '.$Wish['WishlistYear'].' trailer').'&aq=f" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
+		  <a href="http://www.youtube.com/results?search_query='.urlencode($Wish['WishlistTitle'].' '.$Wish['WishlistYear'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 		  '.$WishlistDeleteLink.'
 		 </td>
 		</tr>'."\n";

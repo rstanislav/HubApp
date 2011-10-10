@@ -23,6 +23,7 @@ else {
 
 $UTorrentObj->Connect();
 $SeriesObj->ConnectTheTVDB();
+$XBMCObj->Connect();
 
 // Check for existing active drive and that all required folders are present
 $DrivesObj->CheckActiveDrive();
@@ -30,6 +31,13 @@ $DrivesObj->CheckActiveDrive();
 // Backup XBMC Files
 if(date('G') > 4 && date('G') < 6) {
 	//
+}
+
+// Cache movie covers locally
+if(date('G') > 4 && date('G') < 6) {
+	if(is_object($XBMCObj->XBMCRPC)) {
+		$XBMCObj->CacheCovers();
+	}
 }
 
 // Update RSS Feeds
@@ -51,7 +59,6 @@ $LogActivity = $HubObj->PDO->query('SELECT LogDate AS NewContent FROM Log WHERE 
 $XBMCActivity = $HubObj->PDO->query('SELECT LogDate AS LastUpdate FROM Log WHERE LogType = "Success" AND LogEvent LIKE "%XBMC" AND (LogText LIKE "Updated XBMC Library%") ORDER BY LogDate DESC LIMIT 1')->fetch();
 
 if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
-	$XBMCObj->Connect();
 	if(is_object($XBMCObj->XBMCRPC)) {
 		$XBMCObj->ScanForContent();
 		// $XBMCObj->Notification('Hub', 'Adding new content');

@@ -31,14 +31,30 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				$FilePath = $Files;
 			}
 			
-			$MoviePoster = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'"><img class="poster" width="150" height="250" src="'.$Thumbnail.'" /></a>' : '<img class="poster" width="150" height="250" src="'.$Thumbnail.'" />';
+			//$MoviePoster = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'"><img class="poster" width="150" height="250" src="'.$Thumbnail.'" /></a>' : '<img class="poster" width="150" height="250" src="'.$Thumbnail.'" />';
+			
+			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
+			$MovieTrailerLink = '<a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
+			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
+			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/delete.png" /></a>'    : '';
+			
+			$MoviePoster = '
+			 <div id="Cover-'.$Movie['movieid'].'" class="cover">
+			  <img class="poster" width="150" height="250" src="'.$Thumbnail.'" />
+			  <div id="CoverControl-'.$Movie['movieid'].'" class="cover-control">
+			   '.$MoviePlayLink.'
+			   '.$MovieTrailerLink.'
+			   '.$MovieInfoLink.'
+			   '.$MovieDeleteLink.'
+			  </div>
+			 </div>';
 			
 			$GenreShow = (filter_has_var(INPUT_COOKIE, 'MovieGenre')) ? ' style="'.$_COOKIE['MovieGenre'].'"' : ' style="display: inline;"';
 			$PathShow = (filter_has_var(INPUT_COOKIE, 'MoviePath')) ? ' style="'.$_COOKIE['MoviePath'].'"' : ' style="display: inline;"';
 			
 			echo '
 			<td style="text-align: center; width:33%;">
-			 '.$MoviePoster.'<br />
+			 <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
 			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
 			 <span class="MovieGenre"'.$GenreShow.'><br /><em>'.$Genre.'</em></span>
 			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span>
@@ -81,7 +97,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		  <th>Title</th>
 		  <th>Year</th>
 		  <th>Genre</th>
-		  <th style="width:54px">&nbsp;</th>
+		  <th style="width:74px">&nbsp;</th>
 		 </tr>
 		 </thead>'."\n";
 		 
@@ -97,6 +113,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			 <td>'.$Movie['genre'].'</td>
 			 <td style="text-align: right">
 			  '.$MoviePlayLink.'
+			  <a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 			  '.$MovieInfoLink.'
 			  '.$MovieDeleteLink.'
 			 </td>
@@ -105,10 +122,10 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		echo '</table>'."\n";
 	}
 	else {
-		echo '<div class="notification">No data available</div>';
+		echo '<div class="notification information">No data available</div>';
 	}
 }
 else {
-	echo '<div class="notification">Unable to connect to XBMC</div>';
+	echo '<div class="notification warning">Unable to connect to XBMC</div>';
 }
 ?>

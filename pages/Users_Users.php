@@ -18,13 +18,13 @@ $('#newUser').click(function(event) {
 	    '<tr id="' + UserID + '">' +
 		 '<form name="' + UserID + '" method="post" action="load.php?page=UserAdd" style="display:none">' +
 		  '<td>Now</td>' +
-		  '<td><input name="UserName" style="width:250px" type="text" /></td>' +
+		  '<td><input name="UserName" style="width:250px" placeholder="username" type="text" /></td>' +
 		  '<td>' + 
 		  '<?php
 		  echo $UserGroupSel;
 		  ?>' +
 		  '</td>' +
-		  '<td><input name="UserEMail" style="width:250px" type="text" /></td>' +
+		  '<td><input name="UserEMail" style="width:250px" placeholder="e-mail" type="text" /></td>' +
 		  '<td style="text-align:center">' +
 	 	   '<a onclick="javascript:ajaxSubmit(\'' + UserID + '\');"><img src="images/icons/add.png" /></a>' +
 	 	   '<a onclick="javascript:$(\'#' + UserID + '\').remove();"><img src="images/icons/delete.png" /></a>' +

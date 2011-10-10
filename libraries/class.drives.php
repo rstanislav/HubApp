@@ -341,12 +341,7 @@ class Drives extends Hub {
 		Hub::AddLog(EVENT.'Drives', 'Success', 'Added "'.$DriveLetter.'" to the database');
 		
 		if(is_file($Settings['SettingXBMCSourcesFile'])) {
-			if($DriveNetwork) {
-				$DriveRoot = 'smb:'.$DriveRoot;
-			}
-			else {
-				$DriveRoot = $DriveLetter;
-			}
+			$DriveRoot = ($DriveNetwork) ? 'smb:'.$DriveRoot : $DriveLetter;
 			
 			$DocObj = new DOMDocument();
 			$DocObj->load($Settings['SettingXBMCSourcesFile']);
@@ -383,7 +378,12 @@ class Drives extends Hub {
 				Hub::AddLog(EVENT.'XBMC', 'Success', 'Added "'.implode(', ', $LogSources).'" to Sources.xml');
 			}
 			
-			// Update library
+			XBMC::Connect();
+			if(is_object($this->XBMCRPC)) {
+				XBMC::ScanForContent();
+				
+				Hub::AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
+			}
 		}
 		else {
 			echo $Settings['SettingXBMCSourcesFile'].' does not exist.';

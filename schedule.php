@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 
 ini_set('display_errors',     0); 
 ini_set('log_errors',         1);
-ini_set('error_log',          dirname(__FILE__) . '/tmp/schedule_error.log');
+ini_set('error_log',          realpath(dirname(__FILE__)).'/tmp/schedule_error.log');
 ini_set('max_execution_time', (60 * 60 * 5));
 
 session_start();
@@ -14,15 +14,10 @@ $HubObj->CheckForDBUpgrade();
 
 $Settings = $HubObj->Settings;
 
-if(strlen(EVENT)) {
-	if($Settings['SettingHubKillSwitch'] || $HubObj->CheckLock()) {
-		die();
-	}
-	else {
-		$HubObj->Lock();
-	}
+if($Settings['SettingHubKillSwitch'] || $HubObj->CheckLock()) {
+	die();
 }
-else if(!$HubObj->CheckLock()) {
+else {
 	$HubObj->Lock();
 }
 
@@ -48,42 +43,6 @@ if(is_object($UTorrentObj->UTorrentAPI)) {
 	$UTorrentObj->DeleteFinishedTorrents();
 }
 
-if((date('G') > 3 && date('G') < 7)) {
-	$FolderRebuild = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastFolderRebuild"')->fetch();
-	
-	if((time() - $FolderRebuild['Last']) >= (60 * 60 * 24)) {
-		// Rebuild serie folders across all drives
-		$SeriesObj->RebuildFolders();
-		
-		$RebuildPrep = $HubObj->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastFolderRebuild"');
-		$RebuildPrep->execute(array(':Time' => time()));
-	}
-	
-	$SerieRefresh = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRefresh"')->fetch();
-	
-	if((time() - $SerieRefresh['Last']) >= (60 * 60 * 24)) {
-		// Refresh database series data
-		if(is_object($SeriesObj->TheTVDBAPI)) {
-			$SeriesObj->RefreshAllSeries();
-		
-			$RefreshPrep = $HubObj->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastSerieRefresh"');
-			$RefreshPrep->execute(array(':Time' => time()));
-		}
-	}
-	
-	$SerieRebuild= $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRebuild"')->fetch();
-	
-	if((time() - $SerieRefresh['Last']) >= (60 * 60 * 24)) {
-		// Rebuild database episodes data
-		if(is_object($SeriesObj->TheTVDBAPI)) {
-			$SeriesObj->RebuildEpisodes();
-		
-			$RebuildPrep = $HubObj->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastSerieRebuild"');
-			$RebuildPrep->execute(array(':Time' => time()));
-		}
-	}
-}
-
 // Extract and/or move completed downloads across all drives
 $ExtractFilesObj->ExtractAndMoveAllFiles();
 
@@ -98,6 +57,29 @@ if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
 		// $XBMCObj->Notification('Hub', 'Adding new content');
 			
 		$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
+	}
+}
+
+$FolderRebuild = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastFolderRebuild"')->fetch();
+$SerieRefresh  = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRefresh"')->fetch();
+$SerieRebuild  = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRebuild"')->fetch();
+
+$LatestUpdate = max($FolderRebuild['Last'], $SerieRefresh['Last'], $SerieRebuild['Last']);
+if((date('G') > 3 && date('G') < 7) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
+	if(date('dmy', $FolderRebuild['Last']) != date('dmy')) {
+		$SeriesObj->RebuildFolders();
+	}
+
+	if(date('dmy', $SerieRefresh['Last']) != date('dmy')) {
+		if(is_object($SeriesObj->TheTVDBAPI)) {
+			$SeriesObj->RefreshAllSeries();
+		}
+	}
+
+	if(date('dmy', $SerieRebuild['Last']) != date('dmy')) {
+		if(is_object($SeriesObj->TheTVDBAPI)) {
+			$SeriesObj->RebuildEpisodes();
+		}
 	}
 }
 

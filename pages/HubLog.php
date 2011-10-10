@@ -5,7 +5,7 @@ $Logs = $HubObj->GetLogs();
 
 if(is_array($Logs) && sizeof($Logs)) {
 	echo '
-	<table>
+	<table class="text-select">
 	 <thead>
 	 <tr>
 	  <th width="70">Date</th>
@@ -25,6 +25,6 @@ if(is_array($Logs) && sizeof($Logs)) {
 	echo '</table>'."\n";
 }
 else {
-	echo '<div class="notification">No data available</div>';
+	echo '<div class="notification information">No data available</div>';
 }
 ?>

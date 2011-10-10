@@ -61,6 +61,6 @@ foreach($Series AS $Serie) {
 <?php
 }
 else {
-	echo '<div class="notification">No data available</div>';
+	echo '<div class="notification information">No data available</div>';
 }
 ?>

@@ -193,6 +193,6 @@ if(is_array($UnsortedFiles)) {
 	 }
 }
 else {
-	echo '<div class="notification">No unsorted files available</div>';
+	echo '<div class="notification information">No unsorted files available</div>';
 }
 ?>

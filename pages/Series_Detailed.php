@@ -14,7 +14,19 @@ if(is_array($Series)) {
 			$SeriePoster = '<img class="poster" src="'.$SeriePosterThumb.'" />';
 			
 			if(is_file($Serie['SeriePoster'])) {
-				$SeriePoster = '<a href="'.$Serie['SeriePoster'].'">'.$SeriePoster.'</a>';
+				$SerieRefreshLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieRefresh'))     ? '<a id="SerieRefresh-'.$SerieID.'" class="cover-link"><img src="images/icons/refresh.png" /></a>'   : '';
+				$SerieSpellingLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieAddSpelling')) ? '<a id="SerieSpelling-'.$SerieID.'" rel="'.$Serie['SerieTitle'].'" class="cover-link"><img src="images/icons/spelling.png" /></a>' : '';
+				$SerieDeleteLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDelete'))      ? '<a id="SerieDelete-'.$SerieID.'" rel="'.$Serie['SerieTitle'].'" class="cover-link"><img src="images/icons/delete.png" /></a>'     : '';
+				
+				$SeriePoster = '
+				 <div id="Cover-'.$SerieID.'" class="cover">
+				  <a href="'.$Serie['SeriePoster'].'">'.$SeriePoster.'</a>
+				  <div id="CoverControl-'.$SerieID.'" class="cover-control">
+				   '.$SerieRefreshLink.'
+				   '.$SerieSpellingLink.'
+				   '.$SerieDeleteLink.'
+				  </div>
+				 </div>';
 			}
 		}
 		else {
@@ -110,7 +122,7 @@ if(is_array($Series)) {
 			}
 			else if($Episode['TorrentKey']) {
 				$Episode['EpisodeFile'] = 'Episode has been added to uTorrent';
-				$EpisodeControl = '<img src="images/icons/downloaded.png" />';
+				$EpisodeControl = '<a id="DownloadTorrent-'.$Episode['EpisodeID'].'-'.$Episode['TorrentKey'].'"><img src="images/icons/downloaded.png" /></a>';
 				$OtherOptions = TRUE;
 			}
 			else {
@@ -195,10 +207,10 @@ if(is_array($Series)) {
 		echo '</table>'."\n";
 	}
 	else {
-		echo '<div class="notification">No data available</div>';
+		echo '<div class="notification information">No data available</div>';
 	}
 }
 else {
-	echo '<div class="notification">No data available</div>';
+	echo '<div class="notification information">No data available</div>';
 }
 ?>

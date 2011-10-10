@@ -223,7 +223,7 @@ class ExtractFiles extends Hub {
 							                                  ':Season'  => $ParsedEpisode[0],
 							                                  ':Episode' => $ParsedEpisode[1]));
 							                                  
-							Hub::NotifyUsers('NewLibraryEpisode', 'XBMC/Series', '"'.$SerieTitle.' s'.sprintf('%02s', $ParsedEpisode[0]).'e'.sprintf('%02s', $ParsedEpisode[1]).'" is now available on "'.$DriveRoot.'"');
+							Hub::NotifyUsers('NewLibraryEpisode', 'XBMC/Series', '"'.$SerieTitle.' '.$ParsedEpisode[0].'x'.$ParsedEpisode[1].'" is now available on "'.$DriveRoot.'"');
 						}
 					}
 				}
@@ -258,6 +258,15 @@ class ExtractFiles extends Hub {
 	}
 	
 	function ExtractAndMoveAllFiles() {
+		if(!strlen(EVENT)) {
+			if(Hub::CheckLock()) {
+				return FALSE;
+			}
+			else {
+				Hub::Lock();
+			}
+		}
+		
 		$Files = self::GetFiles();
 		if(is_array($Files) && sizeof($Files)) {
 			if(array_key_exists('Extract', $Files)) {
@@ -278,6 +287,10 @@ class ExtractFiles extends Hub {
 		}
 		
 		self::CleanDownloadsFolder();
+			
+		if(!strlen(EVENT)) {
+			Hub::Unlock();
+		}
 	}
 	
 	function CleanDownloadsFolder() {

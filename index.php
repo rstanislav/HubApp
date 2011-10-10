@@ -63,11 +63,7 @@ else {
  <span class="spinnertext"> Loading...</span>
 </div>
 
-<div id="upload-wrapper">
- <div id="upload-inner">
-  Drop files to upload
- </div>
-</div>
+<div id="upload-wrapper"></div>
 
 <div id="error" style="display:none">
  <img src="images/alerts/confirm.png" />

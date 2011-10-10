@@ -104,6 +104,38 @@ class XBMC extends Hub {
 		}
 	}
 	
+	function CacheCovers($ForceNew = FALSE) {
+		$Movies = self::GetMovies();
+		
+		$CoverCount = 0;
+		if(is_array($Movies)) {
+			foreach($Movies['movies'] AS $Movie) {
+				if(!is_file(APP_PATH.'/posters/movie-'.$Movie['movieid'].'.jpg') || $ForceNew) {
+					if(array_key_exists('thumbnail', $Movie)) {
+						$Cover = file_get_contents(self::GetImage($Movie['thumbnail']));
+						
+						if(strlen($Cover)) {
+							$CoverFile = APP_PATH.'/posters/movie-'.$Movie['movieid'].'.jpg';
+							if($FileHandle = fopen($CoverFile, 'w')) {
+								if(fwrite($FileHandle, $Cover) !== FALSE) {
+									Series::MakeThumbnail(APP_PATH.'/posters/movie-'.$Movie['movieid'].'.jpg', APP_PATH.'/posters/thumbnails/movie-'.$Movie['movieid'].'.jpg', 150, 221);
+									
+									$CoverCount++;
+								}
+								
+								fclose($FileHandle);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if($CoverCount) {
+			Hub::AddLog(EVENT.'Movies', 'Success', 'Cached '.$CoverCount.' movie posters');
+		}
+	}
+	
 	function MakeRequest($One, $Two, $Params = '') {
 		try {
 			$Response = $this->XBMCRPC->$One->$Two($Params);

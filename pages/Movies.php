@@ -19,9 +19,15 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		<table width="100%" class="nostyle">
 		 <tr>'."\n";
 		foreach($RecentMovies['movies'] AS $Movie) {
-			$Thumbnail = (array_key_exists('thumbnail', $Movie)) ? $XBMCObj->GetImage($Movie['thumbnail']) : '';
-			$Genre     = (array_key_exists('genre', $Movie))     ? $Movie['genre']                         : '';
-			$Files      = $HubObj->ConcatFilePath($Movie['file']);
+			if(is_file(APP_PATH.'/posters/thumbnails/movie-'.$Movie['movieid'].'.jpg')) {
+				$Thumbnail = 'posters/thumbnails/movie-'.$Movie['movieid'].'.jpg';
+			}
+			else {
+				$Thumbnail = 'images/poster-unavailable.png';
+			}
+			
+			$Genre = (array_key_exists('genre', $Movie)) ? $Movie['genre'] : '';
+			$Files = $HubObj->ConcatFilePath($Movie['file']);
 			
 			$FilePath = '';
 			if(is_array($Files)) {
@@ -30,8 +36,6 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			else {
 				$FilePath = $Files;
 			}
-			
-			//$MoviePoster = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'"><img class="poster" width="150" height="250" src="'.$Thumbnail.'" /></a>' : '<img class="poster" width="150" height="250" src="'.$Thumbnail.'" />';
 			
 			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
 			$MovieTrailerLink = '<a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';

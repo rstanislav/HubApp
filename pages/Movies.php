@@ -39,7 +39,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			echo '
 			<td style="text-align: center; width:33%;">
 			 '.$MoviePoster.'<br />
-			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
+			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong> <a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'&aq=f" target="_blank" title="Search for trailer on YouTube"><img style="vertical-align:text-bottom;" src="images/icons/youtube.png" /></a>
 			 <span class="MovieGenre"'.$GenreShow.'><br /><em>'.$Genre.'</em></span>
 			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span>
 			</td>'."\n";
@@ -81,7 +81,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		  <th>Title</th>
 		  <th>Year</th>
 		  <th>Genre</th>
-		  <th style="width:54px">&nbsp;</th>
+		  <th style="width:74px">&nbsp;</th>
 		 </tr>
 		 </thead>'."\n";
 		 
@@ -97,6 +97,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			 <td>'.$Movie['genre'].'</td>
 			 <td style="text-align: right">
 			  '.$MoviePlayLink.'
+			  <a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'&aq=f" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 			  '.$MovieInfoLink.'
 			  '.$MovieDeleteLink.'
 			 </td>

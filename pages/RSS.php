@@ -79,9 +79,9 @@ if(is_array($Torrents)) {
 	 <tr>
 	  <th>Title</th>
 	  <th>Category</th>
-	  <th>Added</th>
-	  <th>Published</th>
-	  <th style="width: 36px">&nbsp;</th>
+	  <th style="width: 85px">Added</th>
+	  <th style="width: 85px">Published</th>
+	  <th style="width: 54px">&nbsp;</th>
 	 </tr>
 	 </thead>'."\n";
 	foreach($Torrents AS $Torrent) {
@@ -94,7 +94,8 @@ if(is_array($Torrents)) {
 			break;
 			
 			case 'Movie':
-				$FavButton = '<a href="http://www.imdb.com/search/title?release_date='.$ParsedRelease['Year'].','.$ParsedRelease['Year'].'&title='.urlencode($ParsedRelease['Title']).'" target="_blank"><img src="images/icons/imdb.png" /></a>';
+				$FavButton = '<a href="http://www.imdb.com/search/title?release_date='.$ParsedRelease['Year'].','.$ParsedRelease['Year'].'&title='.urlencode($ParsedRelease['Title']).'" target="_blank"><img src="images/icons/imdb.png" /></a> ';
+				$FavButton .= '<a href="http://www.youtube.com/results?search_query='.urlencode($ParsedRelease['Title'].' '.$ParsedRelease['Year'].' trailer').'&aq=f" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>';
 			break;
 			
 			default;

@@ -122,7 +122,7 @@ if(is_array($Series)) {
 			}
 			else if($Episode['TorrentKey']) {
 				$Episode['EpisodeFile'] = 'Episode has been added to uTorrent';
-				$EpisodeControl = '<img src="images/icons/downloaded.png" />';
+				$EpisodeControl = '<a id="DownloadTorrent-'.$Episode['EpisodeID'].'-'.$Episode['TorrentKey'].'"><img src="images/icons/downloaded.png" /></a>';
 				$OtherOptions = TRUE;
 			}
 			else {

@@ -60,10 +60,14 @@ $XBMCActivity = $HubObj->PDO->query('SELECT LogDate AS LastUpdate FROM Log WHERE
 
 if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
 	if(is_object($XBMCObj->XBMCRPC)) {
-		$XBMCObj->ScanForContent();
-		// $XBMCObj->Notification('Hub', 'Adding new content');
+		$ActivePlayer = $XBMCObj->MakeRequest('Player', 'GetActivePlayers');
+	
+		if(!$ActivePlayer['video']) {
+			$XBMCObj->ScanForContent();
+			// $XBMCObj->Notification('Hub', 'Adding new content');
 			
-		$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
+			$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
+		}
 	}
 }
 

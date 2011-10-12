@@ -23,14 +23,20 @@ $HubObj->CheckForDBUpgrade();
  	echo '
  	<link type="text/css" rel="stylesheet" href="css/stylesheet.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.qtip.css" />
- 	<link type="text/css" rel="stylesheet" href="css/jquery.selectBox.css" />'."\n";
+ 	<link type="text/css" rel="stylesheet" href="css/jquery.selectBox.css" />
+ 	
+ 	<noscript>
+ 	 <div id="error">
+ 	  <img src="images/alerts/confirm.png" />
+ 	  For full functionality of this site it is necessary to enable JavaScript.<br /><br />
+ 	  Here are the <a href="http://enable-javascript.com/" target="_blank">
+ 	  instructions how to enable JavaScript in your web browser</a>.
+ 	 </div>
+ 	</noscript>'."\n";
  }
  ?>
  
- <noscript> 
-  <meta http-equiv="Refresh" content="0;url=http://www.google.com/enable_javascript/" />
- </noscript> 
-     
+ <link rel="shortcut icon" href="images/favicon.ico" />
  <link rel="apple-touch-icon" href="images/logo-iphone.png" />
  <link rel="apple-touch-icon" sizes="72x72" href="images/logo-ipad.png" />
  <link rel="apple-touch-icon" sizes="114x114" href="images/logo-iphone4.png" />
@@ -47,6 +53,7 @@ $HubObj->CheckForDBUpgrade();
  <script type="text/javascript" src="js/jquery.jeditable.js"></script>
  <script type="text/javascript" src="js/jquery.timers.js"></script>
  <script type="text/javascript" src="js/jquery.selectBox.js"></script>
+ <script type="text/javascript" src="js/valums.file-uploader.js"></script>
  <script type="text/javascript" src="js/hub.script.js"></script>
 </head>
 

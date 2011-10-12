@@ -16,6 +16,23 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'Upload':
+			$Settings = $HubObj->GetSettings();
+			
+			if(is_dir($Settings['SettingUTorrentWatchFolder']) && $UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) {
+				require_once './libraries/valums.file-uploader.php';
+			
+				$UploaderObj = new qqFileUploader();
+				$UploadResult = $UploaderObj->handleUpload($Settings['SettingUTorrentWatchFolder'].'/');
+				
+				if(array_key_exists('success', $UploadResult)) {
+					if($UploadResult['success']) {
+						$HubObj->AddLog(EVENT.'uTorrent', 'Success', 'Uploaded "'.$_GET['qqfile'].'" to Watch Folder');
+					}
+				}
+			}
+		break;
+	
 		case 'Profile':
 			require_once './pages/Profile.php';
 		break;

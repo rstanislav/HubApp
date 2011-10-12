@@ -406,3 +406,32 @@ function DeleteCookie(name, path, domain) {
 			";expires=Thu, 01-Jan-1970 00:00:01 GMT";
 	}
 }
+
+function createUploader() {
+	var uploader = new qq.FileUploader({
+    	element: document.getElementById('upload-wrapper'),
+        action: 'load.php?page=Upload',
+        allowedExtensions: ['torrent'],
+       	debug: false,
+       	
+       	onSubmit: function(id, fileName) {
+       		if(!$('#maincontent').find('div#upload-progress').length) {
+       			$('#maincontent').prepend(
+       			'<div id="upload-progress">' +
+       			' <div class="head-control">' +
+       			'  <a onclick="$(\'#upload-progress\').remove();" class="button negative"><span class="inner"><span class="label" nowrap="">Close</span></span></a>' +
+       			' </div>' +
+       			' <div class="head">' +
+       			'  Upload <small style="font-size: 12px;">(<a href="#!/Help/Upload">?</a>)</small>' +
+       			' </div>' +
+       			'</div>');
+       			$('#upload-progress').fadeIn();
+       		}
+       	},
+       	onComplete: function(id, fileName, responseJSON) {
+       		$('#upload-progress').append('Uploaded <strong>' + fileName + '</strong><br />');
+       	}
+    });           
+}
+ 
+window.onload = createUploader;

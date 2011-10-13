@@ -40,16 +40,14 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
 			$MovieTrailerLink = '<a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
-			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/delete.png" /></a>'    : '';
 			
 			$MoviePoster = '
 			 <div id="Cover-'.$Movie['movieid'].'" class="cover">
 			  <img class="poster" width="150" height="250" src="'.$Thumbnail.'" />
 			  <div id="CoverControl-'.$Movie['movieid'].'" class="cover-control">
 			   '.$MoviePlayLink.'
-			   '.$MovieTrailerLink.'
 			   '.$MovieInfoLink.'
-			   '.$MovieDeleteLink.'
+			   '.$MovieTrailerLink.'
 			  </div>
 			 </div>';
 			
@@ -117,8 +115,8 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			 <td>'.$Movie['genre'].'</td>
 			 <td style="text-align: right">
 			  '.$MoviePlayLink.'
-			  <a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 			  '.$MovieInfoLink.'
+			  <a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 			  '.$MovieDeleteLink.'
 			 </td>
 			</tr>'."\n";

@@ -38,7 +38,7 @@ class Wishlist extends Hub {
 			if(!is_array($Wishlist)) {
 				$WishlistAddPrep = $this->PDO->prepare('INSERT INTO Wishlist (WishlistID, WishlistDate, WishlistTitle, WishlistYear) VALUES (NULL, :Date, :Title, :Year)');
 				$WishlistAddPrep->execute(array(':Date'  => time(),
-			                            		':Title' => self::ConvertCase($_POST['WishlistTitle']),
+			                            		':Title' => self::ConvertCase(self::StripIllegalChars($_POST['WishlistTitle'])),
 			                            		':Year'  => $_POST['WishlistYear']));
 			}
 			else {
@@ -81,6 +81,13 @@ class Wishlist extends Hub {
 		}
 		
 		return $String;
+	}
+	
+	function StripIllegalChars($Str) {
+		$IllegalChars = array(',', '?', '!', '\'', '\\', '/', '.', '&',   ':', ';');
+		$Replacements = array('',  '',  '',  '',   '',   '',  '',  'and', '', '');
+		
+		return str_replace($IllegalChars, $Replacements, $Str);
 	}
 	
 	function WishlistEdit() { // $_POST

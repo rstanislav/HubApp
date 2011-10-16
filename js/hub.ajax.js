@@ -47,40 +47,35 @@ $(document).ready(function() {
 	'a[id|="SerieRefresh"],' +
 	'a[id|="SerieSpelling"],' +
 	'a[id|="SerieDelete"],' +
+	'a[id|="SerieRefreshAll"],' +
 	'a[id|="ZoneDelete"],' +
 	'a[id|="FoldersRebuild"],' +
 	'a[id|="EpisodesRebuild"],' +
-	'a[id|="SerieRefreshAll"],' +
 	'a[id|="DriveRemove"],' +
 	'a[id|="MovieInfo"],' +
 	'a[id|="MoviePlay"],' +
-	'a[id|="FilePlay"],' +
 	'a[id|="MovieDelete"],' +
+	'a[id|="FilePlay"],' +
 	'a[id|="RSSUpdate"],' +
-	'a[id|="DownloadTorrent"],' +
-	'a[id|="SerieRefresh"],' +
-	'a[id|="SerieSpelling"],' +
-	'a[id|="SerieDelete"],' +
+	'a[id|="RSSFeedDelete"],' +
 	'a[id|="TorrentStart"],' +
 	'a[id|="TorrentStop"],' +
 	'a[id|="TorrentPause"],' +
 	'a[id|="TorrentDelete"],' +
 	'a[id|="TorrentDeleteData"],' +
-	'a[id|="RSSUpdate"],' +
-	'a[id|="DownloadTorrent"],' +
-	'a[id|="UserGroupEdit"],' +
-	'a[id|="TorrentDownload"],' +
-	'a[id|="WishlistDelete"],' +
-	'a[id|="RSSFeedDelete"],' +
 	'a[id|="TorrentStartAll"],' +
 	'a[id|="TorrentPauseAll"],' +
 	'a[id|="TorrentStopAll"],' +
+	'a[id|="DownloadTorrent"],' +
+	'a[id|="TorrentDownload"],' +
+	'a[id|="UserGroupEdit"],' +
+	'a[id|="UserDelete"],' + 
+	'a[id|="WishlistDelete"],' +
 	'a[id|="XBMCLibraryUpdate"],' +
 	'a[id|="XBMCLibraryClean"],' +
 	'a[id|="DeleteEpisode"],' + 
 	'a[id|="MovieToggleGenre"],' + 
 	'a[id|="MovieTogglePath"],' + 
-	'a[id|="UserDelete"],' + 
 	'a[id|="DriveAdd"],' +
 	'a[id|="UserGroupDelete"]').click(function(event) {
 		event.preventDefault();
@@ -95,18 +90,27 @@ $(document).ready(function() {
 		}
 	});
 	
-	$('#seasons-button').click(function() {
-		$('tr[id|="SerieSeason"], thead[id|="SerieSeasonHead"], thead[id|="SerieSeasonInfo"]').toggle();
-		ButtonContent = $('#seasons-button').contents().find('.label').text();
-		
-		if(ButtonContent == 'All seasons') {
-			NewButtonContent = 'Latest Season';
-		}
-		else {
-			NewButtonContent = 'All Seasons';
-		}
-		$('#seasons-button').contents().find('.label').text(NewButtonContent);
+	$("a[rel=trailer]").click(function() {
+		$.fancybox({
+			'padding':        0,
+			'autoScale':      false,
+			'transitionIn':   'none',
+			'transitionOut':  'none',
+			'width':           680,
+			'height':          455,
+			'overlayOpacity':  0.6,
+			'overlayColor':    '#000',
+			'centerOnScroll':  true,
+			'showCloseButton': false,
+			'showNavArrows':   false,
+			'titleShow':       false,	
+			'href':            this.href.replace(new RegExp("watch\\?v=", "i"), 'v/'),
+			'type':            'iframe'
+		});
+	
+		return false;
 	});
+	
 	
 	$('a[id|="DriveActive"]').click(function(event) {
 		DriveID = $(this).attr('id').replace('DriveActive-', '');
@@ -158,17 +162,6 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
-	$('.context').contextMenu({
-		menu: 'torrentControl'
-	},
-	function(action, el, pos) {
-	    alert("Action: " + action + "\n\n" +
-	          "Element ID: " + $(el).attr("id") + "\n\n" +
-	          "X: " + pos.x + "  Y: " + pos.y + " (relative to element)\n\n" +
-	          "X: " + pos.docX + "  Y: " + pos.docY + " (relative to document)"
-	    );
-	});
 });
 
 function randomString() {
@@ -200,9 +193,7 @@ function ajaxSubmitResponse(responseText, statusText, xhr, $form)  {
 		});
 		
 		$('#' + $form.attr('name') + ' img').each(function(index) {
-			//if(index == 0) {
-				$(this).replaceWith();
-			//}
+			$(this).replaceWith();
 		});
 	}
 	else {
@@ -571,7 +562,6 @@ function AjaxButton(Button, Extra) {
 						$(ButtonObj).contents().find('.label').text('Error!');
 					}
 					else {
-						//$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
 						$(ButtonObj).contents().find('.label').text('Downloaded!');
 					}
 				}
@@ -581,12 +571,12 @@ function AjaxButton(Button, Extra) {
 }
 
 function AjaxLink(Link) {
-	Action = $(Link).attr('id').split('-');
+	Action   = $(Link).attr('id').split('-');
 	SecondID = Action[2];
-	FirstID = Action[1];
-	Action = Action[0];
+	FirstID  = Action[1];
+	Action   = Action[0];
+	LinkVal  = $(Link).html();
 	
-	LinkVal = $(Link).html();
 	switch(Action) {
 		case 'DeleteEpisode':
 			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '"?', 'Delete Episode', function(response) {

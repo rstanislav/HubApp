@@ -69,7 +69,7 @@ class XBMC extends Hub {
 		        'fields' => array(
 		            'genre', 'director', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
 		            'originaltitle', 'lastplayed', 'showtitle', 'firstaired', 'duration', 'season',
-		            'episode', 'runtime', 'year', 'playcount', 'rating'
+		            'episode', 'runtime', 'year', 'playcount', 'rating', 'playcount'
 		        )));
 		}
 		catch(XBMC_RPC_Exception $e) {
@@ -84,7 +84,7 @@ class XBMC extends Hub {
 		        'fields' => array(
 		            'genre', 'director', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
 		            'originaltitle', 'lastplayed', 'showtitle', 'firstaired', 'duration', 'season',
-		            'episode', 'runtime', 'year', 'playcount', 'rating'
+		            'episode', 'runtime', 'year', 'playcount', 'rating', 'playcount'
 		        )));
 		}
 		catch(XBMC_RPC_Exception $e) {

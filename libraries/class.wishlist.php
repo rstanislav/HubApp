@@ -1,7 +1,7 @@
 <?php
 class Wishlist extends Hub {
-	function GetFulfilledWishlistItems() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistFile = "" OR TorrentKey = "" ORDER BY WishlistTitle');
+	function GetUnfulfilledWishlistItems() {
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate = "" ORDER BY WishlistTitle');
 		$WishPrep->execute();
 		
 		if($WishPrep->rowCount()) {
@@ -12,8 +12,8 @@ class Wishlist extends Hub {
 		}
 	}
 
-	function GetUnfulfilledWishlistItems() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistFile != "" OR TorrentKey != "" ORDER BY WishlistTitle');
+	function GetFulfilledWishlistItems() {
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE  WishlistDownloadDate != "" ORDER BY WishlistDownloadDate DESC');
 		$WishPrep->execute();
 		
 		if($WishPrep->rowCount()) {

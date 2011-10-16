@@ -50,7 +50,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				}
 			}
 			else {
-				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
+				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
 			}
 			
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';

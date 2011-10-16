@@ -55,7 +55,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
 			
-			$Watched = (array_key_exists('lastplayed', $Movie)) ? '<div class="cover-watched">watched</div>' : '';
+			$Watched = ($Movie['playcount']) ? '<div class="cover-watched">watched</div>' : '';
 			
 			$MoviePoster = '
 			 <div id="Cover-'.$Movie['movieid'].'" class="cover">
@@ -97,14 +97,14 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		$Movies = array();
 		foreach($AllMovies['movies'] AS $Movie) {
 			$Title = trim(str_replace('The ', '', trim($Movie['label'])));
-			$Movies[$Title]['id']         = trim($Movie['movieid']);
-			$Movies[$Title]['label']      = trim($Movie['label']);
-			$Movies[$Title]['file']       = trim($Movie['file']);
-			$Movies[$Title]['genre']      = (!isset($Movie['genre']))      ? '' : trim($Movie['genre']);
-			$Movies[$Title]['year']       = (!isset($Movie['year']))       ? '' : trim($Movie['year']);
-			$Movies[$Title]['thumbnail']  = (!isset($Movie['thumbnail']))  ? '' : trim($Movie['thumbnail']);
-			$Movies[$Title]['fanart']     = (!isset($Movie['fanart']))     ? '' : trim($Movie['fanart']);
-			$Movies[$Title]['lastplayed'] = (array_key_exists('lastplayed', $Movie)) ? $Movie['lastplayed'] : '';
+			$Movies[$Title]['id']        = trim($Movie['movieid']);
+			$Movies[$Title]['label']     = trim($Movie['label']);
+			$Movies[$Title]['file']      = trim($Movie['file']);
+			$Movies[$Title]['genre']     = (!isset($Movie['genre']))      ? '' : trim($Movie['genre']);
+			$Movies[$Title]['year']      = (!isset($Movie['year']))       ? '' : trim($Movie['year']);
+			$Movies[$Title]['thumbnail'] = (!isset($Movie['thumbnail']))  ? '' : trim($Movie['thumbnail']);
+			$Movies[$Title]['fanart']    = (!isset($Movie['fanart']))     ? '' : trim($Movie['fanart']);
+			$Movies[$Title]['playcount'] = $Movie['playcount'];
 		}
 		
 		ksort($Movies);
@@ -125,7 +125,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['id'].'"><img src="images/icons/information.png" /></a>'  : '';
 			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie['id'].'"><img src="images/icons/delete.png" /></a>'    : '';
 			
-			$Watched = (strlen($Movie['lastplayed'])) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';
+			$Watched = ($Movie['playcount']) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';
 			
 			echo '
 			<tr>

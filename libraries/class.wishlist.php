@@ -1,7 +1,7 @@
 <?php
 class Wishlist extends Hub {
-	function GetFulfilledWishlistItems() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistFile = "" OR TorrentKey = "" ORDER BY WishlistTitle');
+	function GetUnfulfilledWishlistItems() {
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate = "" ORDER BY WishlistTitle');
 		$WishPrep->execute();
 		
 		if($WishPrep->rowCount()) {
@@ -12,8 +12,8 @@ class Wishlist extends Hub {
 		}
 	}
 
-	function GetUnfulfilledWishlistItems() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistFile != "" OR TorrentKey != "" ORDER BY WishlistTitle');
+	function GetFulfilledWishlistItems() {
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE  WishlistDownloadDate != "" ORDER BY WishlistDownloadDate DESC');
 		$WishPrep->execute();
 		
 		if($WishPrep->rowCount()) {
@@ -38,7 +38,7 @@ class Wishlist extends Hub {
 			if(!is_array($Wishlist)) {
 				$WishlistAddPrep = $this->PDO->prepare('INSERT INTO Wishlist (WishlistID, WishlistDate, WishlistTitle, WishlistYear) VALUES (NULL, :Date, :Title, :Year)');
 				$WishlistAddPrep->execute(array(':Date'  => time(),
-			                            		':Title' => self::ConvertCase($_POST['WishlistTitle']),
+			                            		':Title' => self::ConvertCase(self::StripIllegalChars($_POST['WishlistTitle'])),
 			                            		':Year'  => $_POST['WishlistYear']));
 			}
 			else {
@@ -81,6 +81,13 @@ class Wishlist extends Hub {
 		}
 		
 		return $String;
+	}
+	
+	function StripIllegalChars($Str) {
+		$IllegalChars = array(',', '?', '!', '\'', '\\', '/', '.', '&',   ':', ';');
+		$Replacements = array('',  '',  '',  '',   '',   '',  '',  'and', '', '');
+		
+		return str_replace($IllegalChars, $Replacements, $Str);
 	}
 	
 	function WishlistEdit() { // $_POST

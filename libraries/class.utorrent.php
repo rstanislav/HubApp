@@ -46,7 +46,7 @@ class UTorrent extends Hub {
 			foreach($Torrents AS $Torrent) {
 				$TorrentInfo = RSS::ParseRelease($Torrent[UTORRENT_TORRENT_NAME]);
 			
-				if($TorrentInfo['Title'] == $Parsed['Title']) {
+				if(is_array($Parsed) && $Parsed['Type'] == 'TV' && $TorrentInfo['Title'] == $Parsed['Title']) {
 					if($TorrentInfo['Episodes'][0][0] == $Parsed['Episodes'][0][0] && $TorrentInfo['Episodes'][0][1] == $Parsed['Episodes'][0][1]) {
 						$OldQuality = RSS::GetQualityRank($Torrent[UTORRENT_TORRENT_NAME]);
 						$NewQuality = RSS::GetQualityRank($TorrentTitle);

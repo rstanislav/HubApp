@@ -26,7 +26,7 @@ $('#AddWishlistItem').click(function(event) {
 <div class="head">Wishlist <small style="font-size: 12px;">(<a href="#!/Help/Wishlist">?</a>)</small></div>
 
 <?php
-$Wishes = $WishlistObj->GetFulfilledWishlistItems();
+$Wishes = $WishlistObj->GetUnfulfilledWishlistItems();
 
 if(is_array($Wishes)) {
 	echo '
@@ -80,7 +80,7 @@ else {
 <div class="head">Wishlist &raquo; Granted <small style="font-size: 12px;">(<a href="#!/Help/Wishlist">?</a>)</small></div>
 
 <?php
-$Wishes = $WishlistObj->GetUnfulfilledWishlistItems();
+$Wishes = $WishlistObj->GetFulfilledWishlistItems();
 
 if(is_array($Wishes)) {
 	echo '

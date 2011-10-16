@@ -18,15 +18,7 @@ if(is_array($Series)) {
 				$SerieSpellingLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieAddSpelling')) ? '<a id="SerieSpelling-'.$SerieID.'" rel="'.$Serie['SerieTitle'].'" class="cover-link"><img src="images/icons/spelling.png" /></a>' : '';
 				$SerieDeleteLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDelete'))      ? '<a id="SerieDelete-'.$SerieID.'" rel="'.$Serie['SerieTitle'].'" class="cover-link"><img src="images/icons/delete.png" /></a>'     : '';
 				
-				$SeriePoster = '
-				 <div id="Cover-'.$SerieID.'" class="cover">
-				  <a href="'.$Serie['SeriePoster'].'">'.$SeriePoster.'</a>
-				  <div id="CoverControl-'.$SerieID.'" class="cover-control">
-				   '.$SerieRefreshLink.'
-				   '.$SerieSpellingLink.'
-				   '.$SerieDeleteLink.'
-				  </div>
-				 </div>';
+				$SeriePoster = '<a href="'.$Serie['SeriePoster'].'">'.$SeriePoster.'</a>';
 			}
 		}
 		else {

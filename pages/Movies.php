@@ -11,6 +11,8 @@ $XBMCObj->Connect();
 if(is_object($XBMCObj->XBMCRPC)) {
 	$RecentMovies = $XBMCObj->GetRecentlyAddedMovies();
 	
+	//$HubObj->d($RecentMovies);
+	
 	//$XBMCObj->d($XBMCObj->GetCommands($HubObj->XBMCRPC));
 	
 	if(is_array($RecentMovies)) {
@@ -38,18 +40,31 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			}
 			
 			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
-			$MovieTrailerLink = '<a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
+			
+			if(array_key_exists('trailer', $Movie)) {
+				if(strstr($Movie['trailer'], 'plugin.video.youtube')) {
+					$MovieTrailerLink = '<a href="http://youtube.com/watch?v='.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie['trailer']).'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/youtube.png" /></a>';
+				}
+				else if(strstr($Movie['trailer'], 'http://playlist.yahoo.com')) {
+					$MovieTrailerLink = '<a href="'.$Movie['trailer'].'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/yahoo.png" /></a>';
+				}
+			}
+			else {
+				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
+			}
+			
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
-			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/delete.png" /></a>'    : '';
+			
+			$Watched = (array_key_exists('lastplayed', $Movie)) ? '<div class="cover-watched">watched</div>' : '';
 			
 			$MoviePoster = '
 			 <div id="Cover-'.$Movie['movieid'].'" class="cover">
 			  <img class="poster" width="150" height="250" src="'.$Thumbnail.'" />
+			  '.$Watched.'
 			  <div id="CoverControl-'.$Movie['movieid'].'" class="cover-control">
 			   '.$MoviePlayLink.'
-			   '.$MovieTrailerLink.'
 			   '.$MovieInfoLink.'
-			   '.$MovieDeleteLink.'
+			   '.$MovieTrailerLink.'
 			  </div>
 			 </div>';
 			
@@ -61,7 +76,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			 <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
 			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
 			 <span class="MovieGenre"'.$GenreShow.'><br /><em>'.$Genre.'</em></span>
-			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span>
+			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span><br /><br />
 			</td>'."\n";
 			
 			if($i++ % 3 == 0) {
@@ -73,7 +88,6 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		echo '</table>'."\n";
 	}
 	?>
-	<br /><br />
 	
 	<div class="head">All Movies <small style="font-size: 12px;">(<a href="#!/Help/Movies">?</a>)</small></div>
 	<?php
@@ -83,13 +97,14 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		$Movies = array();
 		foreach($AllMovies['movies'] AS $Movie) {
 			$Title = trim(str_replace('The ', '', trim($Movie['label'])));
-			$Movies[$Title]['id']        = trim($Movie['movieid']);
-			$Movies[$Title]['label']     = trim($Movie['label']);
-			$Movies[$Title]['file']      = trim($Movie['file']);
-			$Movies[$Title]['genre']     = (!isset($Movie['genre']))     ? '' : trim($Movie['genre']);
-			$Movies[$Title]['year']      = (!isset($Movie['year']))      ? '' : trim($Movie['year']);
-			$Movies[$Title]['thumbnail'] = (!isset($Movie['thumbnail'])) ? '' : trim($Movie['thumbnail']);
-			$Movies[$Title]['fanart']    = (!isset($Movie['fanart']))    ? '' : trim($Movie['fanart']);
+			$Movies[$Title]['id']         = trim($Movie['movieid']);
+			$Movies[$Title]['label']      = trim($Movie['label']);
+			$Movies[$Title]['file']       = trim($Movie['file']);
+			$Movies[$Title]['genre']      = (!isset($Movie['genre']))      ? '' : trim($Movie['genre']);
+			$Movies[$Title]['year']       = (!isset($Movie['year']))       ? '' : trim($Movie['year']);
+			$Movies[$Title]['thumbnail']  = (!isset($Movie['thumbnail']))  ? '' : trim($Movie['thumbnail']);
+			$Movies[$Title]['fanart']     = (!isset($Movie['fanart']))     ? '' : trim($Movie['fanart']);
+			$Movies[$Title]['lastplayed'] = (array_key_exists('lastplayed', $Movie)) ? $Movie['lastplayed'] : '';
 		}
 		
 		ksort($Movies);
@@ -110,15 +125,17 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['id'].'"><img src="images/icons/information.png" /></a>'  : '';
 			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie['id'].'"><img src="images/icons/delete.png" /></a>'    : '';
 			
+			$Watched = (strlen($Movie['lastplayed'])) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';
+			
 			echo '
 			<tr>
-			 <td>'.$Movie['label'].'</td>
+			 <td>'.$Watched.''.$Movie['label'].'</td>
 			 <td>'.$Movie['year'].'</td>
 			 <td>'.$Movie['genre'].'</td>
 			 <td style="text-align: right">
 			  '.$MoviePlayLink.'
-			  <a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 			  '.$MovieInfoLink.'
+			  <a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 			  '.$MovieDeleteLink.'
 			 </td>
 			</tr>'."\n";

@@ -97,14 +97,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		$Movies = array();
 		foreach($AllMovies['movies'] AS $Movie) {
 			$Title = trim(str_replace('The ', '', trim($Movie['label'])));
-			$Movies[$Title]['id']        = trim($Movie['movieid']);
-			$Movies[$Title]['label']     = trim($Movie['label']);
-			$Movies[$Title]['file']      = trim($Movie['file']);
-			$Movies[$Title]['genre']     = (!isset($Movie['genre']))      ? '' : trim($Movie['genre']);
-			$Movies[$Title]['year']      = (!isset($Movie['year']))       ? '' : trim($Movie['year']);
-			$Movies[$Title]['thumbnail'] = (!isset($Movie['thumbnail']))  ? '' : trim($Movie['thumbnail']);
-			$Movies[$Title]['fanart']    = (!isset($Movie['fanart']))     ? '' : trim($Movie['fanart']);
-			$Movies[$Title]['playcount'] = $Movie['playcount'];
+			$Movies[$Title][] = $Movie;
 		}
 		
 		ksort($Movies);
@@ -114,31 +107,53 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		 <thead>
 		 <tr>
 		  <th>Title</th>
-		  <th>Year</th>
+		  <th style="width:40px; text-align:center">Year</th>
 		  <th>Genre</th>
 		  <th style="width:74px">&nbsp;</th>
 		 </tr>
 		 </thead>'."\n";
-		 
+		
 		foreach($Movies AS $Movie) {
-			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="MoviePlay-'.$Movie['id'].'"><img src="images/icons/control_play.png" /></a>' : '';
-			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['id'].'"><img src="images/icons/information.png" /></a>'  : '';
-			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie['id'].'"><img src="images/icons/delete.png" /></a>'    : '';
+			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="MoviePlay-'.$Movie[0]['movieid'].'"><img src="images/icons/control_play.png" /></a>' : '';
+			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie[0]['movieid'].'"><img src="images/icons/information.png" /></a>'  : '';
+			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie[0]['movieid'].'"><img src="images/icons/delete.png" /></a>'    : '';
 			
-			$Watched = ($Movie['playcount']) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';
+			$WatchedIcon = ($Movie[0]['playcount']) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';
 			
-			echo '
-			<tr>
-			 <td>'.$Watched.''.$Movie['label'].'</td>
-			 <td>'.$Movie['year'].'</td>
-			 <td>'.$Movie['genre'].'</td>
-			 <td style="text-align: right">
-			  '.$MoviePlayLink.'
-			  '.$MovieInfoLink.'
-			  <a href="http://www.youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
-			  '.$MovieDeleteLink.'
-			 </td>
-			</tr>'."\n";
+			$MovieID        = trim($Movie[0]['movieid']);
+			$MovieLabel     = trim($Movie[0]['label']);
+			$MovieFile      = trim($Movie[0]['file']);
+			$MovieYear      = (array_key_exists('year', $Movie[0]))      ? trim($Movie[0]['year'])      : '';
+			$MovieThumbnail = (array_key_exists('thumbnail', $Movie[0])) ? trim($Movie[0]['thumbnail']) : '';
+			$MovieFanart    = (array_key_exists('fanart', $Movie[0]))    ? trim($Movie[0]['fanart'])    : '';
+			$MovieGenre     = (array_key_exists('genre', $Movie[0]))     ? trim($Movie[0]['genre'])     : '';
+			
+			if(array_key_exists('trailer', $Movie[0])) {
+				if(strstr($Movie[0]['trailer'], 'plugin.video.youtube')) {
+					$MovieTrailerLink = '<a href="http://youtube.com/watch?v='.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie[0]['trailer']).'" rel="trailer" title="'.$MovieLabel.' ('.$MovieYear.') Trailer"><img  src="images/icons/youtube.png" /></a>';
+				}
+				else if(strstr($Movie[0]['trailer'], 'http://playlist.yahoo.com')) {
+					$MovieTrailerLink = '<a href="'.$Movie[0]['trailer'].'" rel="trailer" title="'.$MovieLabel.' ('.$MovieYear.') Trailer"><img  src="images/icons/yahoo.png" /></a>';
+				}
+			}
+			else {
+				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$MovieYear.' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
+			}
+			
+			if(strlen($MovieLabel)) {
+				echo '
+				<tr>
+				 <td>'.$WatchedIcon.''.$MovieLabel.'</td>
+				 <td style="text-align:center">'.$MovieYear.'</td>
+				 <td>'.$MovieGenre.'</td>
+				 <td style="text-align: right">
+				  '.$MoviePlayLink.'
+				  '.$MovieInfoLink.'
+				  '.$MovieTrailerLink.'
+				  '.$MovieDeleteLink.'
+				 </td>
+				</tr>'."\n";
+			}
 		}
 		echo '</table>'."\n";
 	}

@@ -30,7 +30,7 @@ if($Series) {
 			$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.$Serie['EpisodeFile'].'"><img src="images/icons/control_play.png" title="Play '.$Serie['EpisodeFile'].'" /></a>' : '';
 		}
 		else if($Serie['TorrentKey']) {
-			$FileAction = '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'"><img src="images/icons/downloaded.png" title="Episode has been added to uTorrent. Click to re-download" /></a>';
+			$FileAction = '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$Serie['TorrentKey'].'"><img src="images/icons/downloaded.png" title="Episode has been added to uTorrent. Click to re-download" /></a>';
 		}
 		else if($RSSTorrents) {
 			if(sizeof($RSSTorrents) > 1) {

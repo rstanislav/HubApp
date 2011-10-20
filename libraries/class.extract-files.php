@@ -198,7 +198,7 @@ class ExtractFiles extends Hub {
 				$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
 				$FilesNo = 0;
 				foreach($Files AS $File) {
-					if(self::GetFileSize($File) > (1024 * 1024 * 100)) {
+					if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b|\bsample\b/i", $File) && self::GetFileSize($File) > (1024 * 1024 * 100)) {
 						$FilesNo++;
 					}
 				}
@@ -209,6 +209,12 @@ class ExtractFiles extends Hub {
 					}
 					else {
 						$AddLogEntry = ' but failed to delete "'.$FileInfo['dirname'].'"';
+					}
+				}
+				else {
+					$NewLocation = $DriveRoot.'/Unsorted/'.str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']);
+					if(rename($FileInfo['dirname'], $NewLocation)) {
+						$AddLogEntry = ' and moved "'.$FileInfo['dirname'].'" to "'.$DriveRoot.'/Unsorted/" because it has files worth keeping';
 					}
 				}
 			}

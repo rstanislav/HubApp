@@ -151,10 +151,13 @@ else {
 				$Settings = $HubObj->GetSettings();
 				
 				if($UTorrentObj->GetSetting('max_ul_rate') == $Settings['SettingUTorrentDefaultUpSpeed'] && $UTorrentObj->GetSetting('max_dl_rate') == $Settings['SettingUTorrentDefaultDownSpeed']) {
-					echo '<a><img src="images/icons/hippopotamus_dark.png" title="Limit uTorrent to '.$Settings['SettingUTorrentDefinedUpSpeed'].'/'.$Settings['SettingUTorrentDefinedDownSpeed'].' KiB/s" /></a>';
+					echo '<a><img src="images/icons/turtle_dark.png" title="Enable uTorrent speed limiter ('.$Settings['SettingUTorrentDefinedDownSpeed'].'/'.$Settings['SettingUTorrentDefinedUpSpeed'].' KiB/s)" /></a>';
+				}
+				else if($UTorrentObj->GetSetting('max_ul_rate') == $Settings['SettingUTorrentDefinedUpSpeed'] && $UTorrentObj->GetSetting('max_dl_rate') == $Settings['SettingUTorrentDefinedDownSpeed']) {
+					echo '<a><img src="images/icons/turtle_red.png" title="Disable uTorrent speed limiter ('.$Settings['SettingUTorrentDefaultDownSpeed'].'/'.$Settings['SettingUTorrentDefaultUpSpeed'].' KiB/s)" /></a>';
 				}
 				else {
-					echo '<a><img src="images/icons/hippopotamus.png" title="Limit uTorrent to '.$Settings['SettingUTorrentDefaultUpSpeed'].'/'.$Settings['SettingUTorrentDefaultDownSpeed'].' KiB/s" /></a>';
+					echo '<a><img src="images/icons/turtle_blue.png" title="Check your uTorrent speed settings!" /></a>';
 				}
 			}
 		break;

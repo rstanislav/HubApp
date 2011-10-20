@@ -148,11 +148,11 @@ $(document).ready(function() {
 					$('#TorrentSpeedSetting a img').attr('src', 'images/icons/error.png');
 				}
 				else {
-					if(CurrentStatus == 'images/icons/hippopotamus_dark.png') {
-						$('#TorrentSpeedSetting a img').attr('src', 'images/icons/hippopotamus.png');
+					if(CurrentStatus == 'images/icons/turtle_dark.png') {
+						$('#TorrentSpeedSetting a img').attr('src', 'images/icons/turtle_red.png');
 					}
 					else {
-						$('#TorrentSpeedSetting a img').attr('src', 'images/icons/hippopotamus_dark.png');
+						$('#TorrentSpeedSetting a img').attr('src', 'images/icons/turtle_dark.png');
 					}
 				}
 			}

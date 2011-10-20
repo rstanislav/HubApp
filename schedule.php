@@ -52,11 +52,6 @@ $LogActivity = $HubObj->PDO->query('SELECT LogDate AS NewContent FROM Log WHERE 
 $XBMCActivity = $HubObj->PDO->query('SELECT LogDate AS LastUpdate FROM Log WHERE LogType = "Success" AND LogEvent LIKE "%XBMC" AND (LogText LIKE "Updated XBMC Library%") ORDER BY LogDate DESC LIMIT 1')->fetch();
 
 if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
-	// Cache movie covers locally
-	if(is_object($XBMCObj->XBMCRPC)) {
-		$XBMCObj->CacheCovers();
-	}
-	
 	if(is_object($XBMCObj->XBMCRPC)) {
 		$ActivePlayer = $XBMCObj->MakeRequest('Player', 'GetActivePlayers');
 	
@@ -65,6 +60,9 @@ if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
 			// $XBMCObj->Notification('Hub', 'Adding new content');
 			
 			$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
+			
+			// Cache movie covers locally
+			$XBMCObj->CacheCovers();
 		}
 	}
 }

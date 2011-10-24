@@ -22,6 +22,7 @@ $HubObj->CheckForDBUpgrade();
  else {
  	echo '
  	<link type="text/css" rel="stylesheet" href="css/stylesheet.css" />
+ 	<link type="text/css" rel="stylesheet" href="css/hub.form.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.qtip.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.selectBox.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.fancybox-1.3.4.css" media="screen" />

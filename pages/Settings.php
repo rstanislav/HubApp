@@ -14,6 +14,10 @@ $('#SettingsSave').click(function() {
 });
 </script>
 
+<style type="text/css">
+
+</style>
+
 <?php
 $Settings = $HubObj->Settings;
 ?>

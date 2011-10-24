@@ -60,11 +60,13 @@ if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
 			// $XBMCObj->Notification('Hub', 'Adding new content');
 			
 			$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
-			
-			// Cache movie covers locally
-			$XBMCObj->CacheCovers();
 		}
 	}
+}
+
+if(is_object($XBMCObj->XBMCRPC)) {
+	// Cache movie covers locally
+	$XBMCObj->CacheCovers();
 }
 
 $FolderRebuild = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastFolderRebuild"')->fetch();

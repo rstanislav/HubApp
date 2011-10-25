@@ -255,7 +255,7 @@ class Hub {
 				$HubKillSwitch = (isset($_POST['SettingHubKillSwitch'])) ? 1 : 0;
 				
 				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskPercentage = :MinActiveDiskPercentage, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch');
-				$EditSettingsPrep->execute(array(':LocalIP'                 => $_POST['SettingHubLocalIP'],
+				$EditSettingsPrep->execute(array(':LocalIP'                 => implode('.', $_POST['SettingHubLocalIP']),
 				                                 ':MinActiveDiskPercentage' => $_POST['SettingHubMinimumActiveDiskPercentage'],
 				                                 ':MinDownloadQuality'      => $_POST['SettingHubMinimumDownloadQuality'],
 				                                 ':MaxDownloadQuality'      => $_POST['SettingHubMaximumDownloadQuality'],
@@ -291,7 +291,7 @@ class Hub {
 			
 			case 'UTorrent':
 				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingUTorrentHostname = :Hostname, SettingUTorrentPort = :Port, SettingUTorrentUsername = :Username, SettingUTorrentPassword = :Password, SettingUTorrentWatchFolder = :WatchFolder, SettingUTorrentDefaultUpSpeed = :DefaultUpSpeed, SettingUTorrentDefaultDownSpeed = :DefaultDownSpeed, SettingUTorrentDefinedUpSpeed = :DefinedUpSpeed, SettingUTorrentDefinedDownSpeed = :DefinedDownSpeed');
-				$EditSettingsPrep->execute(array(':Hostname'         => $_POST['SettingUTorrentHostname'],
+				$EditSettingsPrep->execute(array(':Hostname'         => implode('.', $_POST['SettingUTorrentHostname']),
 				                                 ':Port'             => $_POST['SettingUTorrentPort'],
 				                                 ':Username'         => $_POST['SettingUTorrentUsername'],
 				                                 ':Password'         => $_POST['SettingUTorrentPassword'],

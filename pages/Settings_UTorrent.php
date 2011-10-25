@@ -10,8 +10,13 @@
    <div class="field">
     <label>
      <?php
-     $UTorrentAPIHostname = ($Settings['SettingUTorrentHostname']) ? $Settings['SettingUTorrentHostname'] : 'localhost';
-     echo '<input name="SettingUTorrentHostname" type="text" value="'.$UTorrentAPIHostname.'" />'."\n";
+     $UTorrentAPIIP = ($Settings['SettingUTorrentHostname']) ? $Settings['SettingUTorrentHostname'] : '127.0.0.1';
+     $UTorrentAPIIPArr = explode('.', $UTorrentAPIIP);
+     	
+     echo '<input name="SettingUTorrentHostname[1]" class="ip" type="text" value="'.$UTorrentAPIIPArr[0].'" />.'.
+     	  '<input name="SettingUTorrentHostname[2]" class="ip" type="text" value="'.$UTorrentAPIIPArr[1].'" />.'.
+     	  '<input name="SettingUTorrentHostname[3]" class="ip" type="text" value="'.$UTorrentAPIIPArr[2].'" />.'.
+     	  '<input name="SettingUTorrentHostname[4]" class="ip" type="text" value="'.$UTorrentAPIIPArr[3].'" />'."\n";
      ?>
      <span>IP Address</span>
     </label>

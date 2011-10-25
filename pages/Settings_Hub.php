@@ -9,7 +9,16 @@
   <dd>
    <div class="field">
     <label>
-     <input name="SettingHubLocalIP" type="text" value="<?php echo $Settings['SettingHubLocalIP']; ?>" />
+     <?php
+     $LocalIP = ($Settings['SettingHubLocalIP']) ? $Settings['SettingHubLocalIP'] : '127.0.0.1';
+     $LocalIPArr = explode('.', $LocalIP);
+     	
+     echo '<input name="SettingHubLocalIP[1]" class="ip" type="text" value="'.$LocalIPArr[0].'" />.'.
+     	  '<input name="SettingHubLocalIP[2]" class="ip" type="text" value="'.$LocalIPArr[1].'" />.'.
+     	  '<input name="SettingHubLocalIP[3]" class="ip" type="text" value="'.$LocalIPArr[2].'" />.'.
+     	  '<input name="SettingHubLocalIP[4]" class="ip" type="text" value="'.$LocalIPArr[3].'" />'."\n";
+     ?>
+     <!--<input name="SettingHubLocalIP" type="text" value="<?php echo $Settings['SettingHubLocalIP']; ?>" />//-->
      <span>Local IP</span>
     </label>
    </div>

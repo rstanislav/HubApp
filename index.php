@@ -47,7 +47,6 @@ $HubObj->CheckForDBUpgrade();
  <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
  <script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>
  <script type="text/javascript" src="js/jquery.qtip.js"></script>
- <script type="text/javascript" src="js/jquery.contextMenu-1.01.js"></script>
  <script type="text/javascript" src="js/jquery.alerts.js"></script>
  <script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
  <script type="text/javascript" src="js/selectToUISlider.jQuery.js"></script>

@@ -110,12 +110,14 @@ if(is_array($Wishes)) {
 			$FileText = $HubObj->ConcatFilePath($Wish['WishlistFile']);
 		}
 		
+		/*
 		if($Wish['WishlistFile'] && !is_file($Wish['WishlistFile'])) {
 			$FileText = 'Movie has been downloaded, but the file is missing';
 			$WishlistPlayLink   = '';
 			$WishlistDeleteLink = $WishlistDeleteLink;
 			$WishListStatusImg  = '<img src="images/icons/error.png" />';
 		}
+		*/
 		
 		echo '
 		<tr>

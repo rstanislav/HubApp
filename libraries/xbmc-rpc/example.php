@@ -1,4 +1,4 @@
-d<?php
+<?php
 
 $params = 'xbmc:xbmc@localhost:8080';
 require_once 'rpc/HTTPClient.php';

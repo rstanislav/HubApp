@@ -123,7 +123,7 @@ if(is_array($Wishes)) {
 		<tr>
 		 <td>'.$Wish['WishlistTitle'].'</td>
 		 <td style="width:50px">'.$Wish['WishlistYear'].'</td>
-		 <td style="width:200px">Granted on '.date('d.m.y H:i', $Wish['WishlistDownloadDate']).'</td>
+		 <td style="width:150px">Granted on '.date('d.m.y H:i', $Wish['WishlistDownloadDate']).'</td>
 		 <td>'.$FileText.'</td>
 		 <td style="text-align: center;width:54px">
 		  '.$WishListStatusImg.'

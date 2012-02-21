@@ -16,6 +16,15 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'XBMCPlayPause':
+			if(filter_has_var(INPUT_GET, 'PlayerID')) {
+				$XBMCObj->Connect();
+				if(is_object($XBMCObj->XBMCRPC)) {
+					$XBMCObj->PlayPause($_GET['PlayerID']);
+				}
+			}
+		break;
+		
 		case 'Upload':
 			$Settings = $HubObj->GetSettings();
 			

@@ -489,7 +489,7 @@ class RSS extends Hub {
 		$Release = str_replace($Search, $Replace, $Release);
 		
 		$SerieRegEx    = '/(.*?)\.?((?:(?:s[0-9]{1,2})?[.-]?e[0-9]{1,2}|[0-9]{1,2}x[0-9]{1,2})(?:[.-]?(?:s?[0-9]{1,2})?[xe]?[0-9]{1,2})*)\.(.*)/i';
-		$MovieRegEx    = '/([A-z0-9 \&._\-:]+)([0-9]{4})(.*)/';
+		$MovieRegEx    = '/([A-z0-9 \&._\-:\\pL]+)([0-9]{4})(.*)/';
 		$TalkShowRegEx = '/([A-z0-9 \&._\-:]+)([0-9]{4}).([0-9]{2}).([0-9]{2})([. ])/';
 		
 		if(preg_match($SerieRegEx, $Release, $Match)) {

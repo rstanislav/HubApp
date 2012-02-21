@@ -46,6 +46,23 @@ if($Series) {
 			$FileAction = '<a href="http://www.torrentleech.org/torrents/browse/index/query/'.urlencode($Serie['SerieTitle'].' s'.sprintf('%02s', $Serie['EpisodeSeason']).'e'.sprintf('%02s', $Serie['EpisodeEpisode'])).'/facets/e8044d" target="_blank"><img src="images/icons/search.png" title="Search TorrentLeech.org for '.htmlspecialchars('"'.$Serie['SerieTitle'].' s'.sprintf("%02de%02d", $Serie['EpisodeSeason'], $Serie['EpisodeEpisode']).'"').'" /></a>';
 		}
 		
+		if(date('d.m.y', $Serie['EpisodeAirDate']) == date('d.m.y', time())) {
+			$Heading = 'Today';
+        }
+        else if(date('d.m.y', $Serie['EpisodeAirDate']) == date('d.m.y', (time() - (60 * 60 * 24)))) {
+			$Heading = 'Yesterday';
+        }
+        else {
+        	$Heading = date('l', $Serie['EpisodeAirDate']);
+        }
+		
+		if($Heading != @$PrevHeading) {
+			echo '
+        	<tr class="heading">
+        	 <td style="color: white" colspan="5">'.$Heading.'</td>
+        	</tr>'."\n";
+        }
+		
 		echo '
 		<tr>
 		 <td style="text-align: center">'.$FileAction.'</td>
@@ -54,6 +71,8 @@ if($Series) {
 		 <td>'.$Serie['EpisodeTitle'].'</td>
 		 <td style="text-align: right">'.$HubObj->ConvertSeconds(time() - $Serie['EpisodeAirDate'], FALSE).'</td>
 		</tr>'."\n";
+		
+		$PrevHeading = $Heading;
 	}
 	
 	echo '</table>'."\n";

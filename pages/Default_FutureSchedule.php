@@ -15,7 +15,7 @@ if($Series) {
 	  <th style="width: 85px; text-align: right">Time Until</th>
 	 </tr>
 	 </thead>'."\n";
-	 
+	
 	foreach($Series AS $Serie) {
 		$SearchFile = $Serie['SerieTitle'].' s'.sprintf('%02s', $Serie['EpisodeSeason']).'e'.sprintf('%02s', $Serie['EpisodeEpisode']);
 		$RSSTorrents = $RSSObj->SearchTitle($SearchFile);
@@ -38,6 +38,28 @@ if($Series) {
 			$FileAction = '';
 		}
 		
+		if(date('d.m.y', $Serie['EpisodeAirDate']) == date('d.m.y', time())) {
+			$Heading = 'Today';
+        }
+        else if(date('d.m.y', $Serie['EpisodeAirDate']) == date('d.m.y', (time() + (60 * 60 * 24)))) {
+			$Heading = 'Tomorrow';
+        }
+        else {
+        	if($Serie['EpisodeAirDate'] - time() > (60 * 60 * 24 * 3)) {
+				$Heading = 'Upcoming';
+        	}
+        	else {
+        		$Heading = date('l', $Serie['EpisodeAirDate']);
+        	}
+        }
+		
+		if($Heading != @$PrevHeading) {
+			echo '
+        	<tr class="heading">
+        	 <td style="color: white" colspan="5">'.$Heading.'</td>
+        	</tr>'."\n";
+        }
+        
 		echo '
 		<tr>
 		 <td style="text-align:center">'.$FileAction.'</td>
@@ -46,6 +68,8 @@ if($Series) {
 		 <td>'.$Serie['EpisodeTitle'].'</td>
 		 <td style="text-align: right">'.$HubObj->ConvertSeconds($Serie['EpisodeAirDate'] - time(), FALSE).'</td>
 		</tr>'."\n";
+		
+		$PrevHeading = $Heading;
 	}
 	
 	echo '</table>'."\n";

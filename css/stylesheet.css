@@ -1029,6 +1029,15 @@ a {
 	background: #dfeef7;
 }
 
+#maincontent tr.heading {
+	background: #516E84;
+	font-weight: bold;
+}
+
+#maincontent tr.heading td, #maincontent tr.heading:hover td {
+	background: 0;
+}
+
 #maincontent th {
 	color: #678197;
 	text-align:left;

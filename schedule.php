@@ -28,9 +28,12 @@ $XBMCObj->Connect();
 // Check for existing active drive and that all required folders are present
 $DrivesObj->CheckActiveDrive();
 
-// Backup XBMC Files
 if(date('G') > 4 && date('G') < 6) {
-	//
+	// Refresh all wishlist items
+	$WishlistObj->WishlistRefresh();
+	
+	// Backup XBMC Files
+	// ...
 }
 
 // Update RSS Feeds

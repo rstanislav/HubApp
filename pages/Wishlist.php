@@ -99,7 +99,7 @@ if(is_array($Wishes)) {
 		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'" rel="'.$Wish['WishlistTitle'].' ('.$Wish['WishlistYear'].')"><img src="images/icons/delete.png" /></a>' : '';
 		$WishListStatusImg = '';
 		
-		if($Wish['TorrentKey'] && !$Wish['WishlistFile']) {
+		if($Wish['TorrentKey'] && !$Wish['WishlistFile'] && !$Wish['WishlistFileGone']) {
 			$Torrent = $RSSObj->GetTorrentByID($Wish['TorrentKey']);
 			$FileText = $Torrent['TorrentTitle'].' has been added to uTorrent';
 			$WishlistPlayLink = '';
@@ -110,14 +110,13 @@ if(is_array($Wishes)) {
 			$FileText = $HubObj->ConcatFilePath($Wish['WishlistFile']);
 		}
 		
-		/*
-		if($Wish['WishlistFile'] && !is_file($Wish['WishlistFile'])) {
+		
+		if($Wish['WishlistFileGone'] && !$Wish['WishlistFile']) {
 			$FileText = 'Movie has been downloaded, but the file is missing';
 			$WishlistPlayLink   = '';
 			$WishlistDeleteLink = $WishlistDeleteLink;
 			$WishListStatusImg  = '<img src="images/icons/error.png" />';
 		}
-		*/
 		
 		echo '
 		<tr>

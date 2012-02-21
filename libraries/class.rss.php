@@ -237,10 +237,9 @@ class RSS extends Hub {
 		$RSSFeeds = $this->GetRSSFeeds();
 		
 		if(is_array($RSSFeeds)) {
+			$NewItems = 0;
 			foreach($RSSFeeds AS $RSSFeed) {
 				$Update = $this->PDO->query('SELECT TorrentPubDate AS Last FROM Torrents WHERE RSSKey = "'.$RSSFeed['RSSID'].'" ORDER BY TorrentPubDate DESC LIMIT 1')->fetch();
-				
-				$NewItems = 0;
 				
 				$RSSFile = @file_get_contents($RSSFeed['RSSFeed']);
 							

@@ -26,16 +26,6 @@
    <div class="field">
     <label>
      <?php
-     $BackupChecked = ($Settings['SettingHubBackup']) ? ' checked="checked"' : '';
-     echo '<input name="SettingHubBackup" type="checkbox"'.$BackupChecked.' />'."\n";
-     ?>
-     <span>Backup Hub files</span>
-    </label>
-   </div>
-   
-   <div class="field">
-    <label>
-     <?php
      $KillSwitchChecked = ($Settings['SettingHubKillSwitch']) ? ' checked="checked"' : '';
      echo '<input name="SettingHubKillSwitch" type="checkbox"'.$KillSwitchChecked.' />'."\n";
      ?>
@@ -45,7 +35,7 @@
   </dd>
   
   <div style="float: right">
-   <a id="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+   <a rel="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
   </div>
             
   <dd class="clear"></dd>
@@ -108,7 +98,7 @@
   </dd>
   
   <div style="float: right">
-   <a id="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+   <a rel="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
   </div>
             
   <dd class="clear"></dd>
@@ -129,28 +119,67 @@
   
    <div class="field">
     <label>
-     <input type="text" name="" value="" placeholder="Key" />
-     <span>Dropbox API key</span>
+     <input type="text" name="" value="" placeholder="Dropbox Username" />
+     <span>Dropbox Username</span>
     </label>
    </div>
   
    <div class="field">
     <label>
-     <input type="text" name="" value="" placeholder="Secret" />
-     <span>Dropbox API secret</span>
+     <input type="text" name="" value="" placeholder="Dropbox Password" />
+     <span>Dropbox Password</span>
     </label>
    </div>
    
    <div class="field">
     <span class="info">Dropbox is used for sharing your wishlist and backing up your XBMC database</span>
-    <a target="_blank" href="#">Apply here</a>
+    <!--<a target="_blank" href="#">Apply here</a>//-->
    </div>
   </dd>
   
   <div style="float: right">
-   <a id="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+   <a rel="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
   </div>
   
+  <dd class="clear"></dd>
+  
+  <dt>Backup</dt>
+  <dd>
+   <div class="field">
+    <label>
+     <?php
+     $BackupChecked = ($Settings['SettingHubBackup']) ? ' checked="checked"' : '';
+     echo '<input name="SettingHubBackup" type="checkbox"'.$BackupChecked.' />'."\n";
+     ?>
+     <span>Backup Hub files</span>
+    </label>
+   </div>
+   
+   <div class="field">
+    <label>
+     <?php
+     //$BackupChecked = ($Settings['SettingDatabaseBackup']) ? ' checked="checked"' : '';
+     echo '<input name="SettingDatabaseBackup" type="checkbox"'.$BackupChecked.' />'."\n";
+     ?>
+     <span>Backup Hub database</span>
+    </label>
+   </div>
+   
+   <div class="field">
+    <label>
+     <?php
+     //$BackupChecked = ($Settings['SettingXBMCBackup']) ? ' checked="checked"' : '';
+     echo '<input name="SettingXBMCBackup" type="checkbox"'.$BackupChecked.' />'."\n";
+     ?>
+     <span>Backup XBMC files</span>
+    </label>
+   </div>
+  </dd>
+  
+  <div style="float: right">
+   <a rel="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+  </div>
+            
   <dd class="clear"></dd>
   
  </dl>

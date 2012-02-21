@@ -421,7 +421,7 @@ else {
 				$SeriesObj->DeleteSerie($_GET['SerieID']);
 			}
 			else {
-				$_SESSION['Error'] = 'You are not permitted to add delete a serie';
+				$_SESSION['Error'] = 'You are not permitted to delete a serie';
 			}
 		break;
 		

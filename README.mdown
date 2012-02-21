@@ -52,7 +52,7 @@
 
 ##Requirements##
 
-* XBMC (>10.1)
+* XBMC Eden (11.0)
 * Apache
 * PHP (>5.3.5)
  * cURL

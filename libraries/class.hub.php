@@ -151,31 +151,13 @@ class Hub {
 	function AddLog($LogEvent, $LogType, $LogText, $LogError = FALSE, $LogAction = '') {
 		$LogError = (is_array($LogError)) ? implode("\n", $LogError) : $LogError;
 		
-		$LogPrep = $this->PDO->prepare('SELECT * FROM Log ORDER BY LogDate DESC LIMIT 1');
-		$LogPrep->execute();
-		
-		if($LogPrep->rowCount()) {
-			foreach($LogPrep->fetchAll() AS $Log) {
-				preg_match('/(Added) ([0-9]+) (torrents spread across) ([0-9]+) (RSS feeds)/', $Log['LogText'], $LogPrevious);
-				preg_match('/(Added) ([0-9]+) (torrents spread across) ([0-9]+) (RSS feeds)/', $LogText, $LogNew);
-				
-				if(sizeof($LogPrevious) && sizeof($LogNew)) {
-					$LogPrep = $this->PDO->prepare('UPDATE Log SET LogDate = :LogDate, LogText = :LogText WHERE LogID = :LogID');
-					$LogPrep->execute(array(':LogDate' => time(),
-					                        ':LogText' => 'Added '.($LogNew[2] + $LogPrevious[2]).' torrents spread across '.$LogNew[4].' RSS feeds',
-					                        ':LogID'   => $Log['LogID']));
-				}
-				else {
-					$LogPrep = $this->PDO->prepare('INSERT INTO Log (LogID, LogDate, LogEvent, LogType, LogError, LogText, LogAction) VALUES (NULL, :LogDate, :LogEvent, :LogType, :LogError, :LogText, :LogAction)');
-					$LogPrep->execute(array(':LogDate'   => time(),
-					                        ':LogEvent'  => $LogEvent,
-					                        ':LogType'   => $LogType,
-					                        ':LogError'  => $LogError,
-					                        ':LogText'   => $LogText,
-					                        ':LogAction' => $LogAction));
-				}
-			}
-		}
+		$LogPrep = $this->PDO->prepare('INSERT INTO Log (LogID, LogDate, LogEvent, LogType, LogError, LogText, LogAction) VALUES (NULL, :LogDate, :LogEvent, :LogType, :LogError, :LogText, :LogAction)');
+		$LogPrep->execute(array(':LogDate'   => time(),
+		                        ':LogEvent'  => $LogEvent,
+		                        ':LogType'   => $LogType,
+		                        ':LogError'  => $LogError,
+		                        ':LogText'   => $LogText,
+		                        ':LogAction' => $LogAction));
 	}
 	
 	function BytesToHuman($Bytes) {

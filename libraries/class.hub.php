@@ -236,14 +236,14 @@ class Hub {
 				$HubBackup     = (isset($_POST['SettingHubBackup']))     ? 1 : 0;
 				$HubKillSwitch = (isset($_POST['SettingHubKillSwitch'])) ? 1 : 0;
 				
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskPercentage = :MinActiveDiskPercentage, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch');
-				$EditSettingsPrep->execute(array(':LocalIP'                 => implode('.', $_POST['SettingHubLocalIP']),
-				                                 ':MinActiveDiskPercentage' => $_POST['SettingHubMinimumActiveDiskPercentage'],
-				                                 ':MinDownloadQuality'      => $_POST['SettingHubMinimumDownloadQuality'],
-				                                 ':MaxDownloadQuality'      => $_POST['SettingHubMaximumDownloadQuality'],
-				                                 ':HubBackup'               => $HubBackup,
-				                                 ':TheTVDBAPIKey'           => $_POST['SettingHubTheTVDBAPIKey'],
-				                                 ':HubKillSwitch'           => $HubKillSwitch));
+				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch');
+				$EditSettingsPrep->execute(array(':LocalIP'                    => implode('.', $_POST['SettingHubLocalIP']),
+				                                 ':MinActiveDiskFreeSpaceInGB' => $_POST['SettingHubMinimumActiveDiskFreeSpaceInGB'],
+				                                 ':MinDownloadQuality'         => $_POST['SettingHubMinimumDownloadQuality'],
+				                                 ':MaxDownloadQuality'         => $_POST['SettingHubMaximumDownloadQuality'],
+				                                 ':HubBackup'                  => $HubBackup,
+				                                 ':TheTVDBAPIKey'              => $_POST['SettingHubTheTVDBAPIKey'],
+				                                 ':HubKillSwitch'              => $HubKillSwitch));
 			break;
 			
 			case 'Notifications':

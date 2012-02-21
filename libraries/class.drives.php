@@ -14,7 +14,7 @@ class Drives extends Hub {
 				
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
-				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) <= $Settings['SettingHubMinimumActiveDiskPercentage']) {
+				if(($FreeSpace / 1024 / 1024 / 1024) <= $Settings['SettingHubMinimumActiveDiskFreeSpaceInGB']) {
 					self::DetermineNewActiveDrive();
 				}
 				else {
@@ -60,7 +60,7 @@ class Drives extends Hub {
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
 				
-				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) > $Settings['SettingHubMinimumActiveDiskPercentage']) {
+				if(($FreeSpace / 1024 / 1024 / 1024) > $Settings['SettingHubMinimumActiveDiskFreeSpaceInGB']) {
 					self::SetActiveDrive($Drive['DriveID']);
 					
 					break;

@@ -44,13 +44,13 @@
   <dd>
    <div class="field">
     <label>
-     <select name="SettingHubMinimumActiveDiskPercentage" id="MinActiveDiskPercentage">
+     <select name="SettingHubMinimumActiveDiskFreeSpaceInGB" id="MinimumActiveDiskFreeSpaceInGB">
      <?php
-     $PercentArr = array(1, 2, 3, 4, 5, 10, 15, 20, 30);
+     $GBArr = array(5, 10, 15, 20, 30, 40, 50, 75, 100);
      
-     foreach($PercentArr AS $Percent) {
-     	$PercentSelected = ($Percent == $Settings['SettingHubMinimumActiveDiskPercentage']) ? ' selected="selected"' : '';
-     	echo '<option value="'.$Percent.'%"'.$PercentSelected.'>'.$Percent.'%</option>'."\n";
+     foreach($GBArr AS $GB) {
+     	$GBSelected = ($GB == $Settings['SettingHubMinimumActiveDiskFreeSpaceInGB']) ? ' selected="selected"' : '';
+     	echo '<option value="'.$GB.'"'.$GBSelected.'>'.$GB.' GB</option>'."\n";
      }
      ?>
      </select>

@@ -77,7 +77,8 @@ $(document).ready(function() {
 	'a[id|="MovieToggleGenre"],' + 
 	'a[id|="MovieTogglePath"],' + 
 	'a[id|="DriveAdd"],' +
-	'a[id|="UserGroupDelete"]').click(function(event) {
+	'a[id|="UserGroupDelete"],' +
+	'a[id|="XBMCPlayPause"]').click(function(event) {
 		event.preventDefault();
 		
 		if($(this).hasClass('button')) {
@@ -197,7 +198,11 @@ function ajaxSubmitResponse(responseText, statusText, xhr, $form)  {
 		});
 	}
 	else {
-		jAlert(responseText, 'Something went wrong...');
+		noty({
+			text: responseText,
+			type: 'error',
+			timeout: false,
+		});
 	}
 }
 
@@ -280,6 +285,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -301,6 +312,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -322,6 +339,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -343,6 +366,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -364,6 +393,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -385,6 +420,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -408,6 +449,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -429,6 +476,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).contents().find('.label').text('Added!');
@@ -449,6 +502,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -472,6 +531,12 @@ function AjaxButton(Button, Extra) {
 						success: function(Return) {
 							if(Return != '') {
 								$(ButtonObj).contents().find('.label').text('Error!');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -497,6 +562,12 @@ function AjaxButton(Button, Extra) {
 						success: function(Return) {
 							if(Return != '') {
 								$(ButtonObj).contents().find('.label').text('Error!');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$('#Serie-' + ID).slideUp('slow').remove();
@@ -519,6 +590,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -540,6 +617,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -573,6 +656,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
@@ -594,6 +683,12 @@ function AjaxButton(Button, Extra) {
 				success: function(Return) {
 					if(Return != '') {
 						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(ButtonObj).contents().find('.label').text('Downloaded!');
@@ -625,6 +720,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$('#Episode-' + FirstID).slideUp('slow').remove();
@@ -648,6 +749,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$('#User-' + FirstID).slideUp('slow').remove();
@@ -671,6 +778,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$('#UserGroup-' + FirstID).slideUp('slow').remove();
@@ -694,6 +807,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$('#Zone-' + FirstID).slideUp('slow').remove();
@@ -715,6 +834,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return != '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html('<img src="images/icons/check.png" />');
@@ -734,6 +859,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return != '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html(LinkVal);
@@ -753,6 +884,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return != '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html('<img src="images/icons/check.png" />');
@@ -774,6 +911,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$(Link).parent().find('a').each(function() {
@@ -799,6 +942,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return != '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html('<img src="images/icons/check.png" />');
@@ -820,6 +969,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$(Link).html(LinkVal);
@@ -843,6 +998,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$(Link).html(LinkVal);
@@ -873,6 +1034,12 @@ function AjaxLink(Link) {
 					else {
 						$('#DownloadMultipleTorrent-' + FirstID).html('<img src="images/icons/error.png" />');
 						$('#DownloadTorrent-' + FirstID + '-' + SecondID).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 				}
 			});
@@ -889,6 +1056,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return == '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html(LinkVal);
@@ -909,6 +1082,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return != '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html(LinkVal);
@@ -928,6 +1107,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return != '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html(LinkVal);
@@ -947,6 +1132,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return != '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html(LinkVal);
@@ -968,6 +1159,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$(Link).html(LinkVal);
@@ -991,6 +1188,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								$(Link).html(LinkVal);
@@ -1012,6 +1215,12 @@ function AjaxLink(Link) {
 				success: function(Return) {
 					if(Return != '') {
 						$(Link).html('<img src="images/icons/error.png" />');
+								
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
 					}
 					else {
 						$(Link).html('<img src="images/icons/downloaded.png" />');
@@ -1033,6 +1242,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								 $('#Wishlist-' + FirstID).slideUp('slow').remove();
@@ -1056,6 +1271,12 @@ function AjaxLink(Link) {
 						success: function(Return) {
 							if(Return != '') {
 								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
 							}
 							else {
 								 $('#RSSFeed-' + FirstID).slideUp('slow').remove();

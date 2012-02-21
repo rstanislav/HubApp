@@ -6,7 +6,7 @@ class XBMC extends Hub {
 		$Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
 		
 		if(is_array($Zone)) {
-			require_once APP_PATH.'/libraries/xbmc-rpc/HTTPClient.php';
+			require_once APP_PATH.'/libraries/xbmc-rpc/rpc/HTTPClient.php';
 			try {
 				$this->XBMCRPC = new XBMC_RPC_HTTPClient($Zone['ZoneXBMCUsername'].':'.$Zone['ZoneXBMCPassword'].'@'.$Zone['ZoneXBMCHost'].':'.$Zone['ZoneXBMCPort']);
 			}
@@ -22,7 +22,7 @@ class XBMC extends Hub {
 	function PlayFile($File) {
 		if(is_file($File)) {
 			try {
-				return $this->XBMCRPC->XBMC->Play(array('file' => $File));
+				return $this->XBMCRPC->Player->Open(array('params' => array('item' => array('file' => $File))));
 			}
 			catch(XBMC_RPC_Exception $e) {
 				die($e->getMessage());
@@ -30,9 +30,19 @@ class XBMC extends Hub {
 		}
 	}
 	
+	function PlayPause($PlayerID) {
+		try {
+			return $this->XBMCRPC->Player->PlayPause(array('params' => 1));
+		}
+		catch(XBMC_RPC_Exception $e) {
+			Hub::d($e);
+			die($e->getMessage());
+		}
+	}
+	
 	function ScanForContent() {
 		try {
-			return $this->XBMCRPC->VideoLibrary->ScanForContent();
+			return $this->XBMCRPC->VideoLibrary->Scan();
 		}
 		catch(XBMC_RPC_Exception $e) {
 			die($e->getMessage());
@@ -40,7 +50,12 @@ class XBMC extends Hub {
 	}
 	
 	function CleanLibrary() {
-		// Not implemented in the XBMC JSON RPC yet
+		try {
+			return $this->XBMCRPC->VideoLibrary->Clean();
+		}
+		catch(XBMC_RPC_Exception $e) {
+			die($e->getMessage());
+		}
 	}
 	
 	function Notification($Sender, $Message) {
@@ -64,27 +79,23 @@ class XBMC extends Hub {
 	function GetRecentlyAddedMovies() {
 		try {
 		    return $this->XBMCRPC->VideoLibrary->GetRecentlyAddedMovies(array(
-		        'start' => 0,
-		        'end' => 24, 
-		        'fields' => array(
-		            'genre', 'director', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
-		            'originaltitle', 'lastplayed', 'showtitle', 'firstaired', 'duration', 'season',
-		            'episode', 'runtime', 'year', 'playcount', 'rating', 'playcount'
+                'limits' => array('start' => 0, 'end' => 33),
+                'properties' => array(
+		            'genre', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
+		            'originaltitle', 'file', 'runtime', 'year', 'rating', 'playcount', 'thumbnail'
 		        )));
 		}
 		catch(XBMC_RPC_Exception $e) {
-		    die($e->getMessage());
+			die($e->getMessage());
 		}
 	}
 	
 	function GetMovies() {
 		try {
 		    return $this->XBMCRPC->VideoLibrary->GetMovies(array(
-		        'start' => 0,
-		        'fields' => array(
+		        'properties' => array(
 		            'genre', 'director', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
-		            'originaltitle', 'lastplayed', 'showtitle', 'firstaired', 'duration', 'season',
-		            'episode', 'runtime', 'year', 'playcount', 'rating', 'playcount'
+		            'originaltitle', 'lastplayed', 'file', 'runtime', 'year', 'playcount', 'rating', 'thumbnail'
 		        )));
 		}
 		catch(XBMC_RPC_Exception $e) {
@@ -95,9 +106,9 @@ class XBMC extends Hub {
 	function GetImage($Image) {
 		try {
 		    $Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
-		    $Image = $this->XBMCRPC->Files->Download($Image);
+		    $Image = $this->XBMCRPC->Files->PrepareDownload(array('path' => $Image));
 		    
-		    return 'http://'.$Zone['ZoneXBMCUsername'].':'.$Zone['ZoneXBMCPassword'].'@'.$Zone['ZoneXBMCHost'].':'.$Zone['ZoneXBMCPort'].'/'.$Image['path'];
+		    return 'http://'.$Zone['ZoneXBMCUsername'].':'.$Zone['ZoneXBMCPassword'].'@'.$Zone['ZoneXBMCHost'].':'.$Zone['ZoneXBMCPort'].'/'.$Image['details']['path'];
 		}
 		catch(XBMC_RPC_Exception $e) {
 		    die($e->getMessage());
@@ -106,14 +117,12 @@ class XBMC extends Hub {
 	
 	function CacheCovers($ForceNew = FALSE) {
 		$Movies = self::GetMovies();
-		
 		$CoverCount = 0;
 		if(is_array($Movies)) {
 			foreach($Movies['movies'] AS $Movie) {
 				if(!is_file(APP_PATH.'/posters/movie-'.$Movie['movieid'].'.jpg') || $ForceNew) {
 					if(array_key_exists('thumbnail', $Movie)) {
 						$Cover = file_get_contents(self::GetImage($Movie['thumbnail']));
-						
 						if(strlen($Cover)) {
 							$CoverFile = APP_PATH.'/posters/movie-'.$Movie['movieid'].'.jpg';
 							if($FileHandle = fopen($CoverFile, 'w')) {
@@ -138,7 +147,12 @@ class XBMC extends Hub {
 	
 	function MakeRequest($One, $Two, $Params = '') {
 		try {
-			$Response = $this->XBMCRPC->$One->$Two($Params);
+			if(empty($Params)) {
+				$Response = $this->XBMCRPC->$One->$Two();
+			}
+			else {
+				$Response = $this->XBMCRPC->$One->$Two($Params);
+			}
 		}
 		catch(XBMC_RPC_Exception $e) {
 			die($e->getMessage());
@@ -160,13 +174,29 @@ class XBMC extends Hub {
 		    foreach($response['commands'] as $command) {
 		        printf('<p><strong>%s</strong><br />%s</p>', $command['command'], $command['description']);
 		    }
-		}else {
+		}
+		else {
+			$i = 0;
 		    foreach ($response['methods'] as $command => $commandData) {
-		        printf(
-		            '<p><strong>%s</strong><br />%s</p>',
-		            $command,
-		            isset($commandData['description']) ? $commandData['description'] : ''
-		        );
+                $description = isset($commandData['description']) ? $commandData['description'] : '';
+                
+                $color = sizeof($commandData['params']) ? 'red' : 'black';
+                echo '
+                <div id="command-'.$i.'" style="color: '.$color.'">
+                 <strong>'.$command.'</strong><br />
+                 '.$description.'<br />
+                </div>'."\n";
+                
+                if(sizeof($commandData['params'])) {
+                    echo '<div style="display:none" id="data-'.$i.'">'."\n";
+                    Hub::d($commandData['params']);
+                    echo '</div><br />';
+                }
+                else {
+                    echo '<br />';
+                }
+                
+                $i++;
 		    }
 		}
 	}

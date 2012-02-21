@@ -224,6 +224,40 @@ function AjaxButton(Button, Extra) {
 	if(!ButtonClass)                      ButtonClass = 'positive';
 	
 	switch(Action) {
+		case 'XBMCPlayPause':
+			if(ButtonVal = 'Play') {
+				NewPlayState = 'Pause';
+			}
+			else {
+				NewPlayState = 'Play';
+			}
+			
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=XBMCPlayPause&PlayerID=' + ID,
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Loading ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(NewPlayState);
+					}
+				}
+			});
+		break;
+		
 		case 'MovieToggleGenre':
 			$('.MovieGenre').toggle();
 			SetCookie('MovieGenre', $('.MovieGenre').attr('style'), '999', '/', '', '' );

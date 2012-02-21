@@ -55,9 +55,8 @@ if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
 	if(is_object($XBMCObj->XBMCRPC)) {
 		$ActivePlayer = $XBMCObj->MakeRequest('Player', 'GetActivePlayers');
 	
-		if(!$ActivePlayer['video']) {
+		if(!sizeof($ActivePlayer)) {
 			$XBMCObj->ScanForContent();
-			// $XBMCObj->Notification('Hub', 'Adding new content');
 			
 			$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
 		}

@@ -1,5 +1,4 @@
 <div class="head-control">
- <a id="MovieToggleGenre-0" class="button positive"><span class="inner"><span class="label" nowrap="">Toggle Genre</span></span></a>
  <a id="MovieTogglePath-0" class="button positive"><span class="inner"><span class="label" nowrap="">Toggle File Path</span></span></a>
 </div>
 
@@ -9,12 +8,7 @@
 $XBMCObj->Connect();
 
 if(is_object($XBMCObj->XBMCRPC)) {
-	$RecentMovies = $XBMCObj->GetRecentlyAddedMovies();
-	
-	//$HubObj->d($RecentMovies);
-	
-	//$XBMCObj->d($XBMCObj->GetCommands($HubObj->XBMCRPC));
-	
+    $RecentMovies = $XBMCObj->GetRecentlyAddedMovies();
 	if(is_array($RecentMovies)) {
 		$i = 1;
 		echo '
@@ -28,7 +22,6 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				$Thumbnail = 'images/poster-unavailable.png';
 			}
 			
-			$Genre = (array_key_exists('genre', $Movie)) ? $Movie['genre'] : '';
 			$Files = $HubObj->ConcatFilePath($Movie['file']);
 			
 			$FilePath = '';
@@ -40,8 +33,8 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			}
 			
 			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
-			
-			if(array_key_exists('trailer', $Movie)) {
+
+			if(!empty($Movie['trailer'])) {
 				if(strstr($Movie['trailer'], 'plugin.video.youtube')) {
 					$MovieTrailerLink = '<a href="http://youtube.com/watch?v='.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie['trailer']).'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/youtube.png" /></a>';
 				}
@@ -68,14 +61,11 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			  </div>
 			 </div>';
 			
-			$GenreShow = (filter_has_var(INPUT_COOKIE, 'MovieGenre')) ? ' style="'.$_COOKIE['MovieGenre'].'"' : ' style="display: inline;"';
 			$PathShow = (filter_has_var(INPUT_COOKIE, 'MoviePath')) ? ' style="'.$_COOKIE['MoviePath'].'"' : ' style="display: inline;"';
-			
 			echo '
 			<td style="text-align: center; width:33%;">
 			 <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
 			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
-			 <span class="MovieGenre"'.$GenreShow.'><br /><em>'.$Genre.'</em></span>
 			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span><br /><br />
 			</td>'."\n";
 			
@@ -108,7 +98,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		 <tr>
 		  <th>Title</th>
 		  <th style="width:40px; text-align:center">Year</th>
-		  <th>Genre</th>
+		  <th>File</th>
 		  <th style="width:74px">&nbsp;</th>
 		 </tr>
 		 </thead>'."\n";
@@ -127,6 +117,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$MovieThumbnail = (array_key_exists('thumbnail', $Movie[0])) ? trim($Movie[0]['thumbnail']) : '';
 			$MovieFanart    = (array_key_exists('fanart', $Movie[0]))    ? trim($Movie[0]['fanart'])    : '';
 			$MovieGenre     = (array_key_exists('genre', $Movie[0]))     ? trim($Movie[0]['genre'])     : '';
+			$MovieFile      = (array_key_exists('file', $Movie[0]))      ? $HubObj->ConcatFilePath(trim($Movie[0]['file']))      : '';
 			
 			if(array_key_exists('trailer', $Movie[0])) {
 				if(strstr($Movie[0]['trailer'], 'plugin.video.youtube')) {
@@ -134,6 +125,9 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				}
 				else if(strstr($Movie[0]['trailer'], 'http://playlist.yahoo.com')) {
 					$MovieTrailerLink = '<a href="'.$Movie[0]['trailer'].'" rel="trailer" title="'.$MovieLabel.' ('.$MovieYear.') Trailer"><img  src="images/icons/yahoo.png" /></a>';
+				}
+				else {
+					$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$MovieYear.' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
 				}
 			}
 			else {
@@ -145,7 +139,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				<tr>
 				 <td>'.$WatchedIcon.''.$MovieLabel.'</td>
 				 <td style="text-align:center">'.$MovieYear.'</td>
-				 <td>'.$MovieGenre.'</td>
+				 <td>'.$MovieFile.'</td>
 				 <td style="text-align: right">
 				  '.$MoviePlayLink.'
 				  '.$MovieInfoLink.'

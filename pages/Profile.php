@@ -38,7 +38,7 @@ $('#ProfileSave').click(function() {
   </dd>
   
   <div style="float: right">
-   <a id="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+   <a id="ProfileSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
   </div>
             
   <dd class="clear"></dd>

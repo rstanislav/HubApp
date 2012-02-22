@@ -183,7 +183,7 @@ class ExtractFiles extends Hub {
 			$NewFileName = $NewFileInfo['filename'].'-DUPE-'.mt_rand().'.'.$NewFileInfo['extension'];
 		}
 
-		if(rename($FileInfo['dirname'].'/'.$FileInfo['basename'], $NewFolder.'/'.$NewFileName)) {
+		if(is_file($FileInfo['dirname'].'/'.$FileInfo['basename']) && rename($FileInfo['dirname'].'/'.$FileInfo['basename'], $NewFolder.'/'.$NewFileName)) {
 			$AddLogEntry = '';
 				
 			if(!str_replace($DriveRoot.'/Completed', '', $FileInfo['dirname'])) {

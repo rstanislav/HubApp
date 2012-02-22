@@ -111,6 +111,30 @@ class UTorrent extends Hub {
 		}
 	}
 	
+	function CheckTorrentForFile($FileCheck) {
+		if(is_object($this->UTorrentAPI)) {
+			$Torrents = UTorrent::GetTorrents();
+				
+			foreach($Torrents AS $Torrent) {
+				$Files = UTorrent::GetFiles($Torrent[0]);
+				
+				foreach($Files AS $File) {
+					if(is_array($File)) {
+						foreach($File AS $FileTmp) {
+							if($FileTmp[0] == $FileCheck) {
+								if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000 && $Torrent[UTORRENT_TORRENT_STATUS] == 136) {
+									return FALSE;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return TRUE;
+	}
+	
 	function GetSettings() {
 		if(is_object($this->UTorrentAPI)) {
 			return $this->UTorrentAPI->getSettings();
@@ -142,6 +166,10 @@ class UTorrent extends Hub {
 	
 	function GetTorrents() {
 		return $this->UTorrentAPI->getTorrents();
+	}
+	
+	function GetFiles($Hash) {
+		return $this->UTorrentAPI->getFiles($Hash);
 	}
 	
 	function TorrentStartAll() {

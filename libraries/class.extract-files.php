@@ -34,13 +34,14 @@ class ExtractFiles extends Hub {
 		$Drives = Drives::GetDrivesFromDB();
 		
 		$CompletedFiles = array();
-		if(is_array($Drives)) {
+		if(is_array($Drives)) {	
 			foreach($Drives AS $Drive) {
 				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
 				$Files = Hub::RecursiveGlob($DriveRoot.'/Completed', "{*.mp4,*.mkv,*.avi,*.rar}", GLOB_BRACE);
 				
 				foreach($Files AS $File) {
 					$FileExt = pathinfo($File, PATHINFO_EXTENSION);
+					$FileName = pathinfo($File, PATHINFO_BASENAME);
 					
 					switch($FileExt) {
 						case 'rar':
@@ -64,7 +65,8 @@ class ExtractFiles extends Hub {
 								$UniqueRarFile = TRUE;
 							}
 							
-							if($UniqueRarFile) {
+							UTorrent::Connect();
+							if($UniqueRarFile && !UTorrent::CheckTorrentForFile($FileName)) {
 								if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b/i", $File)) {
 									$CompletedFiles['Extract'][] = $File.','.$Drive['DriveID'];
 								}
@@ -74,7 +76,7 @@ class ExtractFiles extends Hub {
 						case 'mp4':
 						case 'mkv':
 						case 'avi':
-							if($this->GetFileSize($File) >= (1024 * 1024 * 150)) {
+							if($this->GetFileSize($File) >= (1024 * 1024 * 150) && !UTorrent::CheckTorrentForFile($FileName)) {
 								$CompletedFiles['Move'][] = $File.','.$Drive['DriveID'];
 							}
 						break;
@@ -235,8 +237,9 @@ class ExtractFiles extends Hub {
 				}
 			}
 			else if($ParsedFile['Type'] == 'Movie') {
-				$WishlistUpdatePrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = :File WHERE WishlistTitle = :Title AND WishlistYear = :Year');
+				$WishlistUpdatePrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = :File, WishlistDownloadDate = :Date, WishlistFileGone = 0 WHERE WishlistTitle = :Title AND WishlistYear = :Year');
 				$WishlistUpdatePrep->execute(array(':File'  => $NewFolder.'/'.$NewFileName,
+				                                   ':Date'  => time(),
 				                                   ':Title' => $ParsedFile['Title'],
 				                                   ':Year'  => $ParsedFile['Year']));
 				                                   

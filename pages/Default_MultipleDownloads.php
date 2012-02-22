@@ -24,6 +24,6 @@ if(filter_has_var(INPUT_GET, 'File') && !empty($_GET['File'])) {
 	}
 }
 else {
-	echo 'Something is not right…';
+	echo 'Invalid params.';
 }
 ?>

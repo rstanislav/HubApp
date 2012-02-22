@@ -200,6 +200,9 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			echo '</table>'."\n";
 		}
 	}
+	else {
+		echo '<div class="notification information">XBMC is currently idle</div>';
+	}
 }
 else {
 	echo '<div class="notification warning">Unable to connect to XBMC</div>';

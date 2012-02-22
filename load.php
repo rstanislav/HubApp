@@ -16,6 +16,10 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'WishlistRefresh':
+			$WishlistObj->WishlistRefresh();
+		break;
+		
 		case 'XBMCPlayPause':
 			if(filter_has_var(INPUT_GET, 'PlayerID')) {
 				$XBMCObj->Connect();

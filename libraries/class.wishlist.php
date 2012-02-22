@@ -134,7 +134,7 @@ class Wishlist extends Hub {
 		$Movies = $this->GetMovieFiles();
 			
 		if(is_array($Movies)) {
-			$WishlistRefreshPrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = null, WishlistFileGone = 1 WHERE WishlistDownloadDate != 0 AND WishlistFile != \'\' OR (WishlistDownloadDate != 0 AND TorrentKey != 0)');
+			$WishlistRefreshPrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = null, WishlistFileGone = 1 WHERE WishlistDownloadDate != 0 AND WishlistFile != "" OR (WishlistDownloadDate != 0 AND TorrentKey != 0)');
 			$WishlistRefreshPrep->execute();
 			
 			$WishlistItems = 0;
@@ -142,9 +142,18 @@ class Wishlist extends Hub {
 				$ParsedFile = RSS::ParseRelease($Movie);
 				
 				if(is_array($ParsedFile)) {
-					if($this->GetWishlistItemByTitleYear($ParsedFile['Title'], $ParsedFile['Year'])) {
-						$WishlistRefreshPrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = :File, WishlistFileGone = 0 WHERE WishlistTitle = :Title AND WishlistYear = :Year');
+					$WishlistItem = $this->GetWishlistItemByTitleYear($ParsedFile['Title'], $ParsedFile['Year']);
+					if($WishlistItem) {
+						if(!$WishlistItem['WishlistDownloadDate']) {
+							$WishlistDownloadDate = time();
+						}
+						else {
+							$WishlistDownloadDate = $WishlistItem['WishlistDownloadDate'];
+						}
+						
+						$WishlistRefreshPrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = :File, WishlistFileGone = 0, WishlistDownloadDate = :Date WHERE WishlistTitle = :Title AND WishlistYear = :Year');
 						$WishlistRefreshPrep->execute(array('File'  => $Movie,
+						                                    'Date'  => $WishlistDownloadDate,
 							                                'Title' => $ParsedFile['Title'],
 							                                'Year'  => $ParsedFile['Year']));
 							                                

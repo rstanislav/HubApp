@@ -78,7 +78,8 @@ $(document).ready(function() {
 	'a[id|="MovieTogglePath"],' + 
 	'a[id|="DriveAdd"],' +
 	'a[id|="UserGroupDelete"],' +
-	'a[id|="XBMCPlayPause"]').click(function(event) {
+	'a[id|="XBMCPlayPause"],' +
+	'a[id|="WishlistRefresh"]').click(function(event) {
 		event.preventDefault();
 		
 		if($(this).hasClass('button')) {
@@ -229,6 +230,33 @@ function AjaxButton(Button, Extra) {
 	if(!ButtonClass)                      ButtonClass = 'positive';
 	
 	switch(Action) {
+		case 'WishlistRefresh':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=WishlistRefresh',
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Refreshing ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
 		case 'XBMCPlayPause':
 			if(ButtonVal = 'Play') {
 				NewPlayState = 'Pause';

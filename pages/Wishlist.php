@@ -21,6 +21,7 @@ $('#AddWishlistItem').click(function(event) {
 
 <div class="head-control">
  <a id="AddWishlistItem" class="button positive"><span class="inner"><span class="label" nowrap="">Add Wish</span></span></a>
+ <a id="WishlistRefresh-0" class="button positive"><span class="inner"><span class="label" nowrap="">Refresh Wishlist</span></span></a>
 </div>
  
 <div class="head">Wishlist <small style="font-size: 12px;">(<a href="#!/Help/Wishlist">?</a>)</small></div>

@@ -40,10 +40,8 @@ class ExtractFiles extends Hub {
 				$Files = Hub::RecursiveGlob($DriveRoot.'/Completed', "{*.mp4,*.mkv,*.avi,*.rar}", GLOB_BRACE);
 				
 				foreach($Files AS $File) {
-					$FileExt = pathinfo($File, PATHINFO_EXTENSION);
-					$FileName = pathinfo($File, PATHINFO_BASENAME);
-					
-					switch($FileExt) {
+					$FileInfo = pathinfo($File);
+					switch($FileInfo['extension']) {
 						case 'rar':
 							$UniqueRarFile = FALSE;
 						
@@ -65,8 +63,7 @@ class ExtractFiles extends Hub {
 								$UniqueRarFile = TRUE;
 							}
 							
-							UTorrent::Connect();
-							if($UniqueRarFile && !UTorrent::CheckTorrentForFile($FileName)) {
+							if($UniqueRarFile && !is_file($FileInfo['dirname'].'/SEEDING')) {
 								if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b/i", $File)) {
 									$CompletedFiles['Extract'][] = $File.','.$Drive['DriveID'];
 								}
@@ -76,7 +73,7 @@ class ExtractFiles extends Hub {
 						case 'mp4':
 						case 'mkv':
 						case 'avi':
-							if($this->GetFileSize($File) >= (1024 * 1024 * 150) && !UTorrent::CheckTorrentForFile($FileName)) {
+							if($this->GetFileSize($File) >= (1024 * 1024 * 150) && !is_file($FileInfo['dirname'].'/SEEDING')) {
 								$CompletedFiles['Move'][] = $File.','.$Drive['DriveID'];
 							}
 						break;
@@ -196,28 +193,37 @@ class ExtractFiles extends Hub {
 				$OldLocation = str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']).'/'.$FileInfo['basename'];
 			}
 			
-			if($FileInfo['foldername'] != 'Completed') {
-				$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
-				$FilesNo = 0;
-				foreach($Files AS $File) {
-					if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b|\bsample\b/i", $File) && self::GetFileSize($File) > (1024 * 1024 * 100)) {
-						$FilesNo++;
+			UTorrent::Connect();
+			if(!UTorrent::CheckTorrentForFile($FileInfo['basename'])) {
+				if($FileInfo['foldername'] != 'Completed') {
+					$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
+					$FilesNo = 0;
+					foreach($Files AS $File) {
+						if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b|\bsample\b/i", $File) && self::GetFileSize($File) > (1024 * 1024 * 100)) {
+							$FilesNo++;
+						}
 					}
-				}
 				
-				if(!$FilesNo) {
-					if(@Drives::RecursiveDirRemove($FileInfo['dirname'])) {
-						$AddLogEntry = ' and deleted "'.$FileInfo['dirname'].'"';
+					if(!$FilesNo) {
+						if(@Drives::RecursiveDirRemove($FileInfo['dirname'])) {
+							$AddLogEntry = ' and deleted "'.$FileInfo['dirname'].'"';
+						}
+						else {
+							$AddLogEntry = ' but failed to delete "'.$FileInfo['dirname'].'"';
+						}
 					}
 					else {
-						$AddLogEntry = ' but failed to delete "'.$FileInfo['dirname'].'"';
+						$NewLocation = $DriveRoot.'/Unsorted/'.str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']);
+						if(rename($FileInfo['dirname'], $NewLocation)) {
+							$AddLogEntry = ' and moved "'.$FileInfo['dirname'].'" to "'.$DriveRoot.'/Unsorted/" because it has files worth keeping';
+						}
 					}
 				}
-				else {
-					$NewLocation = $DriveRoot.'/Unsorted/'.str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']);
-					if(rename($FileInfo['dirname'], $NewLocation)) {
-						$AddLogEntry = ' and moved "'.$FileInfo['dirname'].'" to "'.$DriveRoot.'/Unsorted/" because it has files worth keeping';
-					}
+			}
+			else {
+				if($FileInfo['foldername'] != 'Completed') {
+					Drives::RecursiveDirFileAdd($FileInfo['dirname'], 'SEEDING');
+					$AddLogEntry = ' and kept the original files for seeding purposes';
 				}
 			}
 			

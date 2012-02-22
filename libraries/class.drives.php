@@ -168,6 +168,23 @@ class Drives extends Hub {
 	   	}
 	}
 	
+	function RecursiveDirFileAdd($Directory, $FileToAdd) { 
+		if(is_dir($Directory)) {
+			touch($Directory.'/'.$FileToAdd);
+			$Objects = scandir($Directory); 
+			
+			foreach($Objects AS $Object) { 
+				if($Object != '.' && $Object != '..') { 
+	        		if(filetype($Directory.'/'.$Object) == 'dir') {
+	        			self::RecursiveDirFileAdd($Directory.'/'.$Object, $FileToAdd); 
+	        		}
+	       		} 
+	     	} 
+	     
+	     	reset($Objects);
+	   	}
+	}
+	
 	function GetDriveByID($DriveID) {
 		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveID = :ID');
 		$DrivePrep->execute(array(':ID' => $DriveID));

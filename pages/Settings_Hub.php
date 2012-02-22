@@ -103,6 +103,35 @@
             
   <dd class="clear"></dd>
   
+  <dt>Torrent Search</dt>
+  <dd>
+   <div class="field">
+    <label>
+     <input type="text" name="SettingHubSearchURITVSeries" value="<?php echo $Settings['SettingHubSearchURITVSeries']; ?>" placeholder="http://" />
+     <span>Search URI for tv series</span>
+    </label>
+   </div>
+   
+   <div class="field">
+    <label>
+     <input type="text" name="SettingHubSearchURIMovies" value="<?php echo $Settings['SettingHubSearchURIMovies']; ?>" placeholder="http://" />
+     <span>Search URI for movies</span>
+    </label>
+   </div>
+   
+   <div class="field">
+    <span class="info">
+     For example: <strong>http://torrentz.eu/search?f=<em>{QUERY}</em></strong>
+    </span>
+   </div>
+  </dd>
+  
+  <div style="float: right">
+   <a rel="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+  </div>
+            
+  <dd class="clear"></dd>
+  
   <dt>Remote Services</dt>
   <dd>
    <div class="field">

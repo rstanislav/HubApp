@@ -43,7 +43,7 @@ if($Series) {
 		else {
 			$SearchQuery = strtolower($Serie['SerieTitle']);
 			$SeasonEpisodeFormatted = sprintf("S%02sE%02s", $Serie['EpisodeSeason'], $Serie['EpisodeEpisode']);
-			$FileAction = '<a href="http://www.torrentleech.org/torrents/browse/index/query/'.urlencode($Serie['SerieTitle'].' s'.sprintf('%02s', $Serie['EpisodeSeason']).'e'.sprintf('%02s', $Serie['EpisodeEpisode'])).'/facets/e8044d" target="_blank"><img src="images/icons/search.png" title="Search TorrentLeech.org for '.htmlspecialchars('"'.$Serie['SerieTitle'].' s'.sprintf("%02de%02d", $Serie['EpisodeSeason'], $Serie['EpisodeEpisode']).'"').'" /></a>';
+			$FileAction = $RSSObj->CreateSearchLink($Serie['SerieTitle'].' s'.sprintf("%02de%02d", $Serie['EpisodeSeason'], $Serie['EpisodeEpisode']), 'tv');
 		}
 		
 		if(date('d.m.y', $Serie['EpisodeAirDate']) == date('d.m.y', time())) {

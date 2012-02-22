@@ -439,6 +439,32 @@ class RSS extends Hub {
 		}
 	}
 	
+	function CreateSearchLink($Query, $Type) {
+		$Settings = Hub::GetSettings();
+		
+		$DeadLink = '<img src="images/icons/search_dark.png" title="Add a search URI in the settings to enable searching" />';
+		switch($Type) {
+			case 'movie':
+				if(!empty($Settings['SettingHubSearchURIMovies'])) {
+					$Link = $Settings['SettingHubSearchURIMovies'];
+				}
+			break;
+			
+			case 'tv':
+				if(!empty($Settings['SettingHubSearchURITVSeries'])) {
+					$Link = $Settings['SettingHubSearchURITVSeries'];
+				}
+			break;
+		}
+		
+		if(isset($Link)) {
+			return '<a href="'.str_replace('{QUERY}', urlencode($Query), $Link).'" target="_blank"><img src="images/icons/search.png" title="Search for \''.$Query.'\'" /></a>';
+		}
+		else {
+			return $DeadLink;
+		}
+	}
+	
 	function TorrentDownload($ID) {
 		$Torrent = $this->PDO->query('SELECT TorrentURI, TorrentTitle FROM Torrents WHERE TorrentID = '.$ID)->fetch();
 		

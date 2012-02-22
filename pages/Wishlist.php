@@ -37,7 +37,7 @@ if(is_array($Wishes)) {
 	  <th>Title</th>
 	  <th style="width:50px">Year</th>
 	  <th style="width:150px">Since</th>
-	  <th style="width:36px">&nbsp;</th>
+	  <th style="width:54px">&nbsp;</th>
 	 </tr>
 	 </thead>'."\n";
 	foreach($Wishes AS $Wish) {
@@ -49,6 +49,7 @@ if(is_array($Wishes)) {
 		 <td class="editable" id="'.$Wish['WishlistID'].'-|-WishlistYear">'.$Wish['WishlistYear'].'</td>
 		 <td>'.date('d.m.y H:i', $Wish['WishlistDate']).'</td>
 		 <td style="text-align: center">
+		  '.$RSSObj->CreateSearchLink($Wish['WishlistTitle'].' '.$Wish['WishlistYear'], 'movie').'
 		  <a href="http://www.youtube.com/results?search_query='.urlencode($Wish['WishlistTitle'].' '.$Wish['WishlistYear'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 		  '.$WishlistDeleteLink.'
 		 </td>

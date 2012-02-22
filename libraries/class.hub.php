@@ -236,14 +236,16 @@ class Hub {
 				$HubBackup     = (isset($_POST['SettingHubBackup']))     ? 1 : 0;
 				$HubKillSwitch = (isset($_POST['SettingHubKillSwitch'])) ? 1 : 0;
 				
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch');
+				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch, SettingHubSearchURITVSeries = :SearchURITVSeries, SettingHubSearchURIMovies = :SearchURIMovies');
 				$EditSettingsPrep->execute(array(':LocalIP'                    => implode('.', $_POST['SettingHubLocalIP']),
 				                                 ':MinActiveDiskFreeSpaceInGB' => $_POST['SettingHubMinimumActiveDiskFreeSpaceInGB'],
 				                                 ':MinDownloadQuality'         => $_POST['SettingHubMinimumDownloadQuality'],
 				                                 ':MaxDownloadQuality'         => $_POST['SettingHubMaximumDownloadQuality'],
 				                                 ':HubBackup'                  => $HubBackup,
 				                                 ':TheTVDBAPIKey'              => $_POST['SettingHubTheTVDBAPIKey'],
-				                                 ':HubKillSwitch'              => $HubKillSwitch));
+				                                 ':HubKillSwitch'              => $HubKillSwitch,
+				                                 ':SearchURITVSeries'          => $_POST['SettingHubSearchURITVSeries'],
+				                                 ':SearchURIMovies'            => $_POST['SettingHubSearchURIMovies']));
 			break;
 			
 			case 'Notifications':

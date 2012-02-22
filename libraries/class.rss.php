@@ -427,7 +427,7 @@ class RSS extends Hub {
 	}
 	
 	function SearchTitle($Search) {
-		$SearchPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE TorrentTitle LIKE :Search AND TorrentTitle NOT LIKE :ExcludeSearch ORDER BY TorrentDate DESC');
+		$SearchPrep = $this->PDO->prepare('SELECT Torrents.*, RSS.RSSTitle FROM Torrents, RSS WHERE TorrentTitle LIKE :Search AND TorrentTitle NOT LIKE :ExcludeSearch AND RSS.RSSID = Torrents.RSSKey ORDER BY TorrentDate DESC');
 		$SearchPrep->execute(array(':Search'        => urldecode($Search).'%',
 		                           ':ExcludeSearch' => '%hebsub%'));
 		

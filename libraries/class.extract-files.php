@@ -100,7 +100,7 @@ class ExtractFiles extends Hub {
 				$ExtractedFile = str_replace('...         ', '', $ExtractedFile);
 				$ExtractedFile = substr($ExtractedFile, 0, strpos($ExtractedFile, '  '));
 				
-				$MoveFileReturn = self::MoveFile($FileInfo['dirname'].'/'.$ExtractedFile, $DriveID);
+				$MoveFileReturn = self::MoveFile($FileInfo['dirname'].'/'.$ExtractedFile, $DriveID, pathinfo($File, PATHINFO_BASENAME));
 				
 				return $MoveFileReturn;
 			}
@@ -117,9 +117,18 @@ class ExtractFiles extends Hub {
 		}
 	}
 	
-	function MoveFile($File, $DriveID) {
+	function MoveFile($File, $DriveID, $ExtractedFrom = '') {
 		$FileInfo = pathinfo($File);
 		$FileInfo['foldername'] = substr($FileInfo['dirname'], (strrpos($FileInfo['dirname'], '/') + 1));
+		
+		if(empty($ExtractedFrom)) {
+			$FileInTorrent = $File;
+			$MoveAction = 'copy';
+		}
+		else {
+			$FileInTorrent = $ExtractedFrom;
+			$MoveAction = 'rename';
+		}
 		
 		$Drive = Drives::GetDriveByID($DriveID);
 		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
@@ -183,7 +192,7 @@ class ExtractFiles extends Hub {
 			$NewFileName = $NewFileInfo['filename'].'-DUPE-'.mt_rand().'.'.$NewFileInfo['extension'];
 		}
 
-		if(is_file($FileInfo['dirname'].'/'.$FileInfo['basename']) && rename($FileInfo['dirname'].'/'.$FileInfo['basename'], $NewFolder.'/'.$NewFileName)) {
+		if(is_file($FileInfo['dirname'].'/'.$FileInfo['basename']) && $MoveAction($FileInfo['dirname'].'/'.$FileInfo['basename'], $NewFolder.'/'.$NewFileName)) {
 			$AddLogEntry = '';
 				
 			if(!str_replace($DriveRoot.'/Completed', '', $FileInfo['dirname'])) {
@@ -194,7 +203,7 @@ class ExtractFiles extends Hub {
 			}
 			
 			UTorrent::Connect();
-			if(UTorrent::CheckTorrentForFile($FileInfo['basename'])) {
+			if(!UTorrent::CheckTorrentForFile($FileInTorrent)) {
 				if($FileInfo['foldername'] != 'Completed') {
 					$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
 					$FilesNo = 0;

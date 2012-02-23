@@ -116,14 +116,14 @@ class UTorrent extends Hub {
 			$Torrents = UTorrent::GetTorrents();
 				
 			foreach($Torrents AS $Torrent) {
-				$Files = UTorrent::GetFiles($Torrent[0]);
+				$SeedStatuses = array(137, 200, 201); // Seeding (F), Queued Seed, Seeding
+				if(in_array($Torrent[UTORRENT_TORRENT_STATUS], $SeedStatuses)) {
+					$Files = UTorrent::GetFiles($Torrent[0]);
 				
-				foreach($Files AS $File) {
-					if(is_array($File)) {
-						foreach($File AS $FileTmp) {
-							if($FileTmp[0] == $FileCheck) {
-								$SeedStatuses = array(137, 200, 201); // Seeding (F), Queued Seed, Seeding
-								if(in_array($Torrent[UTORRENT_TORRENT_STATUS], $SeedStatuses)) {
+					foreach($Files AS $File) {
+						if(is_array($File)) {
+							foreach($File AS $FileTmp) {
+								if($FileTmp[0] == $FileCheck) {
 									return TRUE;
 								}
 							}

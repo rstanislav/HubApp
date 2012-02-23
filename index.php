@@ -22,9 +22,11 @@ $HubObj->CheckForDBUpgrade();
  else {
  	echo '
  	<link type="text/css" rel="stylesheet" href="css/stylesheet.css" />
+ 	<link type="text/css" rel="stylesheet" href="css/hub.form.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.qtip.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.selectBox.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.fancybox-1.3.4.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.noty.css"/>
  	
  	<noscript>
  	 <div id="error">
@@ -43,10 +45,9 @@ $HubObj->CheckForDBUpgrade();
  <link rel="apple-touch-icon" sizes="114x114" href="images/logo-iphone4.png" />
  <link rel="apple-touch-icon" sizes="144x144" href="images/logo-ipad3.png" />
 
- <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+ <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
  <script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>
  <script type="text/javascript" src="js/jquery.qtip.js"></script>
- <script type="text/javascript" src="js/jquery.contextMenu-1.01.js"></script>
  <script type="text/javascript" src="js/jquery.alerts.js"></script>
  <script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
  <script type="text/javascript" src="js/selectToUISlider.jQuery.js"></script>
@@ -55,6 +56,7 @@ $HubObj->CheckForDBUpgrade();
  <script type="text/javascript" src="js/jquery.timers.js"></script>
  <script type="text/javascript" src="js/jquery.selectBox.js"></script>
  <script type="text/javascript" src="js/valums.file-uploader.js"></script>
+ <script type="text/javascript" src="js/jquery.noty.js"></script>
  <script type="text/javascript" src="js/hub.script.js"></script>
  
  <script type="text/javascript" src="js/jquery.mousewheel-3.0.4.pack.js"></script>

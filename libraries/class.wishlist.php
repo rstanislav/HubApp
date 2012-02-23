@@ -11,6 +11,26 @@ class Wishlist extends Hub {
 			return FALSE;
 		}
 	}
+	
+	function GetMovieFiles() {
+		$Drives = Drives::GetDrivesFromDB();
+		
+		if(is_array($Drives)) {
+			$MovieFiles = array();
+			foreach($Drives AS $Drive) {
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$Files[$DriveRoot] = glob($DriveRoot.'/Media/Movies/{*.mp4,*.mkv,*.avi,*.mp4}', GLOB_BRACE);
+				
+				if(sizeof($Files[$DriveRoot])) {
+					$MovieFiles = array_merge((array)$MovieFiles, (array)$Files[$DriveRoot]);
+				}
+			}
+			
+			if(sizeof($MovieFiles)) {
+				return $MovieFiles;
+			}
+		}
+	}
 
 	function GetFulfilledWishlistItems() {
 		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE  WishlistDownloadDate != "" ORDER BY WishlistDownloadDate DESC');
@@ -110,6 +130,44 @@ class Wishlist extends Hub {
 		}
 	}
 	
+	function WishlistRefresh() {
+		$Movies = $this->GetMovieFiles();
+			
+		if(is_array($Movies)) {
+			$WishlistRefreshPrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = null, WishlistFileGone = 1 WHERE WishlistDownloadDate != 0 AND WishlistFile != "" OR (WishlistDownloadDate != 0 AND TorrentKey != 0)');
+			$WishlistRefreshPrep->execute();
+			
+			$WishlistItems = 0;
+			foreach($Movies AS $Movie) {
+				$ParsedFile = RSS::ParseRelease($Movie);
+				
+				if(is_array($ParsedFile)) {
+					$WishlistItem = $this->GetWishlistItemByTitleYear($ParsedFile['Title'], $ParsedFile['Year']);
+					if($WishlistItem) {
+						if(!$WishlistItem['WishlistDownloadDate']) {
+							$WishlistDownloadDate = time();
+						}
+						else {
+							$WishlistDownloadDate = $WishlistItem['WishlistDownloadDate'];
+						}
+						
+						$WishlistRefreshPrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = :File, WishlistFileGone = 0, WishlistDownloadDate = :Date WHERE WishlistTitle = :Title AND WishlistYear = :Year');
+						$WishlistRefreshPrep->execute(array('File'  => $Movie,
+						                                    'Date'  => $WishlistDownloadDate,
+							                                'Title' => $ParsedFile['Title'],
+							                                'Year'  => $ParsedFile['Year']));
+							                                
+						$WishlistItems++;
+					}
+				}
+			}
+		}
+		
+		if($WishlistItems) {
+			Hub::AddLog(EVENT.'Wishlist', 'Success', 'Refreshed '.$WishlistItems.' wishlist items');
+		}
+	}
+	
 	function WishlistDelete() {
 		if(filter_has_var(INPUT_GET, 'WishlistID')) {
 			$Wishlist = $this->PDO->query('SELECT WishlistTitle, WishlistYear, WishlistFile FROM Wishlist WHERE WishlistID = "'.$_GET['WishlistID'].'"')->fetch();
@@ -130,6 +188,19 @@ class Wishlist extends Hub {
 	function GetWishlistItemByID($WishlistID) {
 		$WishItemPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistID = :ID');
 		$WishItemPrep->execute(array(':ID' => $WishlistID));
+		
+		if($WishItemPrep->rowCount()) {
+			return $WishItemPrep->fetch();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetWishlistItemByTitleYear($WishlistTitle, $WishlistYear) {
+		$WishItemPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistTitle = :Title AND WishlistYear = :Year');
+		$WishItemPrep->execute(array(':Title' => $WishlistTitle,
+		                             ':Year'  => $WishlistYear));
 		
 		if($WishItemPrep->rowCount()) {
 			return $WishItemPrep->fetch();

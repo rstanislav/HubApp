@@ -25,7 +25,7 @@ function updateLog(toTime) {
 
 <div class="head">XBMC Log <small style="font-size: 12px;">(<a href="#!/Help/XBMCLog">?</a>)</small></div>
 
-<table id="xbmc-log">
+<table id="xbmc-log" class="text-select">
  <thead>
  <tr>
   <th style="text-align:center;width: 60px">Time</th>

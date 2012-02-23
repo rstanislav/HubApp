@@ -16,6 +16,19 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'WishlistRefresh':
+			$WishlistObj->WishlistRefresh();
+		break;
+		
+		case 'XBMCPlayPause':
+			if(filter_has_var(INPUT_GET, 'PlayerID')) {
+				$XBMCObj->Connect();
+				if(is_object($XBMCObj->XBMCRPC)) {
+					$XBMCObj->PlayPause($_GET['PlayerID']);
+				}
+			}
+		break;
+		
 		case 'Upload':
 			$Settings = $HubObj->GetSettings();
 			
@@ -151,10 +164,13 @@ else {
 				$Settings = $HubObj->GetSettings();
 				
 				if($UTorrentObj->GetSetting('max_ul_rate') == $Settings['SettingUTorrentDefaultUpSpeed'] && $UTorrentObj->GetSetting('max_dl_rate') == $Settings['SettingUTorrentDefaultDownSpeed']) {
-					echo '<a><img src="images/icons/hippopotamus_dark.png" title="Limit uTorrent to '.$Settings['SettingUTorrentDefinedUpSpeed'].'/'.$Settings['SettingUTorrentDefinedDownSpeed'].' KiB/s" /></a>';
+					echo '<a><img src="images/icons/turtle_dark.png" title="Enable uTorrent speed limiter ('.$Settings['SettingUTorrentDefinedDownSpeed'].'/'.$Settings['SettingUTorrentDefinedUpSpeed'].' KiB/s)" /></a>';
+				}
+				else if($UTorrentObj->GetSetting('max_ul_rate') == $Settings['SettingUTorrentDefinedUpSpeed'] && $UTorrentObj->GetSetting('max_dl_rate') == $Settings['SettingUTorrentDefinedDownSpeed']) {
+					echo '<a><img src="images/icons/turtle_red.png" title="Disable uTorrent speed limiter ('.$Settings['SettingUTorrentDefaultDownSpeed'].'/'.$Settings['SettingUTorrentDefaultUpSpeed'].' KiB/s)" /></a>';
 				}
 				else {
-					echo '<a><img src="images/icons/hippopotamus.png" title="Limit uTorrent to '.$Settings['SettingUTorrentDefaultUpSpeed'].'/'.$Settings['SettingUTorrentDefaultDownSpeed'].' KiB/s" /></a>';
+					echo '<a><img src="images/icons/turtle_blue.png" title="Check your uTorrent speed settings!" /></a>';
 				}
 			}
 		break;
@@ -418,7 +434,7 @@ else {
 				$SeriesObj->DeleteSerie($_GET['SerieID']);
 			}
 			else {
-				$_SESSION['Error'] = 'You are not permitted to add delete a serie';
+				$_SESSION['Error'] = 'You are not permitted to delete a serie';
 			}
 		break;
 		

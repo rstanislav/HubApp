@@ -4,7 +4,7 @@ $('#CheckAllNotifications').click(function() {
 });
 </script>
 
-<div class="head">Settings &raquo; Notifications <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
+<div class="head">Settings <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
 
 <?php
 if($UserObj->UserEMail) {
@@ -16,33 +16,39 @@ if($UserObj->UserEMail) {
 		 This feature requires an account at <a href="http://boxcar.io/">Boxcar</a> using "'.$UserObj->UserEMail.'" and a subscription to the <a href="http://boxcar.io/services/provider_services/new?provider_id=994" target="_blank">Hub service</a>
 		</div>
 		
+		<br />
+		
 		<form id="SettingsForm" name="SettingsNotifications" method="post" action="load.php?page=SaveSettings">
 		<input type="hidden" name="SettingSection" value="Notifications" />
-		<table>
-		 <thead>
-		  <tr>
-		   <th>Get a notification when…</th>
-		   <th style="text-align: center"><a id="CheckAllNotifications">All</a></th>
-		  </tr>
-		 </thead>
-		 <tbody>'."\n";
+		<div id="form-wrap">
+		 <dl>
+		 
+		  <dt>Notifications</dt>
+		  <dd>'."\n";
 		 
 		foreach($Notifications AS $Notification) {
 			$NotificationChecked = ($UserObj->GetUserNotification($Notification['NotificationID'], $UserObj->UserID)) ? ' checked="checked"' : '';
 			
 			echo '
-		    <tr>
-		     <td>'.$Notification['NotificationText'].'</td>
-		     <td style="width: 30px; text-align:center"><input type="checkbox" name="Notification['.$Notification['NotificationID'].']"'.$NotificationChecked.' /></td>
-		    </tr>'."\n";
+			<div class="field">
+			 <label>
+			  <input type="checkbox" name="Notification['.$Notification['NotificationID'].']"'.$NotificationChecked.' />
+			  <span>'.$Notification['NotificationText'].'</span>
+			 </label>
+			</div>'."\n";
 		}
 		
 		echo '
-		  <tr> 
-		   <td colspan="2" style="text-align: right"><a id="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a></td> 
-		  </tr>
-		 </tbody> 
-		</table>
+		  </dd>
+		  <div style="float: right">
+		   <a rel="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+		  </div>
+		  
+		  <dd class="clear"></dd>
+		  
+		 </dl>
+		 <div class="clear"></div>
+		</div>
 		</form>'."\n";
 	}
 }

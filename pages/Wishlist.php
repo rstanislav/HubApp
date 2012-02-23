@@ -21,6 +21,7 @@ $('#AddWishlistItem').click(function(event) {
 
 <div class="head-control">
  <a id="AddWishlistItem" class="button positive"><span class="inner"><span class="label" nowrap="">Add Wish</span></span></a>
+ <a id="WishlistRefresh-0" class="button positive"><span class="inner"><span class="label" nowrap="">Refresh Wishlist</span></span></a>
 </div>
  
 <div class="head">Wishlist <small style="font-size: 12px;">(<a href="#!/Help/Wishlist">?</a>)</small></div>
@@ -36,7 +37,7 @@ if(is_array($Wishes)) {
 	  <th>Title</th>
 	  <th style="width:50px">Year</th>
 	  <th style="width:150px">Since</th>
-	  <th style="width:36px">&nbsp;</th>
+	  <th style="width:54px">&nbsp;</th>
 	 </tr>
 	 </thead>'."\n";
 	foreach($Wishes AS $Wish) {
@@ -48,6 +49,7 @@ if(is_array($Wishes)) {
 		 <td class="editable" id="'.$Wish['WishlistID'].'-|-WishlistYear">'.$Wish['WishlistYear'].'</td>
 		 <td>'.date('d.m.y H:i', $Wish['WishlistDate']).'</td>
 		 <td style="text-align: center">
+		  '.$RSSObj->CreateSearchLink($Wish['WishlistTitle'].' '.$Wish['WishlistYear'], 'movie').'
 		  <a href="http://www.youtube.com/results?search_query='.urlencode($Wish['WishlistTitle'].' '.$Wish['WishlistYear'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="images/icons/youtube.png" /></a>
 		  '.$WishlistDeleteLink.'
 		 </td>
@@ -99,7 +101,7 @@ if(is_array($Wishes)) {
 		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'" rel="'.$Wish['WishlistTitle'].' ('.$Wish['WishlistYear'].')"><img src="images/icons/delete.png" /></a>' : '';
 		$WishListStatusImg = '';
 		
-		if($Wish['TorrentKey'] && !$Wish['WishlistFile']) {
+		if($Wish['TorrentKey'] && !$Wish['WishlistFile'] && !$Wish['WishlistFileGone']) {
 			$Torrent = $RSSObj->GetTorrentByID($Wish['TorrentKey']);
 			$FileText = $Torrent['TorrentTitle'].' has been added to uTorrent';
 			$WishlistPlayLink = '';
@@ -110,7 +112,8 @@ if(is_array($Wishes)) {
 			$FileText = $HubObj->ConcatFilePath($Wish['WishlistFile']);
 		}
 		
-		if($Wish['WishlistFile'] && !is_file($Wish['WishlistFile'])) {
+		
+		if($Wish['WishlistFileGone'] && !$Wish['WishlistFile']) {
 			$FileText = 'Movie has been downloaded, but the file is missing';
 			$WishlistPlayLink   = '';
 			$WishlistDeleteLink = $WishlistDeleteLink;
@@ -121,7 +124,7 @@ if(is_array($Wishes)) {
 		<tr>
 		 <td>'.$Wish['WishlistTitle'].'</td>
 		 <td style="width:50px">'.$Wish['WishlistYear'].'</td>
-		 <td style="width:200px">Granted on '.date('d.m.y H:i', $Wish['WishlistDownloadDate']).'</td>
+		 <td style="width:150px">Granted on '.date('d.m.y H:i', $Wish['WishlistDownloadDate']).'</td>
 		 <td>'.$FileText.'</td>
 		 <td style="text-align: center;width:54px">
 		  '.$WishListStatusImg.'

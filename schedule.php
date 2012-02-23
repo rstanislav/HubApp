@@ -28,9 +28,12 @@ $XBMCObj->Connect();
 // Check for existing active drive and that all required folders are present
 $DrivesObj->CheckActiveDrive();
 
-// Backup XBMC Files
 if(date('G') > 4 && date('G') < 6) {
-	//
+	// Refresh all wishlist items
+	$WishlistObj->WishlistRefresh();
+	
+	// Backup XBMC Files
+	// ...
 }
 
 // Update RSS Feeds
@@ -52,21 +55,20 @@ $LogActivity = $HubObj->PDO->query('SELECT LogDate AS NewContent FROM Log WHERE 
 $XBMCActivity = $HubObj->PDO->query('SELECT LogDate AS LastUpdate FROM Log WHERE LogType = "Success" AND LogEvent LIKE "%XBMC" AND (LogText LIKE "Updated XBMC Library%") ORDER BY LogDate DESC LIMIT 1')->fetch();
 
 if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
-	// Cache movie covers locally
-	if(is_object($XBMCObj->XBMCRPC)) {
-		$XBMCObj->CacheCovers();
-	}
-	
 	if(is_object($XBMCObj->XBMCRPC)) {
 		$ActivePlayer = $XBMCObj->MakeRequest('Player', 'GetActivePlayers');
 	
-		if(!$ActivePlayer['video']) {
+		if(!sizeof($ActivePlayer)) {
 			$XBMCObj->ScanForContent();
-			// $XBMCObj->Notification('Hub', 'Adding new content');
 			
 			$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
 		}
 	}
+}
+
+if(is_object($XBMCObj->XBMCRPC)) {
+	// Cache movie covers locally
+	$XBMCObj->CacheCovers();
 }
 
 $FolderRebuild = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastFolderRebuild"')->fetch();

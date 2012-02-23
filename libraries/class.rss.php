@@ -237,10 +237,9 @@ class RSS extends Hub {
 		$RSSFeeds = $this->GetRSSFeeds();
 		
 		if(is_array($RSSFeeds)) {
+			$NewItems = 0;
 			foreach($RSSFeeds AS $RSSFeed) {
 				$Update = $this->PDO->query('SELECT TorrentPubDate AS Last FROM Torrents WHERE RSSKey = "'.$RSSFeed['RSSID'].'" ORDER BY TorrentPubDate DESC LIMIT 1')->fetch();
-				
-				$NewItems = 0;
 				
 				$RSSFile = @file_get_contents($RSSFeed['RSSFeed']);
 							
@@ -428,7 +427,7 @@ class RSS extends Hub {
 	}
 	
 	function SearchTitle($Search) {
-		$SearchPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE TorrentTitle LIKE :Search AND TorrentTitle NOT LIKE :ExcludeSearch ORDER BY TorrentDate DESC');
+		$SearchPrep = $this->PDO->prepare('SELECT Torrents.*, RSS.RSSTitle FROM Torrents, RSS WHERE TorrentTitle LIKE :Search AND TorrentTitle NOT LIKE :ExcludeSearch AND RSS.RSSID = Torrents.RSSKey ORDER BY TorrentDate DESC');
 		$SearchPrep->execute(array(':Search'        => urldecode($Search).'%',
 		                           ':ExcludeSearch' => '%hebsub%'));
 		
@@ -437,6 +436,32 @@ class RSS extends Hub {
 		}
 		else {
 			return FALSE;
+		}
+	}
+	
+	function CreateSearchLink($Query, $Type) {
+		$Settings = Hub::GetSettings();
+		
+		$DeadLink = '<img src="images/icons/search_dark.png" title="Add a search URI in the settings to enable searching" />';
+		switch($Type) {
+			case 'movie':
+				if(!empty($Settings['SettingHubSearchURIMovies'])) {
+					$Link = $Settings['SettingHubSearchURIMovies'];
+				}
+			break;
+			
+			case 'tv':
+				if(!empty($Settings['SettingHubSearchURITVSeries'])) {
+					$Link = $Settings['SettingHubSearchURITVSeries'];
+				}
+			break;
+		}
+		
+		if(isset($Link)) {
+			return '<a href="'.str_replace('{QUERY}', urlencode($Query), $Link).'" target="_blank"><img src="images/icons/search.png" title="Search for \''.$Query.'\'" /></a>';
+		}
+		else {
+			return $DeadLink;
 		}
 	}
 	
@@ -490,7 +515,7 @@ class RSS extends Hub {
 		$Release = str_replace($Search, $Replace, $Release);
 		
 		$SerieRegEx    = '/(.*?)\.?((?:(?:s[0-9]{1,2})?[.-]?e[0-9]{1,2}|[0-9]{1,2}x[0-9]{1,2})(?:[.-]?(?:s?[0-9]{1,2})?[xe]?[0-9]{1,2})*)\.(.*)/i';
-		$MovieRegEx    = '/([A-z0-9 \&._\-:]+)([0-9]{4})(.*)/';
+		$MovieRegEx    = '/([A-z0-9 \&._\-:\\pL]+)([0-9]{4})(.*)/';
 		$TalkShowRegEx = '/([A-z0-9 \&._\-:]+)([0-9]{4}).([0-9]{2}).([0-9]{2})([. ])/';
 		
 		if(preg_match($SerieRegEx, $Release, $Match)) {

@@ -1,18 +1,24 @@
 <script type="text/javascript">
-$('#SettingsSave').click(function() {
+$('[rel=SettingsSave]').click(function() {
+	SettingBtn = this;
 	$('form[id=' + $(this).parents('form:eq(0)').attr('id') + ']').ajaxSubmit({
 		beforeSubmit: function() {
-			$('#SettingsSave').contents().find('.label').text('Saving ...');
+			$(SettingBtn).contents().find('.label').text('Saving ...');
 		},
 		success: function() {
-			$('#SettingsSave').contents().find('.label').text('Saved!');
+			//$('[rel=SettingsSave]').contents().find('.label').text('Saved!');
+			$(SettingBtn).contents().find('.label').text('Saved!');
 		},
 		error: function() {
-			$('#SettingsSave').contents().find('.label').text('Error!');
+			$(SettingBtn).contents().find('.label').text('Error!');
 		}
 	});
 });
 </script>
+
+<style type="text/css">
+
+</style>
 
 <?php
 $Settings = $HubObj->Settings;

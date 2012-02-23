@@ -159,7 +159,7 @@ if(is_array($Series)) {
 			if(!$OtherOptions) {
 				$SearchQuery = strtolower($Serie['SerieTitle']);
 				$SeasonEpisodeFormatted = sprintf("S%02sE%02s", $Episode['EpisodeSeason'], $Episode['EpisodeEpisode']);
-				$EpisodeControl = '<a href="http://www.torrentleech.org/torrents/browse/index/query/'.urlencode($Serie['SerieTitle'].' s'.sprintf('%02s', $Episode['EpisodeSeason']).'e'.sprintf('%02s', $Episode['EpisodeEpisode'])).'/facets/e8044d" target="_blank"><img src="images/icons/search.png" title="Search TorrentLeech.org for '.htmlspecialchars('"'.$Serie['SerieTitle'].' s'.sprintf("%02de%02d", $Episode['EpisodeSeason'], $Episode['EpisodeEpisode']).'"').'" /></a>';
+				$EpisodeControl = $RSSObj->CreateSearchLink($Serie['SerieTitle'].' s'.sprintf("%02de%02d", $Episode['EpisodeSeason'], $Episode['EpisodeEpisode']), 'tv');
 				
 				$Episode['EpisodeFile'] = 'Not Available';
 			}

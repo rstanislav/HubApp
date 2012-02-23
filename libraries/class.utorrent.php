@@ -111,6 +111,31 @@ class UTorrent extends Hub {
 		}
 	}
 	
+	function CheckTorrentForFile($FileCheck) {
+		if(is_object($this->UTorrentAPI)) {
+			$Torrents = UTorrent::GetTorrents();
+				
+			foreach($Torrents AS $Torrent) {
+				$SeedStatuses = array(137, 200, 201); // Seeding (F), Queued Seed, Seeding
+				if(in_array($Torrent[UTORRENT_TORRENT_STATUS], $SeedStatuses)) {
+					$Files = UTorrent::GetFiles($Torrent[0]);
+				
+					foreach($Files AS $File) {
+						if(is_array($File)) {
+							foreach($File AS $FileTmp) {
+								if($FileTmp[0] == $FileCheck) {
+									return TRUE;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return FALSE;
+	}
+	
 	function GetSettings() {
 		if(is_object($this->UTorrentAPI)) {
 			return $this->UTorrentAPI->getSettings();
@@ -142,6 +167,10 @@ class UTorrent extends Hub {
 	
 	function GetTorrents() {
 		return $this->UTorrentAPI->getTorrents();
+	}
+	
+	function GetFiles($Hash) {
+		return $this->UTorrentAPI->getFiles($Hash);
 	}
 	
 	function TorrentStartAll() {

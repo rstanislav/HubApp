@@ -1026,7 +1026,16 @@ a {
 }
 
 #maincontent tr:hover, #maincontent tr:nth-child(even):hover td, #maincontent tr:nth-child(even):hover .column1 {
-	background: #dfeef7;
+	background: #DBE6F8;
+}
+
+#maincontent tr.heading {
+	background: #91A8BE;
+	font-weight: bold;
+}
+
+#maincontent tr.heading td, #maincontent tr.heading:hover td {
+	background: 0;
 }
 
 #maincontent th {

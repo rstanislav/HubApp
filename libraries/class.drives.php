@@ -14,7 +14,7 @@ class Drives extends Hub {
 				
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
-				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) <= $Settings['SettingHubMinimumActiveDiskPercentage']) {
+				if(($FreeSpace / 1024 / 1024 / 1024) <= $Settings['SettingHubMinimumActiveDiskFreeSpaceInGB']) {
 					self::DetermineNewActiveDrive();
 				}
 				else {
@@ -60,7 +60,7 @@ class Drives extends Hub {
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
 				
-				if(self::GetFreeSpacePercentage($FreeSpace, $TotalSpace) > $Settings['SettingHubMinimumActiveDiskPercentage']) {
+				if(($FreeSpace / 1024 / 1024 / 1024) > $Settings['SettingHubMinimumActiveDiskFreeSpaceInGB']) {
 					self::SetActiveDrive($Drive['DriveID']);
 					
 					break;
@@ -165,6 +165,23 @@ class Drives extends Hub {
 	     	reset($Objects);
 	     	
 	     	return rmdir($Directory); 
+	   	}
+	}
+	
+	function RecursiveDirFileAdd($Directory, $FileToAdd) { 
+		if(is_dir($Directory)) {
+			touch($Directory.'/'.$FileToAdd);
+			$Objects = scandir($Directory); 
+			
+			foreach($Objects AS $Object) { 
+				if($Object != '.' && $Object != '..') { 
+	        		if(filetype($Directory.'/'.$Object) == 'dir') {
+	        			self::RecursiveDirFileAdd($Directory.'/'.$Object, $FileToAdd); 
+	        		}
+	       		} 
+	     	} 
+	     
+	     	reset($Objects);
 	   	}
 	}
 	

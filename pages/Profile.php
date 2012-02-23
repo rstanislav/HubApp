@@ -24,39 +24,55 @@ $('#ProfileSave').click(function() {
 <div class="head">Profile <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
 
 <form id="ProfileForm" name="UserProfile" method="post" action="load.php?page=ProfileSave">
-<table> 
- <tbody> 
-  <tr> 
-   <th scope="row" class="column1">
-    E-Mail<br />
-    <small>Your current e-mail address</small>
-   </th> 
-   <td><input name="UserEMail" type="text" value="<?php echo $UserObj->UserEMail; ?>" /></td> 
-  </tr>	
-  <tr> 
-   <th scope="row" class="column1">
-    Current Password<br />
-    <small>Your current password</small>
-   </th> 
-   <td><input name="UserCurrentPass" type="password" /></td> 
-  </tr>	
-  <tr> 
-   <th scope="row" class="column1">
-    New Password<br />
-    <small>Your desired password</small>
-   </th> 
-   <td><input name="UserNewPass1" type="password" /></td> 
-  </tr>	
-  <tr> 
-   <th scope="row" class="column1">
-    Repeat New Password<br />
-    <small>Your desired password again</small>
-   </th> 
-   <td><input name="UserNewPass2" type="password" /></td> 
-  </tr>
-  <tr> 
-   <td colspan="2" style="text-align: right"><a id="ProfileSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a></td> 
-  </tr>
- </tbody> 
-</table>
+<div id="form-wrap">
+ <dl>
+ 
+  <dt>E-mail</dt>
+  <dd>
+   <div class="field">
+    <label>
+     <input name="UserEMail" type="text" value="<?php echo $UserObj->UserEMail; ?>" />
+     <span>Your current e-mail address</span>
+    </label>
+   </div>
+  </dd>
+  
+  <div style="float: right">
+   <a id="ProfileSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+  </div>
+            
+  <dd class="clear"></dd>
+ 
+  <dt>Password Reset</dt>
+  <dd>
+   <div class="field">
+    <label>
+     <input name="UserCurrentPass" type="password" />
+     <span>Your current password</span>
+    </label>
+   </div>
+   
+   <div class="field">
+    <label>
+     <input name="UserNewPass1" type="password" />
+     <span>New password</span>
+    </label>
+   </div>
+   
+   <div class="field">
+    <label>
+     <input name="UserNewPass2" type="password" />
+     <span>New password (repeat)</span>
+    </label>
+   </div>
+  </dd>
+  
+  <div style="float: right">
+   <a id="ProfileSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+  </div>
+            
+  <dd class="clear"></dd>
+ </dl>
+ <div class="clear"></div>
+</div>
 </form>

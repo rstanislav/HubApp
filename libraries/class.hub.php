@@ -3,8 +3,8 @@ require_once APP_PATH.'/libraries/api.thetvdb.php';
 require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
-	const HubVersion   = '2.4.3.1';
-	const MinDBVersion = '2.0.0';
+	const HubVersion   = '2.4.4';
+	const MinDBVersion = '2.0.1';
 	
 	public $PDO;
 	
@@ -151,31 +151,13 @@ class Hub {
 	function AddLog($LogEvent, $LogType, $LogText, $LogError = FALSE, $LogAction = '') {
 		$LogError = (is_array($LogError)) ? implode("\n", $LogError) : $LogError;
 		
-		$LogPrep = $this->PDO->prepare('SELECT * FROM Log ORDER BY LogDate DESC LIMIT 1');
-		$LogPrep->execute();
-		
-		if($LogPrep->rowCount()) {
-			foreach($LogPrep->fetchAll() AS $Log) {
-				preg_match('/(Added) ([0-9]+) (torrents spread across) ([0-9]+) (RSS feeds)/', $Log['LogText'], $LogPrevious);
-				preg_match('/(Added) ([0-9]+) (torrents spread across) ([0-9]+) (RSS feeds)/', $LogText, $LogNew);
-				
-				if(sizeof($LogPrevious) && sizeof($LogNew)) {
-					$LogPrep = $this->PDO->prepare('UPDATE Log SET LogDate = :LogDate, LogText = :LogText WHERE LogID = :LogID');
-					$LogPrep->execute(array(':LogDate' => time(),
-					                        ':LogText' => 'Added '.($LogNew[2] + $LogPrevious[2]).' torrents spread across '.$LogNew[4].' RSS feeds',
-					                        ':LogID'   => $Log['LogID']));
-				}
-				else {
-					$LogPrep = $this->PDO->prepare('INSERT INTO Log (LogID, LogDate, LogEvent, LogType, LogError, LogText, LogAction) VALUES (NULL, :LogDate, :LogEvent, :LogType, :LogError, :LogText, :LogAction)');
-					$LogPrep->execute(array(':LogDate'   => time(),
-					                        ':LogEvent'  => $LogEvent,
-					                        ':LogType'   => $LogType,
-					                        ':LogError'  => $LogError,
-					                        ':LogText'   => $LogText,
-					                        ':LogAction' => $LogAction));
-				}
-			}
-		}
+		$LogPrep = $this->PDO->prepare('INSERT INTO Log (LogID, LogDate, LogEvent, LogType, LogError, LogText, LogAction) VALUES (NULL, :LogDate, :LogEvent, :LogType, :LogError, :LogText, :LogAction)');
+		$LogPrep->execute(array(':LogDate'   => time(),
+		                        ':LogEvent'  => $LogEvent,
+		                        ':LogType'   => $LogType,
+		                        ':LogError'  => $LogError,
+		                        ':LogText'   => $LogText,
+		                        ':LogAction' => $LogAction));
 	}
 	
 	function BytesToHuman($Bytes) {
@@ -254,14 +236,16 @@ class Hub {
 				$HubBackup     = (isset($_POST['SettingHubBackup']))     ? 1 : 0;
 				$HubKillSwitch = (isset($_POST['SettingHubKillSwitch'])) ? 1 : 0;
 				
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskPercentage = :MinActiveDiskPercentage, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch');
-				$EditSettingsPrep->execute(array(':LocalIP'                 => $_POST['SettingHubLocalIP'],
-				                                 ':MinActiveDiskPercentage' => $_POST['SettingHubMinimumActiveDiskPercentage'],
-				                                 ':MinDownloadQuality'      => $_POST['SettingHubMinimumDownloadQuality'],
-				                                 ':MaxDownloadQuality'      => $_POST['SettingHubMaximumDownloadQuality'],
-				                                 ':HubBackup'               => $HubBackup,
-				                                 ':TheTVDBAPIKey'           => $_POST['SettingHubTheTVDBAPIKey'],
-				                                 ':HubKillSwitch'           => $HubKillSwitch));
+				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch, SettingHubSearchURITVSeries = :SearchURITVSeries, SettingHubSearchURIMovies = :SearchURIMovies');
+				$EditSettingsPrep->execute(array(':LocalIP'                    => implode('.', $_POST['SettingHubLocalIP']),
+				                                 ':MinActiveDiskFreeSpaceInGB' => $_POST['SettingHubMinimumActiveDiskFreeSpaceInGB'],
+				                                 ':MinDownloadQuality'         => $_POST['SettingHubMinimumDownloadQuality'],
+				                                 ':MaxDownloadQuality'         => $_POST['SettingHubMaximumDownloadQuality'],
+				                                 ':HubBackup'                  => $HubBackup,
+				                                 ':TheTVDBAPIKey'              => $_POST['SettingHubTheTVDBAPIKey'],
+				                                 ':HubKillSwitch'              => $HubKillSwitch,
+				                                 ':SearchURITVSeries'          => $_POST['SettingHubSearchURITVSeries'],
+				                                 ':SearchURIMovies'            => $_POST['SettingHubSearchURIMovies']));
 			break;
 			
 			case 'Notifications':
@@ -291,7 +275,7 @@ class Hub {
 			
 			case 'UTorrent':
 				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingUTorrentHostname = :Hostname, SettingUTorrentPort = :Port, SettingUTorrentUsername = :Username, SettingUTorrentPassword = :Password, SettingUTorrentWatchFolder = :WatchFolder, SettingUTorrentDefaultUpSpeed = :DefaultUpSpeed, SettingUTorrentDefaultDownSpeed = :DefaultDownSpeed, SettingUTorrentDefinedUpSpeed = :DefinedUpSpeed, SettingUTorrentDefinedDownSpeed = :DefinedDownSpeed');
-				$EditSettingsPrep->execute(array(':Hostname'         => $_POST['SettingUTorrentHostname'],
+				$EditSettingsPrep->execute(array(':Hostname'         => implode('.', $_POST['SettingUTorrentHostname']),
 				                                 ':Port'             => $_POST['SettingUTorrentPort'],
 				                                 ':Username'         => $_POST['SettingUTorrentUsername'],
 				                                 ':Password'         => $_POST['SettingUTorrentPassword'],

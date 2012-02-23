@@ -194,7 +194,7 @@ class ExtractFiles extends Hub {
 			}
 			
 			UTorrent::Connect();
-			if(!UTorrent::CheckTorrentForFile($FileInfo['basename'])) {
+			if(UTorrent::CheckTorrentForFile($FileInfo['basename'])) {
 				if($FileInfo['foldername'] != 'Completed') {
 					$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
 					$FilesNo = 0;

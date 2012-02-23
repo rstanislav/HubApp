@@ -122,8 +122,9 @@ class UTorrent extends Hub {
 					if(is_array($File)) {
 						foreach($File AS $FileTmp) {
 							if($FileTmp[0] == $FileCheck) {
-								if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000 && $Torrent[UTORRENT_TORRENT_STATUS] == 136) {
-									return FALSE;
+								$SeedStatuses = array(137, 200, 201); // Seeding (F), Queued Seed, Seeding
+								if(in_array($Torrent[UTORRENT_TORRENT_STATUS], $SeedStatuses)) {
+									return TRUE;
 								}
 							}
 						}
@@ -132,7 +133,7 @@ class UTorrent extends Hub {
 			}
 		}
 		
-		return TRUE;
+		return FALSE;
 	}
 	
 	function GetSettings() {

@@ -123,7 +123,7 @@ class UTorrent extends Hub {
 					foreach($Files AS $File) {
 						if(is_array($File)) {
 							foreach($File AS $FileTmp) {
-								if($FileTmp[0] == $FileCheck) {
+								if(($FileTmp[0] == $FileCheck) || (pathinfo($FileTmp[0], PATHINFO_BASENAME) == pathinfo($FileCheck, PATHINFO_BASENAME))) {
 									return TRUE;
 								}
 							}

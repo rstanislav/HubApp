@@ -63,7 +63,7 @@ class ExtractFiles extends Hub {
 								$UniqueRarFile = TRUE;
 							}
 							
-							if($UniqueRarFile && !is_file($FileInfo['dirname'].'/SEEDING')) {
+							if($UniqueRarFile && !$this->SeedingFileCopied($File)) {
 								if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b/i", $File)) {
 									$CompletedFiles['Extract'][] = $File.','.$Drive['DriveID'];
 								}
@@ -73,7 +73,7 @@ class ExtractFiles extends Hub {
 						case 'mp4':
 						case 'mkv':
 						case 'avi':
-							if($this->GetFileSize($File) >= (1024 * 1024 * 150) && !is_file($FileInfo['dirname'].'/SEEDING')) {
+							if($this->GetFileSize($File) >= (1024 * 1024 * 150) && !$this->SeedingFileCopied($File)) {
 								$CompletedFiles['Move'][] = $File.','.$Drive['DriveID'];
 							}
 						break;
@@ -83,6 +83,25 @@ class ExtractFiles extends Hub {
 		}
 		
 		return $CompletedFiles;
+	}
+	
+	function SeedingFileCopied($File) {
+		$SeedingFilePrep = $this->PDO->prepare('SELECT SeedingID FROM Seeding WHERE SeedingFile = :FileBase OR SeedingFile = :File');
+		$SeedingFilePrep->execute(array(':FileBase' => pathinfo($File, PATHINFO_BASENAME),
+		                                ':File'     => $File));
+		                             
+		if($SeedingFilePrep->rowCount()) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function SeedingFileCopyToDB($File) {
+		$SeedingFilePrep = $this->PDO->prepare('INSERT INTO Seeding (SeedingID, SeedingDate, SeedingFile) VALUES (null, :Date, :File)');
+		$SeedingFilePrep->execute(array(':Date' => time(),
+		                                ':File' => $File));
 	}
 	
 	function ExtractFile($File, $DriveID) {
@@ -121,13 +140,17 @@ class ExtractFiles extends Hub {
 		$FileInfo = pathinfo($File);
 		$FileInfo['foldername'] = substr($FileInfo['dirname'], (strrpos($FileInfo['dirname'], '/') + 1));
 		
-		if(empty($ExtractedFrom)) {
-			$FileInTorrent = $File;
-			$MoveAction = 'copy';
+		UTorrent::Connect();
+		$FileInTorrent = (empty($ExtractedFrom)) ? $File : $ExtractedFrom;
+		$SeedingFile   = UTorrent::CheckTorrentForFile($FileInTorrent);
+		
+		if($SeedingFile && empty($ExtractedFrom)) {
+			$MoveAction    = 'copy';
+			$MoveText      = 'Copied';
 		}
 		else {
-			$FileInTorrent = $ExtractedFrom;
-			$MoveAction = 'rename';
+			$MoveAction    = 'rename';
+			$MoveText      = 'Moved';
 		}
 		
 		$Drive = Drives::GetDriveByID($DriveID);
@@ -202,8 +225,7 @@ class ExtractFiles extends Hub {
 				$OldLocation = str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']).'/'.$FileInfo['basename'];
 			}
 			
-			UTorrent::Connect();
-			if(!UTorrent::CheckTorrentForFile($FileInTorrent)) {
+			if(!$SeedingFile) {
 				if($FileInfo['foldername'] != 'Completed') {
 					$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
 					$FilesNo = 0;
@@ -230,10 +252,9 @@ class ExtractFiles extends Hub {
 				}
 			}
 			else {
-				if($FileInfo['foldername'] != 'Completed') {
-					Drives::RecursiveDirFileAdd($FileInfo['dirname'], 'SEEDING');
-					$AddLogEntry = ' and kept the original files for seeding purposes';
-				}
+				$this->SeedingFileCopyToDB($FileInTorrent);
+				
+				$AddLogEntry = ' and kept the original files for seeding purposes';
 			}
 			
 			if($ParsedFile['Type'] == 'TV') {
@@ -261,7 +282,7 @@ class ExtractFiles extends Hub {
 				Hub::NotifyUsers('NewLibraryMovie', 'XBMC/Movies', '"'.$ParsedFile['Title'].' ('.$ParsedFile['Year'].')" is now available on "'.$DriveRoot.'"');
 			}
 			
-			$LogEntry = 'Moved "'.$FileInfo['dirname'].'/'.$FileInfo['basename'].'" to "'.$NewFolder.'/'.$NewFileName.'"'.$AddLogEntry;
+			$LogEntry = $MoveText.' "'.$FileInfo['dirname'].'/'.$FileInfo['basename'].'" to "'.$NewFolder.'/'.$NewFileName.'"'.$AddLogEntry;
 			if($NewFolder != $DriveRoot.'/Unsorted') {
 				Hub::AddLog(EVENT.'Extract Files', 'Success', $LogEntry, 0, 'update');
 				

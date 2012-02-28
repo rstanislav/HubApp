@@ -142,12 +142,19 @@ if(is_array($Series)) {
 							$Settings = $HubObj->Settings;
 							$TorrentQuality = $RSSObj->GetQualityRank($RSSTorrents[0]['TorrentTitle']);
 							if($TorrentQuality >= $Settings['SettingHubMinimumDownloadQuality'] && $TorrentQuality <= $Settings['SettingHubMaximumDownloadQuality']) {
-								$EpisodeControl = '<a id="DownloadTorrent-'.$Episode['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'"><img src="images/icons/download.png" /></a>';
-								$Episode['EpisodeFile'] = 'Local Torrent Entry Available';
-								$OtherOptions = TRUE;
+								$EpisodeControlImg = 'images/icons/download.png';
+							}
+							else if($TorrentQuality < $Settings['SettingHubMinimumDownloadQuality']) {
+								$EpisodeControlImg = 'images/icons/download_low_quality.png';
 							}
 							else {
 								$Episode['EpisodeFile'] = 'Not Available';
+							}
+							
+							if($EpisodeControlImg) {
+								$EpisodeControl = '<a id="DownloadTorrent-'.$Episode['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'" title="Download \''.$RSSTorrents[0]['TorrentTitle'].'\' from \''.$RSSTorrents[0]['RSSTitle'].'\'"><img src="'.$EpisodeControlImg.'" /></a>';
+								$Episode['EpisodeFile'] = 'Local Torrent Entry Available';
+								$OtherOptions = TRUE;
 							}
 						}
 						

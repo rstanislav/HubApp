@@ -31,7 +31,16 @@ if($Series) {
 				$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) ? '<a id="DownloadMultipleTorrent-'.$Serie['EpisodeID'].'" rel="load.php?page=DownloadMultiple&File='.urlencode($SearchFile).'&EpisodeID='.$Serie['EpisodeID'].'"><img src="images/icons/download_multiple.png" /></a>' : '';
 			}
 			else {
-				$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) ? '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'" title="Download \''.$RSSTorrents[0]['TorrentTitle'].'\' from \''.$RSSTorrents[0]['RSSTitle'].'\'"><img src="images/icons/download.png" /></a>' : '';
+				$Settings = $HubObj->Settings;
+				$TorrentQuality = $RSSObj->GetQualityRank($RSSTorrents[0]['TorrentTitle']);
+				if($TorrentQuality >= $Settings['SettingHubMinimumDownloadQuality'] && $TorrentQuality <= $Settings['SettingHubMaximumDownloadQuality']) {
+					$EpisodeControlImg = 'images/icons/download.png';
+				}
+				else if($TorrentQuality < $Settings['SettingHubMinimumDownloadQuality']) {
+					$EpisodeControlImg = 'images/icons/download_low_quality.png';
+				}
+				
+				$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) ? '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'" title="Download \''.$RSSTorrents[0]['TorrentTitle'].'\' from \''.$RSSTorrents[0]['RSSTitle'].'\'"><img src="'.$EpisodeControlImg.'" /></a>' : '';
 			}
 		}
 		else {

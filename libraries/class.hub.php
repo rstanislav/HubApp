@@ -64,7 +64,7 @@ class Hub {
 			foreach(glob('upgrade/db-*.php') AS $File) {
 				$NewDBVersion = str_replace('.php', '', str_replace('upgrade/db-', '', $File));
 				
-				if(str_replace('.', '', $NewDBVersion) >= str_replace('.', '', self::MinDBVersion)) {
+				if(str_replace('.', '', $NewDBVersion) <= str_replace('.', '', self::MinDBVersion)) {
 					$sql = '';
 			    	include_once $File;
 			    	

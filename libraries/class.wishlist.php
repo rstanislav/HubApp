@@ -211,7 +211,7 @@ class Wishlist extends Hub {
 	}
 	
 	function GetBadge() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate = 0 OR WishlistFile = ""');
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate = 0 OR (WishlistFile = "" && WishlistFileGone = 0)');
 		$WishPrep->execute();
 		
 		$WishlistSize = $WishPrep->rowCount();

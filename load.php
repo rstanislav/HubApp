@@ -16,6 +16,11 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'CleanLog':
+			unlink(APP_PATH.'/tmp/schedule_error.log');
+			touch(APP_PATH.'/tmp/schedule_error.log');
+		break;
+		
 		case 'WishlistRefresh':
 			$WishlistObj->WishlistRefresh();
 		break;

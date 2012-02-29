@@ -23,7 +23,7 @@ class ExtractFiles extends Hub {
 	
 	function GetDirectorySize($Directory) { 
 	    $DirSize = 0; 
-	    foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($Directory)) as $File){ 
+	    foreach(new RecursiveIteratorIterator(new IgnorantRecursiveDirectoryIterator($Directory)) AS $File) { 
 	        $DirSize += self::GetFileSize($File); 
 	    }
 	    
@@ -37,7 +37,7 @@ class ExtractFiles extends Hub {
 		if(is_array($Drives)) {	
 			foreach($Drives AS $Drive) {
 				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
-				$Files = Hub::RecursiveGlob($DriveRoot.'/Completed', "{*.mp4,*.mkv,*.avi,*.rar}", GLOB_BRACE);
+				$Files = Hub::RecursiveDirSearch($DriveRoot.'/Completed');
 				
 				foreach($Files AS $File) {
 					$FileInfo = pathinfo($File);
@@ -227,7 +227,7 @@ class ExtractFiles extends Hub {
 			
 			if(!$SeedingFile) {
 				if($FileInfo['foldername'] != 'Completed') {
-					$Files = Hub::RecursiveGlob($FileInfo['dirname'], "{*.mp4,*.mkv,*.avi}", GLOB_BRACE);
+					$Files = Hub::RecursiveDirSearch($FileInfo['dirname']);
 					$FilesNo = 0;
 					foreach($Files AS $File) {
 						if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b|\bsample\b/i", $File) && self::GetFileSize($File) > (1024 * 1024 * 100)) {
@@ -345,23 +345,31 @@ class ExtractFiles extends Hub {
 			$FoldersDeleted = $FoldersSizeDeleted = 0;
 			foreach($Drives AS $Drive) {
 				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
-				$CompletedContents = array_filter(glob($DriveRoot.'/Completed/*'), 'is_dir');
-			
-				foreach($CompletedContents AS $Complete) {
-					$DirSize = self::GetDirectorySize($Complete);
-					if($DirSize <= (1024 * 1024 * 100)) {
-						@Drives::RecursiveDirRemove($Complete);
-						
-						$FoldersDeleted++;
-						$FoldersSizeDeleted += $DirSize;
-					}
+				$CompletedContents = new RecursiveIteratorIterator(new IgnorantRecursiveDirectoryIterator($DriveRoot.'/Completed'), RecursiveIteratorIterator::SELF_FIRST);
+				
+				foreach($CompletedContents AS $Name => $Object){
+				    if(is_dir($Name)) {
+				    	try {
+				    		$DirSize = self::GetDirectorySize($Name);
+				    	}
+				    	catch(UnexpectedValueException $e) {
+				    		break;
+				    	}
+				    	
+				    	if($DirSize <= (1024 * 1024 * 100)) {
+				    		@Drives::RecursiveDirRemove($Name);
+				    		
+				    		$FoldersDeleted++;
+				    		$FoldersSizeDeleted += $DirSize;
+				    	}
+				    }
 				}
 			}
 		}
 		
 		if($FoldersDeleted) {
 			Hub::AddLog(EVENT.'File System', 'Success', 'Cleaned Downloads directory. Deleted '.$FoldersDeleted.' folders totaling '.Hub::BytesToHuman($FoldersSizeDeleted));
-		} 
+		}
 	}
 }
 ?>

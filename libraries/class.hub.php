@@ -137,15 +137,23 @@ class Hub {
 		}
 	}
 	
-	function RecursiveGlob($sDir, $sPattern, $nFlags = NULL) {
-		$aFiles = glob($sDir.'/'.$sPattern, $nFlags);
-	
-		foreach(glob($sDir.'/*', GLOB_ONLYDIR) AS $sSubDir) {
-			$aSubFiles = $this->RecursiveGlob($sSubDir, $sPattern, $nFlags);
-			$aFiles    = array_merge($aFiles, $aSubFiles);
+	function RecursiveDirSearch($Directory, $Extensions = null) {
+		$Iterator = new IgnorantRecursiveDirectoryIterator($Directory);
+		$Extensions = (!is_array($Extensions)) ? array('mp4','mkv','avi','rar') : $Extensions;
+		
+		$Files = array();
+		foreach(new RecursiveIteratorIterator($Iterator, RecursiveIteratorIterator::SELF_FIRST) AS $Object) {
+			if($Object->isFile()) {
+				$File = str_replace('\\', '/', $Object->__toString());
+				$FileInfo = pathinfo($File);
+			
+				if(array_key_exists('extension', $FileInfo) && in_array($FileInfo['extension'], $Extensions)) {
+					$Files[] = $File;
+				}
+			}
 		}
-	
-		return $aFiles;
+		
+		return $Files;
 	}
 	
 	function AddLog($LogEvent, $LogType, $LogText, $LogError = FALSE, $LogAction = '') {
@@ -360,5 +368,15 @@ class Hub {
 	function __destruct() {
 		$this->PDO = null;
 	}
+}
+
+class IgnorantRecursiveDirectoryIterator extends RecursiveDirectoryIterator {
+    function getChildren() {
+        try {
+            return parent::getChildren();
+        } catch(UnexpectedValueException $e) {
+            return new RecursiveArrayIterator(array());
+        }
+    }
 }
 ?>

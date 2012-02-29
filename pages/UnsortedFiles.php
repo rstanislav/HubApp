@@ -89,7 +89,6 @@ if(is_array($UnsortedFiles)) {
 	   <th>Path</th>
 	   <th>File/Folder</th>
 	   <th>&nbsp;</th>
-	   <th>&nbsp;</th>
 	   <th style="width:36px">&nbsp;</th>
 	  </tr>
 	 </thead>'."\n";
@@ -116,28 +115,12 @@ if(is_array($UnsortedFiles)) {
 	 			 </td>
 	 			 <td>'.$File.'</td>
 	 			 <td>&nbsp;</td>
-	 			 <td>&nbsp;</td>
 	 		 	 <td style="text-align:center;">'.$UnsortedFileDeleteLink.'</td>
 	 			</tr>'."\n";
 	 		}
 	 		else if(is_file($UnsortedFile)) {
 	 			$ParsedFile = $RSSObj->ParseRelease($UnsortedFile);
 	 			$ParsedFile['Title'] = str_replace($FilePath, '', $ParsedFile['Title']);
-	 			
-	 			$Type = (array_key_exists('Type', $ParsedFile)) ? $ParsedFile['Type'] : '';
-	 			switch($Type) {
-	 				case 'TV':
-	 					$Selector = 'TV';
-	 				break;
-	 			
-	 				case 'Movie':
-	 					$Selector = 'Movies';
-	 				break;
-	 			
-	 				default:
-	 					$Selector = 'Misc';
-	 				break;
-	 			}
 	 			
 	 			$Editable               = ($UserObj->CheckPermission($UserObj->UserGroupID, 'UnsortedFilesRename')) ? ' class="editable"' : '';
 	 			$UnsortedFileMoveLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'UnsortedFilesMove'))   ? '<a id="UnsortedFileMove-'.$i.'"><img src="images/icons/file_move.png" /></a>'     : '';
@@ -156,30 +139,28 @@ if(is_array($UnsortedFiles)) {
 	 			 <td '.$Editable.'id="File-'.$i.'">'.$File.'</td>
 	 			 <td>
 	 			  <select name="ContentFolder">'."\n";
-	 			foreach(array_filter(glob($DriveRoot.'/Media/*'), 'is_dir') AS $Option) {
-	 				$Selected = ($Selector == str_replace($DriveRoot.'/Media/', '', $Option)) ? ' selected="selected"' : '';
-	 			
-	 				echo '<option value="'.$Option.'"'.$Selected.'>'.str_replace($DriveRoot.'/Media/', '', $Option).'</option>';
+	 			$Iterator = new DirectoryTree(new RecursiveDirectoryIterator($DriveRoot.'/Media/'), RecursiveIteratorIterator::SELF_FIRST);
+	 			    
+	 			foreach($Iterator AS $Directory) {
+	 				if(!empty($Directory)) {
+	 					$Type = (array_key_exists('Type', $ParsedFile)) ? $ParsedFile['Type'] : '';
+	 					if($Type == 'TV' && $ParsedFile['Title'] == str_replace('&nbsp;', '', $Directory)) {
+	 						$Selected = 'selected="selected"';
+	 					}
+	 					else if($Type == 'Movies' && str_replace('&nbsp;', '', $Directory) == 'Movies') {
+	 						$Selected = 'selected="selected"';
+	 					}
+	 					else {
+	 						$Selected = '';
+	 					}
+	 					
+	 					$Enabled = ($Directory == 'TV') ? ' disabled="disabled"' : '';
+	 					
+	 					echo '<option value="'.$Iterator->parent().'"'.$Selected.$Enabled.'>'.$Directory.'</option>';
+	 				}
 	 			}
 	 			echo '
 	 			  </select>
-	 			 </td>
-	 			 <td>'."\n";
-	 			if($Selector == 'TV') {
-	 				echo '<select name="TVFolder">';
-	 					echo '<option value=""></option>'."\n";
-	 					foreach(array_filter(glob($DriveRoot.'/Media/TV/*'), 'is_dir') AS $Option) {
-	 						$Selected = (strtolower($ParsedFile['Title']) == strtolower(trim(str_replace($DriveRoot.'/Media/TV/', '', $Option)))) ? ' selected="selected"' : '';
-	 						
-	 						echo '<option value="'.$Option.'"'.$Selected.'>'.str_replace($DriveRoot.'/Media/TV/', '', $Option).'</option>';
-	 					}
-	 					echo '</select>';
-	 					
-	 			}
-	 			else {
-	 				echo '&nbsp;';
-	 			}
-	 			echo '
 	 			 </td>
 	 			 <td style="text-align:center;">
 	 			  '.$UnsortedFileMoveLink.'

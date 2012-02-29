@@ -540,7 +540,7 @@ class Series extends Hub {
 		
 		if($DriveRoot) {
 			if(is_dir($DriveRoot.'/Media/TV/')) {
-				$SeriesDir = glob($DriveRoot.'/Media/TV/*');
+				$SeriesDir = array_filter(glob($DriveRoot.'/Media/TV/*'), 'is_dir');
 				$SeriesDirArr = array_merge($SeriesDirArr, $SeriesDir);
 			}
 		}
@@ -551,7 +551,7 @@ class Series extends Hub {
 					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
 					
 					if(is_dir($DriveRoot.'/Media/TV/')) {
-						$SeriesDir = glob($DriveRoot.'/Media/TV/*');
+						$SeriesDir = array_filter(glob($DriveRoot.'/Media/TV/*'), 'is_dir');
 						$SeriesDirArr = array_merge($SeriesDirArr, $SeriesDir);
 					}
 				}
@@ -574,7 +574,7 @@ class Series extends Hub {
 			
 			foreach($SeriesDirectoriesArr AS $SerieDirectory) {
 				if($Serie == substr($SerieDirectory, (strrpos($SerieDirectory, '/') + 1))) {
-					$SerieEpisodes = Hub::RecursiveGlob($SerieDirectory, '{*.mp4,*.avi,*.mkv}', GLOB_BRACE);
+					$SerieEpisodes = Hub::RecursiveDirSearch($SerieDirectory);
 				    @$SeriesInfoArr[$Serie]['TotalEpisodes'] += sizeof($SerieEpisodes);
 				    
 				    if($EpisodeLocations) {

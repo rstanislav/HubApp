@@ -19,7 +19,7 @@ class Wishlist extends Hub {
 			$MovieFiles = array();
 			foreach($Drives AS $Drive) {
 				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
-				$Files[$DriveRoot] = glob($DriveRoot.'/Media/Movies/{*.mp4,*.mkv,*.avi,*.mp4}', GLOB_BRACE);
+				$Files[$DriveRoot] = Hub::RecursiveDirSearch($DriveRoot.'/Media/Movies/');
 				
 				if(sizeof($Files[$DriveRoot])) {
 					$MovieFiles = array_merge((array)$MovieFiles, (array)$Files[$DriveRoot]);

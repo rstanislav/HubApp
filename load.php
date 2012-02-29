@@ -759,14 +759,7 @@ else {
 		case 'UnsortedFileMove':
 			print_r($_POST);
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'UnsortedFilesMove')) {
-				if(filter_has_var(INPUT_POST, 'TVFolder')) {
-					$NewFolder = $_POST['TVFolder'].'/';
-				}
-				else {
-					$NewFolder = $_POST['ContentFolder'].'/';
-				}
-				
-				$UnsortedFilesObj->MoveFile($_POST['UnsortedFilePath'].$_POST['UnsortedFile'], $NewFolder.$_POST['UnsortedFile']);
+				$UnsortedFilesObj->MoveFile($_POST['UnsortedFilePath'].$_POST['UnsortedFile'], $_POST['ContentFolder'].'/'.$_POST['UnsortedFile']);
 			}
 			else {
 				$_SESSION['Error'] = 'You are not permitted to move unsorted files';

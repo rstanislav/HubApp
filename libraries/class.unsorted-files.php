@@ -66,4 +66,24 @@ class UnsortedFiles extends Hub {
 		}
 	}
 }
+
+class DirectoryTree extends RecursiveIteratorIterator {
+    public function parent() {
+    	if(parent::current()->isDir()) {
+    		return str_replace('\\', '/', parent::current());
+    	}
+    	else {
+    		return;
+    	}
+    }
+    
+    public function current() {
+        if($this->getInnerIterator()->current()->isDir()) {
+        	return str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $this->getDepth()).$this->getInnerIterator()->current()->getBasename();
+        }
+        else {
+        	return;
+        }
+    }
+}
 ?>

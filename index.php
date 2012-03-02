@@ -50,17 +50,15 @@ $HubObj->CheckForDBUpgrade();
  <script type="text/javascript" src="js/jquery.qtip.js"></script>
  <script type="text/javascript" src="js/jquery.alerts.js"></script>
  <script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
- <script type="text/javascript" src="js/selectToUISlider.jQuery.js"></script>
+ <script type="text/javascript" src="js/jquery.selectToUISlider.js"></script>
  <script type="text/javascript" src="js/jquery.form.js"></script>
  <script type="text/javascript" src="js/jquery.jeditable.js"></script>
  <script type="text/javascript" src="js/jquery.timers.js"></script>
  <script type="text/javascript" src="js/jquery.selectBox.js"></script>
- <script type="text/javascript" src="js/valums.file-uploader.js"></script>
  <script type="text/javascript" src="js/jquery.noty.js"></script>
- <script type="text/javascript" src="js/hub.script.js"></script>
- 
- <script type="text/javascript" src="js/jquery.mousewheel-3.0.4.pack.js"></script>
+ <script type="text/javascript" src="js/valums.file-uploader.js"></script>
  <script type="text/javascript" src="js/jquery.fancybox-1.3.4.pack.js"></script>
+ <script type="text/javascript" src="js/hub.script.js"></script>
 </head>
 
 <body>

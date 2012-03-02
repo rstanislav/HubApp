@@ -117,7 +117,7 @@ if(is_array($Wishes)) {
 			$FileText = 'Movie has been downloaded, but the file is missing';
 			$WishlistPlayLink   = '';
 			$WishlistDeleteLink = $WishlistDeleteLink;
-			$WishListStatusImg  = '<img src="images/icons/error.png" />';
+			$WishListStatusImg  = '<img src="images/icons/file_error.png" />';
 		}
 		
 		echo '

@@ -33,7 +33,7 @@ class Wishlist extends Hub {
 	}
 
 	function GetFulfilledWishlistItems() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE  WishlistDownloadDate != "" ORDER BY WishlistDownloadDate DESC');
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate != "" ORDER BY WishlistDownloadDate DESC');
 		$WishPrep->execute();
 		
 		if($WishPrep->rowCount()) {
@@ -211,7 +211,7 @@ class Wishlist extends Hub {
 	}
 	
 	function GetBadge() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate = 0 OR (WishlistFile = "" && WishlistFileGone = 0)');
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate = ""');
 		$WishPrep->execute();
 		
 		$WishlistSize = $WishPrep->rowCount();

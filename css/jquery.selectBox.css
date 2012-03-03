@@ -61,7 +61,7 @@
 	right: 0;
 	width: 23px;
 	height: 100%;
-	background: url('../images/select/arrow-open.png') 50% center no-repeat;
+	background: url('../images/select/arrow.png') 50% center no-repeat;
 }
 
 .blue .selectBox-arrow {

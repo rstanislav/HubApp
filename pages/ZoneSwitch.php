@@ -5,7 +5,7 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneSwitch')) {
 	if(sizeof($Zones)) {
 		echo '
 		<form method="post" action="">
-		<select name="zoneSelect" id="zoneSelect">'."\n";
+		<select name="zoneSelect" id="zoneSelect" class="blue">'."\n";
 	
 		foreach($Zones AS $Zone) {
  			$ZoneSelected = ($Zone['ZoneName'] == $HubObj->CurrentZone) ? ' selected="selected"' : '';

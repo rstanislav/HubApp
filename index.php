@@ -124,9 +124,6 @@ else {
    </div>
    <ul>
     <?php
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewDrives')) {
-    	echo '<li class="drive"><a rel="Drives" href="#!/Drives">Drives</a></li>'."\n";
-    }
     if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewSeries')) {
     	echo '<li class="series"><a rel="Series" href="#!/Series">Series</a></li>'."\n";
     }
@@ -136,9 +133,17 @@ else {
     if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewWishlist')) {
     	echo '<li class="wishlist"><a rel="Wishlist" href="#!/Wishlist">Wishlist</a><span id="WishlistBadge"></span></li>'."\n";
     }
+    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewDrives')) {
+    	echo '<li class="drive"><a rel="Drives" href="#!/Drives">Drives</a></li>'."\n";
+    }
+    
+    echo '<li class="manager"><a rel="FileManager" href="#!/FileManager">File Manager</a></li>'."\n";
+    
+    /*
     if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewUnsortedFiles')) {
     	echo '<li class="unsorted"><a rel="UnsortedFiles" href="#!/UnsortedFiles">Unsorted Files</a></li>'."\n";
     }
+    */
     if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewExtractFiles')) {
     	echo '<li class="extract"><a rel="ExtractFiles" href="#!/ExtractFiles">Extract Files</a></li>'."\n";
     }

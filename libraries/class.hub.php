@@ -374,9 +374,16 @@ class IgnorantRecursiveDirectoryIterator extends RecursiveDirectoryIterator {
     function getChildren() {
         try {
             return parent::getChildren();
-        } catch(UnexpectedValueException $e) {
+        }
+        catch(UnexpectedValueException $e) {
             return new RecursiveArrayIterator(array());
         }
     }
+}
+
+class HubDirectoryIterator extends DirectoryIterator {
+	function getSize() {
+		return ExtractFiles::GetFileSize($this->current()->getPath().'/'.$this->current()->getBasename());
+	}
 }
 ?>

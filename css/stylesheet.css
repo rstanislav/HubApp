@@ -168,6 +168,7 @@ table.main {
 #navigation .series a        { background: url('../images/navigation/television.png') no-repeat 16px 1px;   }
 #navigation .movies a        { background: url('../images/navigation/film.png') no-repeat 16px 1px;         }
 #navigation .zones a         { background: url('../images/navigation/zones.png') no-repeat 16px 1px;        }
+#navigation .manager a       { background: url('../images/navigation/manager.png') no-repeat 16px 1px;         }
 #navigation .unsorted a      { background: url('../images/navigation/sort.png') no-repeat 16px 1px;         }
 #navigation .extract a       { background: url('../images/navigation/archive.png') no-repeat 16px 1px;      }
 #navigation .control-panel a { background: url('../images/navigation/controlpanel.png') no-repeat 16px 1px; }

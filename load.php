@@ -16,6 +16,52 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'FileManagerFolderDelete':
+			if(filter_has_var(INPUT_GET, 'Folder')) {
+				if($DrivesObj->RecursiveDirRemove($_GET['Folder'])) {
+					$HubObj->AddLog(EVENT.'File Manager', 'Success', 'Deleted "'.$_GET['Folder'].'"');
+				}
+			}
+		break;
+	
+		case 'FileManagerFileDelete':
+			if(filter_has_var(INPUT_GET, 'File')) {
+				if(unlink($_GET['File'])) {
+					$HubObj->AddLog(EVENT.'File Manager', 'Success', 'Deleted "'.$_GET['File'].'"');
+				}
+			}
+		break;
+		
+		case 'FileManagerMove':
+			if(filter_has_var(INPUT_GET, 'From') && filter_has_var(INPUT_GET, 'To')) {
+				$OldLocation = $_GET['From'];
+				$NewLocation = $_GET['To'].'/'.basename($_GET['From']);
+				
+				if(is_dir($_GET['From']) || is_file($_GET['From'])) {
+					if(is_dir($_GET['To']) && !is_file($NewLocation)) {
+						if(rename($OldLocation, $NewLocation)) {
+							$HubObj->AddLog(EVENT.'File Manager', 'Success', 'Moved "'.$OldLocation.'" to "'.$NewLocation.'"');
+						}
+						else {
+							echo 'Failed to move "'.$OldLocation.'" to "'.$NewLocation.'"';
+						}
+					}
+				}
+			}
+			else {
+				if(filter_has_var(INPUT_GET, 'ID') && filter_has_var(INPUT_GET, 'Move')) {
+					include_once './pages/FileManagerMove.php';
+				}
+				else {
+					echo 'You need to specify ID and file/folder to move';
+				}
+			}
+		break;
+		
+		case 'FileManager':
+			include_once './pages/FileManager.php';
+		break;
+		
 		case 'CleanLog':
 			unlink(APP_PATH.'/tmp/schedule_error.log');
 			touch(APP_PATH.'/tmp/schedule_error.log');

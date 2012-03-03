@@ -48,6 +48,16 @@ $(document).ready(function() {
 			});
 			
 		}
+		else if(event.pathNames[0] == 'FileManager') {
+			var Crumbs = '';
+			for(x in event.pathNames) {
+				if(event.pathNames[x] != 'FileManager') {
+					Crumbs += '&crumbs[]=' + event.pathNames[x];
+				}
+			}
+			
+			loadURL('FileManager' + Crumbs);
+		}
 		else if(event.pathNames[0] == 'Password') {
 			$.ajax({
 				method: 'get',

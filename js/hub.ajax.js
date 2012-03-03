@@ -79,7 +79,10 @@ $(document).ready(function() {
 	'a[id|="DriveAdd"],' +
 	'a[id|="UserGroupDelete"],' +
 	'a[id|="XBMCPlayPause"],' +
-	'a[id|="WishlistRefresh"]').click(function(event) {
+	'a[id|="WishlistRefresh"],' +
+	'a[id|="FileManagerFolderDelete"],' +
+	'a[id|="FileManagerFileDelete"],' +
+	'a[id|="FileManagerMove"]').click(function(event) {
 		event.preventDefault();
 		
 		if($(this).hasClass('button')) {
@@ -735,6 +738,64 @@ function AjaxLink(Link) {
 	LinkVal  = $(Link).html();
 	
 	switch(Action) {
+		case 'FileManagerFolderDelete':
+			jPrompt('Are you sure you want to delete "' + $(Link).attr('rel') + '"?' + "\n\n" + '<strong>This will delete the folder along with the contents!</strong>' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Folder', function(response) {
+				if(response == 'delete') {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=FileManagerFolderDelete&Folder=' + $(Link).attr('rel'),
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
+							}
+							else {
+								$('#FileManager-' + FirstID).slideUp('slow').remove();
+							}
+						}
+					});
+				}
+			});
+		break;
+		
+		case 'FileManagerFileDelete':
+			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '"?', 'Delete File', function(response) {
+				if(response) {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=FileManagerFileDelete&File=' + $(Link).attr('rel'),
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
+							}
+							else {
+								$('#FileManager-' + FirstID).slideUp('slow').remove();
+							}
+						}
+					});
+				}
+			});
+		break;
+		
 		case 'DeleteEpisode':
 			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '"?', 'Delete Episode', function(response) {
 				if(response) {

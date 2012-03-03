@@ -93,8 +93,8 @@ table.main {
 	font-weight: bold;
 }
 
-#navigation li .blue { background: #96A8C7; }
-#navigation li .red  { background: #E06785; }
+#navigation li .blue-badge { background: #96A8C7; }
+#navigation li .red-badge  { background: #E06785; }
 
 #navigation li .single {
 	-webkit-border-radius: 16px;

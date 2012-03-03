@@ -257,13 +257,13 @@ class UTorrent extends Hub {
 				}
 		
 				if($TorrentFinishedSize > 0 && $TorrentSize == 0) {
-					echo '<span class="badge single red">'.$TorrentFinishedSize.'</span>';
+					echo '<span class="badge single red-badge">'.$TorrentFinishedSize.'</span>';
 				}
 				else if($TorrentFinishedSize > 0 && $TorrentSize > 0) {
-					echo '<span class="badge dual rightbadge blue">'.$TorrentSize.'</span><span class="badge dual leftbadge red">'.$TorrentFinishedSize.'</span>';
+					echo '<span class="badge dual rightbadge blue-badge">'.$TorrentSize.'</span><span class="badge dual leftbadge red-badge">'.$TorrentFinishedSize.'</span>';
 				}
 				else if($TorrentSize > 0) {
-					echo '<span class="badge single blue">'.$TorrentSize.'</span>';
+					echo '<span class="badge single blue-badge">'.$TorrentSize.'</span>';
 				}
 			}
 		}

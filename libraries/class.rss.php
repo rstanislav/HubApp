@@ -584,10 +584,10 @@ class RSS extends Hub {
 		}
 		
 		if($TorrentNewSize > 0 && $TorrentSize > 0) {
-			echo '<span class="badge dual rightbadge blue">'.$KSize.'</span><span class="badge dual leftbadge red">'.$TorrentNewSize.'</span>';
+			echo '<span class="badge dual rightbadge blue-badge">'.$KSize.'</span><span class="badge dual leftbadge red-badge">'.$TorrentNewSize.'</span>';
 		}
 		else if($TorrentSize >= 0) {
-			echo '<span class="badge single blue">'.$KSize.'</span>';
+			echo '<span class="badge single blue-badge">'.$KSize.'</span>';
 		}
 	}
 }

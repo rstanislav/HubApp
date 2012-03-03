@@ -223,10 +223,10 @@ class Wishlist extends Hub {
 		$WishlistNewSize = $WishPrep->rowCount();
 		
 		if($WishlistNewSize > 0 && $WishlistSize > 0) {
-			echo '<span class="badge dual rightbadge blue">'.$WishlistSize.'</span><span class="badge dual leftbadge red">'.$WishlistNewSize.'</span>';
+			echo '<span class="badge dual rightbadge blue-badge">'.$WishlistSize.'</span><span class="badge dual leftbadge red-badge">'.$WishlistNewSize.'</span>';
 		}
 		else if($WishlistSize > 0) {
-			echo '<span class="badge single blue">'.$WishlistSize.'</span>';
+			echo '<span class="badge single blue-badge">'.$WishlistSize.'</span>';
 		}
 	}
 }

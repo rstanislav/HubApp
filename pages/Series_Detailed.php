@@ -102,8 +102,10 @@ if(is_array($Series)) {
 		foreach($Seasons AS $Episode) {
 			$EpisodeControl = '';
 			$OtherOptions = FALSE;
+			$ExternalSubFolderLink = '';
 			
 			if($Episode['EpisodeFile']) {
+				$ExternalSubFolderLink  = '<a href="#!/FileManager/'.dirname($Episode['EpisodeFile']).'" title="View \''.dirname($Episode['EpisodeFile']).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
 				$Episode['EpisodeFile'] = $HubObj->ConcatFilePath($Episode['EpisodeFile']);
 				
 				$PlayFileLink      = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))           ? '<a id="FilePlay-'.urlencode($Episode['EpisodeFile']).'"><img src="images/icons/control_play.png" title="Play '.$Episode['EpisodeFile'].'" /></a>' : '';
@@ -196,7 +198,7 @@ if(is_array($Series)) {
 			 <td>'.sprintf("S%02sE%02s", $Episode['EpisodeSeason'], $Episode['EpisodeEpisode']).'</td>
 			 <td>'.$Episode['EpisodeTitle'].'</td>
 			 <td>'.date('d.m.y', $Episode['EpisodeAirDate']).'</td>
-			 <td>'.$Episode['EpisodeFile'].'</td>
+			 <td>'.$ExternalSubFolderLink.$Episode['EpisodeFile'].'</td>
 			 <td style="text-align:right">
 			  '.$EpisodeControl.'
 			 </td>

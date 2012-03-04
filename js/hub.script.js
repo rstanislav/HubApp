@@ -73,7 +73,7 @@ $(document).ready(function() {
 				url:    'load.php',
 				data:   'page=Logout',
 				success: function(html) {
-					window.location='/';
+					window.location = location.href.replace(new RegExp('#!/Logout', 'i'), '');
 				}
 			});
 		}

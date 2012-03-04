@@ -19,7 +19,7 @@ else {
 		case 'ZoneChange':
 			if(filter_has_var(INPUT_GET, 'Zone')) {
 				if(!$ZonesObj->SetZone($_GET['Zone'])) {
-					echo 'failed';
+					echo 'Failed to switch zones to "'.$_GET['Zone'].'"';
 				}
 			}
 		break;

@@ -79,6 +79,7 @@ $(document).ready(function() {
 	'a[id|="DriveAdd"],' +
 	'a[id|="UserGroupDelete"],' +
 	'a[id|="XBMCPlayPause"],' +
+	'a[id|="XBMCPlayStop"],' +
 	'a[id|="WishlistRefresh"],' +
 	'a[id|="FileManagerFolderDelete"],' +
 	'a[id|="FileManagerFileDelete"],' +
@@ -261,7 +262,7 @@ function AjaxButton(Button, Extra) {
 		break;
 		
 		case 'XBMCPlayPause':
-			if(ButtonVal = 'Play') {
+			if(ButtonVal == 'Play') {
 				NewPlayState = 'Pause';
 			}
 			else {
@@ -289,6 +290,32 @@ function AjaxButton(Button, Extra) {
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
 						$(ButtonObj).contents().find('.label').text(NewPlayState);
+					}
+				}
+			});
+		break;
+		
+		case 'XBMCPlayStop':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=XBMCPlayStop&PlayerID=' + ID,
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Loading ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
+					}
+					else {
+						$(ButtonObj).contents().find('.label').text('Stopped');
 					}
 				}
 			});

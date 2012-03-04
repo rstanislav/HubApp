@@ -43,7 +43,7 @@ class XBMC extends Hub {
 	function PlayFile($File) {
 		if(is_file($File)) {
 			try {
-				return $this->XBMCRPC->Player->Open(array('params' => array('item' => array('file' => $File))));
+				return $this->XBMCRPC->Player->Open(array('item' => array('file' => $File))); // USE NETWORK FILE
 			}
 			catch(XBMC_RPC_Exception $e) {
 				die($e->getMessage());
@@ -53,10 +53,18 @@ class XBMC extends Hub {
 	
 	function PlayPause($PlayerID) {
 		try {
-			return $this->XBMCRPC->Player->PlayPause(array('params' => 1));
+			return $this->XBMCRPC->Player->PlayPause(array('playerid' => 1));
 		}
 		catch(XBMC_RPC_Exception $e) {
-			Hub::d($e);
+			die($e->getMessage());
+		}
+	}
+	
+	function PlayStop($PlayerID) {
+		try {
+			return $this->XBMCRPC->Player->Stop(array('playerid' => 1));
+		}
+		catch(XBMC_RPC_Exception $e) {
 			die($e->getMessage());
 		}
 	}

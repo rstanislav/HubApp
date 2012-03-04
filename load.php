@@ -87,6 +87,15 @@ else {
 			}
 		break;
 		
+		case 'XBMCPlayStop':
+			if(filter_has_var(INPUT_GET, 'PlayerID')) {
+				$XBMCObj->Connect();
+				if(is_object($XBMCObj->XBMCRPC)) {
+					$XBMCObj->PlayStop($_GET['PlayerID']);
+				}
+			}
+		break;
+		
 		case 'Upload':
 			$Settings = $HubObj->GetSettings();
 			
@@ -128,7 +137,7 @@ else {
 		
 		case 'XBMCLibraryUpdate':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryUpdate')) {
-				$XBMCObj->Connect();
+				$XBMCObj->Connect('default');
 				if(is_object($XBMCObj->XBMCRPC)) {
 					$XBMCObj->ScanForContent();
 					
@@ -139,7 +148,7 @@ else {
 		
 		case 'XBMCLibraryClean':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryClean')) {
-				$XBMCObj->Connect();
+				$XBMCObj->Connect('default');
 				if(is_object($XBMCObj->XBMCRPC)) {
 					$XBMCObj->CleanLibrary();
 					
@@ -927,7 +936,6 @@ else {
 		
 		case 'Logout':
 			$UserObj->Logout();
-			header('Location: '.$_SERVER['HTTP_REFERER']);
 		break;
 		
 		case 'ForgotPassword':

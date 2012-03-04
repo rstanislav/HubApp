@@ -293,6 +293,25 @@ table.main {
 	width: 175px;
 }
 
+#loading-wrapper {
+	width: 100%;
+	height: 100%;
+	position:fixed;
+	top:0;
+	left:0;
+	background:#000;
+   	z-index:1001;
+   	opacity:0.9;
+   	color: #fff;
+   	line-height: 50px;
+   	text-align: center;
+   	background-image: url('../images/spinners/ajax-dark-large.gif');
+   	background-repeat:no-repeat;
+   	background-attachment:fixed;
+   	background-position:center;
+   	display: none;
+}
+
 /*
 *
 * Upload Files
@@ -350,7 +369,7 @@ table.main {
 }
 
 #loading .spinner {
-	background-image: url('../images/spinners/ajax-large.gif'); 
+	background-image: url('../images/spinners/ajax-light-large.gif'); 
 	vertical-align: middle; 
 	position: relative;
 	height: 32px;

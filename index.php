@@ -75,6 +75,7 @@ else {
 </div>
 
 <div id="upload-wrapper"></div>
+<div id="loading-wrapper"></div>
 
 <div id="error" style="display:none">
  <img src="images/alerts/confirm.png" />
@@ -99,7 +100,7 @@ else {
   </td>
   <td class="header right">
    <?php
-   require_once './pages/ZoneSwitch.php';
+   include_once './pages/ZoneSwitch.php';
    ?>
   </td>
  </tr>

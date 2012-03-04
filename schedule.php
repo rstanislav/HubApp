@@ -23,7 +23,7 @@ else {
 
 $UTorrentObj->Connect();
 $SeriesObj->ConnectTheTVDB();
-$XBMCObj->Connect();
+$XBMCObj->Connect('default');
 
 // Check for existing active drive and that all required folders are present
 $DrivesObj->CheckActiveDrive();

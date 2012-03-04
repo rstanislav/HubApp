@@ -10,12 +10,19 @@ if($UserObj->LoggedIn) {
 	$HubObj->LogActivity(urldecode($_SERVER['QUERY_STRING']));
 }
 
-$ErrorFreePages = array('Settings', 'ZonesDropdown', 'Drives', 'ZoneChange');
+$ErrorFreePages = array('Settings', 'Drives', 'ZoneChange');
 if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 	$HubObj->ShowError();
 }
 else {
 	switch($Page) {
+		case 'ZoneChange':
+			if(filter_has_var(INPUT_GET, 'Zone')) {
+				if(!$ZonesObj->SetZone($_GET['Zone'])) {
+					echo 'failed';
+				}
+			}
+		break;
 		case 'FileManagerFolderDelete':
 			if(filter_has_var(INPUT_GET, 'Folder')) {
 				if($DrivesObj->RecursiveDirRemove($_GET['Folder'])) {

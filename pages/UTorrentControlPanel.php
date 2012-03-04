@@ -68,4 +68,4 @@ $('#utorrent').everyTime(1000, function(i) {
 }, 0);
 </script>
 
-<div id="utorrent"><img src="images/spinners/ajax-large.gif" /></div>
+<div id="utorrent"><img src="images/spinners/ajax-light-large.gif" /></div>

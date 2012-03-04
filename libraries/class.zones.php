@@ -9,14 +9,14 @@ class Zones extends Hub {
 		}
 		
 		if(!$AddError) {
-			if(self::CheckZoneConnection($_POST['ZoneHost'], $_POST['ZonePort'], $_POST['ZoneUser'], $_POST['ZonePass'])) {
+			if(XBMC::CheckConnection($_POST['ZoneUser'], $_POST['ZonePass'], $_POST['ZoneHost'], $_POST['ZonePort'])) {
 				$ZoneAddPrep = $this->PDO->prepare('INSERT INTO Zones (ZoneDate, ZoneName, ZoneXBMCHost, ZoneXBMCPort, ZoneXBMCUsername, ZoneXBMCPassword) VALUES (:ZoneDate, :ZoneName, :ZoneXBMCHost, :ZoneXBMCPort, :ZoneXBMCUsername, :ZoneXBMCPassword)');
 				$ZoneAddPrep->execute(array(':ZoneDate'         => time(),
-			                            	':ZoneName'         => $_POST['ZoneName'],
-			                            	':ZoneXBMCHost'     => $_POST['ZoneHost'],
-			                            	':ZoneXBMCPort'     => $_POST['ZonePort'],
-			                            	':ZoneXBMCUsername' => $_POST['ZoneUser'],
-			                            	':ZoneXBMCPassword' => $_POST['ZonePass']));
+				                            ':ZoneName'         => $_POST['ZoneName'],
+				                            ':ZoneXBMCHost'     => $_POST['ZoneHost'],
+				                            ':ZoneXBMCPort'     => $_POST['ZonePort'],
+				                            ':ZoneXBMCUsername' => $_POST['ZoneUser'],
+				                            ':ZoneXBMCPassword' => $_POST['ZonePass']));
 			}
 		}
 		else {
@@ -34,7 +34,7 @@ class Zones extends Hub {
 				if($ZoneFromDB) {
 					$ZoneEdit = array_replace($ZoneFromDB, array($EditField => $_POST['value']));
 					
-					if(self::CheckZoneConnection($ZoneEdit['ZoneXBMCHost'], $ZoneEdit['ZoneXBMCPort'], $ZoneEdit['ZoneXBMCUsername'], $ZoneEdit['ZoneXBMCPassword'])) {
+					if(XBMC::CheckConnection($ZoneEdit['ZoneXBMCHost'], $ZoneEdit['ZoneXBMCPort'], $ZoneEdit['ZoneXBMCUsername'], $ZoneEdit['ZoneXBMCPassword'])) {
 						$ZoneEditPrep = $this->PDO->prepare('UPDATE Zones SET '.$EditField.' = :EditValue WHERE ZoneID = :EditID');
 						$ZoneEditPrep->execute(array(':EditValue' => $_POST['value'], ':EditID' => $EditID));
 						
@@ -64,9 +64,9 @@ class Zones extends Hub {
 		}
 	}
 	
-	function GetZoneByName($ZoneName) {
+	function GetZoneByName($Name) {
 		$ZonePrep = $this->PDO->prepare('SELECT * FROM Zones WHERE ZoneName = :ZoneName');
-		$ZonePrep->execute(array(':ZoneName' => $ZoneName));
+		$ZonePrep->execute(array(':ZoneName' => $Name));
 		
 		if($ZonePrep->rowCount()) {
 			return $ZonePrep->fetch();
@@ -76,8 +76,17 @@ class Zones extends Hub {
 		}
 	}
 	
-	function CheckZoneConnection($Host, $Port, $User, $Pass) {
-		return TRUE;
+	function CheckZoneConnection($Name) {
+		$Zone = self::GetZoneByName($Name);
+		
+		if(is_array($Zone)) {
+			if(XBMC::CheckConnection($Zone['ZoneXBMCUsername'], $Zone['ZoneXBMCPassword'], $Zone['ZoneXBMCHost'], $Zone['ZoneXBMCPort'])) {
+				return TRUE;
+			}
+		}
+		else {
+			return FALSE;
+		}
 	}
 	
 	function GetCurrentZone() {
@@ -90,17 +99,27 @@ class Zones extends Hub {
 			}
 		}
 		else {
-			setcookie('HubZone', self::GetDefaultZone(), (time() + (3600 * 24 * 61)));
-			$this->CurrentZone = self::GetDefaultZone();
+			$this->SetZone(self::GetDefaultZone());
 		}
 		
 		return $this->CurrentZone;
 	}
 	
+	function SetZone($ZoneName) {
+		if(self::IsZone($ZoneName) && self::CheckZoneConnection($ZoneName)) {
+			setcookie('HubZone', $ZoneName, (time() + (3600 * 24 * 61)));
+			$this->CurrentZone = $ZoneName;
+			
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
 	function ZoneChange($ZoneName) {
 		if(self::IsZone($ZoneName)) {
-			$this->CurrentZone = $ZoneName;
-			setcookie('HubZone', $ZoneName, (time() + (3600 * 24 * 61)));
+			self::SetZone($ZoneName);
 			
 			$this->PDO->query('UPDATE Zones SET ZoneDefault = 0');
 			$ZonePrep = $this->PDO->prepare('UPDATE Zones SET ZoneDefault = 1 WHERE ZoneName = :ZoneName');

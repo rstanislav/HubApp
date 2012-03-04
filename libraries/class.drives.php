@@ -395,7 +395,7 @@ class Drives extends Hub {
 				Hub::AddLog(EVENT.'XBMC', 'Success', 'Added "'.implode(', ', $LogSources).'" to Sources.xml');
 			}
 			
-			XBMC::Connect();
+			XBMC::Connect('default');
 			if(is_object($this->XBMCRPC)) {
 				XBMC::ScanForContent();
 				

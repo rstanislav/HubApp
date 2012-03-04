@@ -49,7 +49,7 @@ $.ajax({
 	url:    'load.php',
 	data:   'page=PastSchedule&Days=' + GetCookie('PastScheduleDays'),
 	beforeSend: function() {
-		$('#PastSchedule').html('<img src="images/spinners/ajax-large.gif" />');
+		$('#PastSchedule').html('<img src="images/spinners/ajax-light-large.gif" />');
 	},
 	success: function(data) {
 		$('#PastSchedule').html(data);
@@ -61,7 +61,7 @@ $.ajax({
 	url:    'load.php',
 	data:   'page=FutureSchedule',
 	beforeSend: function() {
-		$('#FutureSchedule').html('<img src="images/spinners/ajax-large.gif" />');
+		$('#FutureSchedule').html('<img src="images/spinners/ajax-light-large.gif" />');
 	},
 	success: function(data) {
 		$('#FutureSchedule').html(data);

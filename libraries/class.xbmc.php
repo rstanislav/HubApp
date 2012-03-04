@@ -2,8 +2,13 @@
 class XBMC extends Hub {
 	public $XBMCRPC;
 	
-	function Connect() {
-		$Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
+	function Connect($Zone = '') {
+		if($Zone == 'default') {
+			$Zone = Zones::GetZoneByName(Zones::GetDefaultZone());
+		}
+		else {
+			$Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
+		}
 		
 		if(is_array($Zone)) {
 			require_once APP_PATH.'/libraries/xbmc-rpc/rpc/HTTPClient.php';
@@ -16,6 +21,22 @@ class XBMC extends Hub {
 		}
 		else {
 			$this->Error[] = 'Unable to get XBMC API credentials';
+		}
+	}
+	
+	function CheckConnection($User, $Pass, $Host, $Port) {
+		require_once APP_PATH.'/libraries/xbmc-rpc/rpc/HTTPClient.php';
+		try {
+			$TempConnection = new XBMC_RPC_HTTPClient($User.':'.$Pass.'@'.$Host.':'.$Port);
+			
+			if(is_object($TempConnection)) {
+				unset($TempConnection);
+				
+				return TRUE;
+			}
+		}
+		catch(XBMC_RPC_ConnectionException $e) {
+		    die($e->getMessage());
 		}
 	}
 	

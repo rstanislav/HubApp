@@ -184,6 +184,10 @@ function randomString() {
 
 function ajaxSubmit(ID) {
 	$('form[name=' + ID + ']').ajaxSubmit({
+		beforeSubmit: function() {
+			Button = $('#' + ID).find('a')[0];
+		    $(Button).html('<img src="images/spinners/ajax-light.gif" />');
+		},
 		success: ajaxSubmitResponse
 	});
 }
@@ -203,6 +207,9 @@ function ajaxSubmitResponse(responseText, statusText, xhr, $form)  {
 		});
 	}
 	else {
+		Button = $('#' + $form.attr('name')).find('a')[0];
+		$(Button).html('<img src="images/icons/add.png" />');
+		
 		noty({
 			text: responseText,
 			type: 'error',

@@ -972,10 +972,12 @@ function AjaxLink(Link) {
 		break;
 	
 		case 'FilePlay':
+			File = $(Link).attr('id').replace(new RegExp(Action + '-', 'i'), '');
+			
 			$.ajax({
 				method: 'get',
 				url:    'load.php',
-				data:   'page=FilePlay&File='+ FirstID + '-' + SecondID,
+				data:   'page=FilePlay&File='+ File,
 				beforeSend: function() {
 					$(Link).html('<img src="images/spinners/ajax-light.gif" />');
 				},

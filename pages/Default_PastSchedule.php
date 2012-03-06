@@ -27,7 +27,7 @@ if($Series) {
 		$RSSTorrents = $RSSObj->SearchTitle($SearchFile);
 		
 		if(!empty($Serie['EpisodeFile'])) {
-			$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.$Serie['EpisodeFile'].'"><img src="images/icons/control_play.png" title="Play '.$Serie['EpisodeFile'].'" /></a>' : '';
+			$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.urlencode($Serie['EpisodeFile']).'"><img src="images/icons/control_play.png" title="Play '.$Serie['EpisodeFile'].'" /></a>' : '';
 		}
 		else if($Serie['TorrentKey']) {
 			$FileAction = '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$Serie['TorrentKey'].'"><img src="images/icons/downloaded.png" title="Episode has been added to uTorrent. Click to re-download" /></a>';

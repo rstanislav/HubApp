@@ -106,9 +106,8 @@ if(is_array($Series)) {
 			
 			if($Episode['EpisodeFile']) {
 				$ExternalSubFolderLink  = '<a href="#!/FileManager/'.dirname($Episode['EpisodeFile']).'" title="View \''.dirname($Episode['EpisodeFile']).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
-				$Episode['EpisodeFile'] = $HubObj->ConcatFilePath($Episode['EpisodeFile']);
-				
 				$PlayFileLink      = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))           ? '<a id="FilePlay-'.urlencode($Episode['EpisodeFile']).'"><img src="images/icons/control_play.png" title="Play '.$Episode['EpisodeFile'].'" /></a>' : '';
+				$Episode['EpisodeFile'] = $HubObj->ConcatFilePath($Episode['EpisodeFile']);
 				$DeleteEpisodeLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDeleteEpisode')) ? '<a id="DeleteEpisode-'.$Episode['EpisodeID'].'" rel="'.$Serie['SerieTitle'].' s'.sprintf('%02s', $Episode['EpisodeSeason']).'e'.sprintf('%02s', $Episode['EpisodeEpisode']).'"><img src="images/icons/delete.png" /></a>'       : '';
 				
 				$EpisodeControl = $PlayFileLink.' '.$DeleteEpisodeLink;

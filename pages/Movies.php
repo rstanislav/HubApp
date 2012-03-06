@@ -32,7 +32,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				$FilePath = $Files;
 			}
 			
-			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
+			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.urlencode($Movie['file']).'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
 
 			if(!empty($Movie['trailer'])) {
 				if(strstr($Movie['trailer'], 'plugin.video.youtube')) {
@@ -104,7 +104,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		 </thead>'."\n";
 		
 		foreach($Movies AS $Movie) {
-			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="MoviePlay-'.$Movie[0]['movieid'].'"><img src="images/icons/control_play.png" /></a>' : '';
+			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="FilePlay-'.urlencode($Movie[0]['file']).'"><img src="images/icons/control_play.png" /></a>' : '';
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie[0]['movieid'].'"><img src="images/icons/information.png" /></a>'  : '';
 			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie[0]['movieid'].'"><img src="images/icons/delete.png" /></a>'    : '';
 			

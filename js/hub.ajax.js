@@ -946,31 +946,6 @@ function AjaxLink(Link) {
 			});
 		break;
 		
-		case 'DriveAdd':
-			$.ajax({
-				method: 'get',
-				url:    'load.php',
-				data:   'page=DriveAdd&DriveLetter='+ FirstID,
-				beforeSend: function() {
-					$(Link).html('<img src="images/spinners/ajax-light.gif" />');
-				},
-				success: function(Return) {
-					if(Return != '') {
-						$(Link).html('<img src="images/icons/error.png" />');
-								
-						noty({
-							text: Return,
-							type: 'error',
-							timeout: false,
-						});
-					}
-					else {
-						$(Link).html('<img src="images/icons/check.png" />');
-					}
-				}
-			});
-		break;
-		
 		case 'DriveActive':
 			$.ajax({
 				method: 'get',

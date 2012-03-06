@@ -99,7 +99,7 @@ class Zones extends Hub {
 			}
 		}
 		else {
-			$this->SetZone(self::GetDefaultZone());
+			self::SetZone(self::GetDefaultZone());
 		}
 		
 		return $this->CurrentZone;

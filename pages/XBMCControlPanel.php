@@ -19,9 +19,6 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		
 		$PlayerInfo = $XBMCObj->XBMCRPC->Player->GetProperties(array('playerid' => 1, 'properties' => array('speed', 'subtitleenabled', 'percentage', 'currentaudiostream', 'currentsubtitle', 'audiostreams', 'position', 'subtitles', 'totaltime', 'time')));
 		
-		//$HubObj->d($ItemInfo);
-		//$HubObj->d($PlayerInfo);
-		
 		$CurrentTime = sprintf('%02s:%02s:%02s', $PlayerInfo['time']['hours'], $PlayerInfo['time']['minutes'], $PlayerInfo['time']['seconds']);
 		$TotalTime   = sprintf('%02s:%02s:%02s', $PlayerInfo['totaltime']['hours'], $PlayerInfo['totaltime']['minutes'], $PlayerInfo['totaltime']['seconds']);
 		
@@ -183,11 +180,13 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				
 			<div class="head">Cast</div>
 			<table style="width:520px">
+			 <thead>
 			 <tr>
 			  <th style="width:250px; text-align:right">Actor</th>
 			  <th style="width:20px">&nbsp;</th>
 			  <th style="width:250px">Role</th>
-			 </tr>'."\n";
+			 </tr>
+			 </thead>'."\n";
 			
 			$SupportingCast = '';
 			foreach($ItemInfo['item']['cast'] AS $Cast) {

@@ -244,8 +244,9 @@ class Hub {
 				$HubBackup     = (isset($_POST['SettingHubBackup']))     ? 1 : 0;
 				$HubKillSwitch = (isset($_POST['SettingHubKillSwitch'])) ? 1 : 0;
 				
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch, SettingHubSearchURITVSeries = :SearchURITVSeries, SettingHubSearchURIMovies = :SearchURIMovies');
-				$EditSettingsPrep->execute(array(':LocalIP'                    => implode('.', $_POST['SettingHubLocalIP']),
+				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalHostname = :LocalHostname, SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch, SettingHubSearchURITVSeries = :SearchURITVSeries, SettingHubSearchURIMovies = :SearchURIMovies');
+				$EditSettingsPrep->execute(array(':LocalHostname'              => $_POST['SettingHubLocalHostname'],
+				                                 ':LocalIP'                    => implode('.', $_POST['SettingHubLocalIP']),
 				                                 ':MinActiveDiskFreeSpaceInGB' => $_POST['SettingHubMinimumActiveDiskFreeSpaceInGB'],
 				                                 ':MinDownloadQuality'         => $_POST['SettingHubMinimumDownloadQuality'],
 				                                 ':MaxDownloadQuality'         => $_POST['SettingHubMaximumDownloadQuality'],

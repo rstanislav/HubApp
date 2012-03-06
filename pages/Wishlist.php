@@ -6,11 +6,11 @@ $('#AddWishlistItem').click(function(event) {
 	WishlistID = randomString();
 	$('#tbl-wishlist tbody tr:first').before(
 	    '<tr id="' + WishlistID + '">' +
-	     '<form name="' + WishlistID + '" method="post" action="load.php?page=WishlistAdd" style="display:none">' +
+	     '<form name="' + WishlistID + '" method="post" action="load.php?page=WishlistAdd">' +
 	      '<td><input name="WishlistTitle" style="width:250px" type="text" /></td>' +
 	      '<td><input name="WishlistYear" style="width:115px" type="text" /></td>' +
-	      '<td><input name="WishlistDate" type="hidden" value="1" />Now</td>' +
-	      '<td style="text-align:center">' +
+	      '<td><input name="WishlistDate" type="hidden" value="Now" /></td>' +
+	      '<td style="text-align:right">' +
 	       '<a onclick="javascript:ajaxSubmit(\'' + WishlistID + '\');"><img src="images/icons/add.png" /></a>' +
 	       '<a onclick="javascript:$(\'#' + WishlistID + '\').remove();"><img src="images/icons/delete.png" /></a>' +
 	      '</td>' +
@@ -26,20 +26,19 @@ $('#AddWishlistItem').click(function(event) {
  
 <div class="head">Wishlist <small style="font-size: 12px;">(<a href="#!/Help/Wishlist">?</a>)</small></div>
 
+<table id="tbl-wishlist">
+ <thead>
+  <tr>
+   <th>Title</th>
+   <th style="width:50px">Year</th>
+   <th style="width:150px">Since</th>
+   <th style="width:54px">&nbsp;</th>
+  </tr>
+ </thead>
 <?php
 $Wishes = $WishlistObj->GetUnfulfilledWishlistItems();
 
 if(is_array($Wishes)) {
-	echo '
-	<table id="tbl-wishlist">
-	 <thead>
-	 <tr>
-	  <th>Title</th>
-	  <th style="width:50px">Year</th>
-	  <th style="width:150px">Since</th>
-	  <th style="width:54px">&nbsp;</th>
-	 </tr>
-	 </thead>'."\n";
 	foreach($Wishes AS $Wish) {
 		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'" rel="'.$Wish['WishlistTitle'].' ('.$Wish['WishlistYear'].')"><img src="images/icons/delete.png" /></a>' : '';
 		
@@ -55,27 +54,17 @@ if(is_array($Wishes)) {
 		 </td>
 		</tr>'."\n";
 	}
-	echo '</table>'."\n";
 }
 else {
 	echo '
-	<table id="tbl-wishlist">
-	 <thead>
-	 <tr>
-	  <th>Title</th>
-	  <th style="width:50px">Year</th>
-	  <th style="width:150px">Since</th>
-	  <th style="width:36px">&nbsp;</th>
-	 </tr>
-	 </thead>
 	 <tr>
       <td colspan="4">
        <div class="notification information">No data available</div>
       </td>
-     </tr>
-    </table>'."\n";
+     </tr>'."\n";
 }
 ?>
+</table>
 
 <br />
 

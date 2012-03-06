@@ -5,7 +5,7 @@
 <div class="head">Recently added movies <small style="font-size: 12px;">(<a href="#!/Help/Movies">?</a>)</small></div>
 
 <?php
-$XBMCObj->Connect();
+$XBMCObj->Connect('default');
 
 if(is_object($XBMCObj->XBMCRPC)) {
     $RecentMovies = $XBMCObj->GetRecentlyAddedMovies();

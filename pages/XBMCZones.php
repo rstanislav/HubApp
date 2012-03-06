@@ -4,7 +4,7 @@ $('#newZone').click(function(event) {
 	event.preventDefault();
 	
 	ZoneID = randomString();
-	$('#tbl-zones tr:first').after(
+	$('#tbl-zones tbody tr:first').before(
 	    '<tr id="' + ZoneID + '">' +
 		 '<form name="' + ZoneID + '" method="post" action="load.php?page=ZoneAdd">' +
 		  '<td>Now</td>' +

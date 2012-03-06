@@ -9,6 +9,13 @@
   <dd>
    <div class="field">
     <label>
+     <input name="SettingHubLocalHostname" type="text" value="<?php echo $Settings['SettingHubLocalHostname']; ?>" placeholder="Local hostname" />
+     <span>Local hostname</span>
+    </label>
+   </div>
+   
+   <div class="field">
+    <label>
      <?php
      $LocalIP = ($Settings['SettingHubLocalIP']) ? $Settings['SettingHubLocalIP'] : '127.0.0.1';
      $LocalIPArr = explode('.', $LocalIP);

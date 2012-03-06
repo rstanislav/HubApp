@@ -276,8 +276,27 @@ else {
 		
 		case 'DriveAdd':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
-				if(filter_has_var(INPUT_GET, 'DriveLetter')) {
-					$DrivesObj->AddDrive($_GET['DriveLetter']);
+				if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
+					$AddError = FALSE;
+					foreach($_POST AS $PostKey => $PostValue) {
+						$AllowedEmpty = array('DriveUser', 'DrivePass', 'DriveLocal');
+						if(!filter_has_var(INPUT_POST, $PostKey) || (empty($PostValue) && !in_array($PostKey, $AllowedEmpty))) {
+							$AddError = TRUE;
+						}
+					}
+					
+					if(!$AddError) {
+						$Settings = $HubObj->GetSettings();
+						$DriveNetwork = (stripos($_POST['DriveComputer'], $Settings['SettingHubLocalHostname']) !== FALSE || stripos($_POST['DriveComputer'], $Settings['SettingHubLocalIP']) !== FALSE) ? 0 : 1;
+						
+						$DrivesObj->AddDrive('//'.$_POST['DriveComputer'].'/'.$_POST['DriveShare'], $_POST['DriveUser'], $_POST['DrivePass'], $_POST['DriveMount'], $DriveNetwork);
+					}
+					else {
+						echo 'You have to fill in all the required fields';
+					}
+				}
+				else {
+					$_SESSION['Error'] = 'You are not allowed to add drives';
 				}
 			}
 			else {

@@ -31,12 +31,12 @@ class ExtractFiles extends Hub {
 	} 
 	
 	function GetFiles() {
-		$Drives = Drives::GetDrivesFromDB();
+		$Drives = Drives::GetDrives();
 		
 		$CompletedFiles = array();
 		if(is_array($Drives)) {	
 			foreach($Drives AS $Drive) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 				$Files = Hub::RecursiveDirSearch($DriveRoot.'/Completed');
 				
 				foreach($Files AS $File) {
@@ -109,7 +109,7 @@ class ExtractFiles extends Hub {
 		$FileInfo['foldername'] = substr($FileInfo['dirname'], (strrpos($FileInfo['dirname'], '/') + 1));
 		
 		$Drive = Drives::GetDriveByID($DriveID);
-		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 		
 		if(!empty($FileInfo['foldername'])) {
 			exec('"'.realpath(dirname(__FILE__).'/../').'/resources/unrar/UnRAR.exe" e "'.str_replace('/', '\\', $File).'" "'.str_replace('/', '\\', $FileInfo['dirname']).'/"', $RarOutput, $RarReturn);
@@ -154,7 +154,7 @@ class ExtractFiles extends Hub {
 		}
 		
 		$Drive = Drives::GetDriveByID($DriveID);
-		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 		
 		if(in_array(strtoupper($FileInfo['foldername']), array('CD1', 'CD2', 'CD3'))) {
 			$NewFileName = str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']);
@@ -339,12 +339,12 @@ class ExtractFiles extends Hub {
 	}
 	
 	function CleanDownloadsFolder() {
-		$Drives = Drives::GetDrivesFromDB();
+		$Drives = Drives::GetDrives();
 		
 		if(is_array($Drives)) {
 			$FoldersDeleted = $FoldersSizeDeleted = 0;
 			foreach($Drives AS $Drive) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 				$CompletedContents = new RecursiveIteratorIterator(new IgnorantRecursiveDirectoryIterator($DriveRoot.'/Completed'), RecursiveIteratorIterator::SELF_FIRST);
 				
 				foreach($CompletedContents AS $Name => $Object){

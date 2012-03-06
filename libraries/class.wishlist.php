@@ -13,12 +13,12 @@ class Wishlist extends Hub {
 	}
 	
 	function GetMovieFiles() {
-		$Drives = Drives::GetDrivesFromDB();
+		$Drives = Drives::GetDrives();
 		
 		if(is_array($Drives)) {
 			$MovieFiles = array();
 			foreach($Drives AS $Drive) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 				$Files[$DriveRoot] = Hub::RecursiveDirSearch($DriveRoot.'/Media/Movies/');
 				
 				if(sizeof($Files[$DriveRoot])) {

@@ -1,26 +1,21 @@
-<?php
-$UnusedDrives = $DrivesObj->GetUnusedDriveLetters();
-
-if(is_array($UnusedDrives)) {
-	$UnusedDrives = implode('</option><option>', $UnusedDrives);
-	
-	$UnusedDrives = '<option>'.$UnusedDrives.'</option>';
-}
-?>
 <script type="text/javascript">
-$('#NewNetworkDrive').click(function(event) {
+$('#NewDrive').click(function(event) {
 	event.preventDefault();
+	
+	$('#drive-instruction').show();
 	
 	DriveID = randomString();
 	$('#tbl-drives tr:first').after(
 	    '<tr id="' + DriveID + '">' +
-		 '<form name="' + DriveID + '" method="post" action="load.php?page=DriveNetworkAdd">' +
+		 '<form name="' + DriveID + '" method="post" action="load.php?page=DriveAdd">' +
 		  '<td style="text-align: center">Now</td>' +
 		  '<td>' +
-		  '//<input name="DriveNetworkComputer" style="width:105px" type="text" placeholder="computer" />' +
-		  '/<input name="DriveNetworkShare" style="width:70px" type="text" placeholder="share" />' +
-		  ' <select name="DriveNetworkLetter" style="width:50px"><?php echo $UnusedDrives; ?></select>' +
+		  '//<input name="DriveComputer" style="width:105px" type="text" placeholder="computer" />' +
+		  '/<input name="DriveShare" style="width:70px" type="text" placeholder="share" />' +
 		  '</td>' +
+		  '<td><input name="DriveUser" style="width:40px" type="text" placeholder="user" /></td>' +
+		  '<td><input name="DrivePass" style="width:40px" type="text" placeholder="pass" /></td>' +
+		  '<td><input name="DriveMount" style="width:80px" type="text" placeholder="X:" /></td>' +
 		  '<td>&nbsp;</td>' +
 		  '<td>&nbsp;</td>' +
 		  '<td>&nbsp;</td>' +
@@ -37,7 +32,7 @@ $('#NewNetworkDrive').click(function(event) {
 if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
 ?>
 <div class="head-control">
- <a id="NewNetworkDrive" class="button positive"><span class="inner"><span class="label" nowrap="">Add Network Drive</span></span></a>
+ <a id="NewDrive" class="button positive"><span class="inner"><span class="label" nowrap="">Add Drive</span></span></a>
 </div>
 <?php
 }
@@ -54,9 +49,12 @@ if(is_array($Drives)) {
  <thead>
  <tr>
   <th style="text-align: center; width:60px">Since</th>
-  <th>Root</th>
-  <th>Free</th>
-  <th>Total</th>
+  <th>Share</th>
+  <th style="width:50px">User</th>
+  <th style="width:50px">Pass</th>
+  <th style="width:90px">Mount</th>
+  <th style="width:60px">Free</th>
+  <th style="width:80px">Total</th>
   <th>&nbsp;</th>
   <th style="width: 36px">&nbsp;</th>
  </tr>
@@ -65,99 +63,46 @@ if(is_array($Drives)) {
 <?php
 $TotalFreeSpace = $TotalSpace = 0;
 foreach($Drives AS $Drive) {
-	$DriveDB = $DrivesObj->GetDriveByLetter($Drive);
-	
-	if(is_array($DriveDB)) {
-		$DriveRoot     = ($DriveDB['DriveNetwork']) ? $DriveDB['DriveRoot']                                : $DriveDB['DriveLetter'];
-		$DriveRootText = ($DriveDB['DriveNetwork']) ? $DriveDB['DriveRoot'].' ('.$DriveDB['DriveLetter'].')' : $DriveDB['DriveLetter'];
-	
-		$DriveAdd = '';
-		
-		if($DriveDB['DriveID'] == $HubObj->ActiveDrive) {
-			$DriveActiveLink = '<a id="DriveActive-'.$DriveDB['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active.png" /></a>';
-		}
-		else {
-			$DriveActiveLink = '<a id="DriveActive-'.$DriveDB['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active_off.png" /></a>';
-		}
-		
-		$DriveRemoveLink = '<a id="DriveRemove-'.$DriveDB['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_remove.png" /></a>';
-		
-		$DriveActiveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) ? $DriveActiveLink : '';
-		$DriveRemoveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) ? $DriveRemoveLink : '';
-		
-		$DriveDate = date('d.m.y', $DriveDB['DriveDate']);
-		$DriveID = $DriveDB['DriveID'];
+	$DriveShareCred = $DrivesObj->DriveShareCredentials($Drive['DriveShare'], $Drive['DriveUser'], $Drive['DrivePass']);
+
+	if($Drive['DriveID'] == $HubObj->ActiveDrive) {
+		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'" rel="'.$Drive['DriveShare'].'"><img src="images/icons/drive_active.png" /></a>';
 	}
 	else {
-		$DriveID = rand();
-		$DriveRoot = $DriveRootText = $Drive;
-		$DriveAdd = '<a id="DriveAdd-'.$DriveRoot.'"><img src="images/icons/drive_add.png" /></a>';
-		$DriveActiveLink = '';
-		$DriveRemoveLink = '';
-		$DriveDate = '';
+		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'" rel="'.$Drive['DriveShare'].'"><img src="images/icons/drive_active_off.png" /></a>';
 	}
 	
-	$FreeSpace       = $DrivesObj->GetFreeSpace($DriveRoot, TRUE);
-	$Space           = $DrivesObj->GetTotalSpace($DriveRoot, TRUE);
+	$DriveActiveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) ? $DriveActiveLink : '';
+	$DriveRemoveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) ? '<a id="DriveRemove-'.$Drive['DriveID'].'" rel="'.$Drive['DriveShare'].'"><img src="images/icons/drive_remove.png" /></a>' : '';
+	
+	$DriveUser = (empty($Drive['DriveUser'])) ? '' : '<em>hidden</em>';
+	$DrivePass = (empty($Drive['DrivePass'])) ? '' : '<em>hidden</em>';
+	
+	$FreeSpace       = $DrivesObj->GetFreeSpace($Drive['DriveID'], TRUE);
+	$Space           = $DrivesObj->GetTotalSpace($Drive['DriveID'], TRUE);
 	$TotalFreeSpace += $FreeSpace;
 	$TotalSpace     += $Space;
-	
 	echo '
-	<tr id="Drive-'.$DriveID.'">
-	 <td style="text-align: center;">'.$DriveDate.'</td>
-	 <td>'.$DriveRootText.'</td>
+	<tr id="Drive-'.$Drive['DriveID'].'">
+	 <td style="text-align: center;">'.date('d.m.y', $Drive['DriveDate']).'</td>
+	 <td>'.$Drive['DriveShare'].'</td>
+	 <td>'.$DriveUser.'</td>
+	 <td>'.$DrivePass.'</td>
+	 <td>'.$Drive['DriveMount'].'</td>
 	 <td>'.$DrivesObj->BytesToHuman($FreeSpace).'</td>
 	 <td>'.$DrivesObj->BytesToHuman($Space).'</td>
 	 <td>'.$DrivesObj->GetFreeSpacePercentage($FreeSpace, $Space).'% free</td>
-	 <td style="text-align:center">'.$DriveActiveLink.' '.$DriveRemoveLink.' '.$DriveAdd.'</td>
+	 <td style="text-align:center">'.$DriveActiveLink.' '.$DriveRemoveLink.'</td>
 	</tr>'."\n";
-}
-
-$DrivesNetwork = $DrivesObj->GetDrivesNetwork();
-
-if(is_array($DrivesNetwork)) {
-foreach($DrivesNetwork AS $Drive) {
-	$DriveRoot     = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
-	$DriveRootText = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'].' ('.$Drive['DriveLetter'].')' : $Drive['DriveLetter'];
-
-	$DriveAdd = '';
-	
-	if($Drive['DriveID'] == $HubObj->ActiveDrive) {
-		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active.png" /></a>';
-	}
-	else {
-		$DriveActiveLink = '<a id="DriveActive-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_active_off.png" /></a>';
-	}
-	
-	$DriveRemoveLink = '<a id="DriveRemove-'.$Drive['DriveID'].'" rel="'.$DriveRootText.'"><img src="images/icons/drive_remove.png" /></a>';
-	
-	$DriveActiveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveActive')) ? $DriveActiveLink : '';
-	$DriveRemoveLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveRemove')) ? $DriveRemoveLink : '';
-	
-	$DriveDate = date('d.m.y', $Drive['DriveDate']);
-	$DriveID = $Drive['DriveID'];
-	
-	$FreeSpace       = $DrivesObj->GetFreeSpace($DriveRoot, TRUE);
-	$Space           = $DrivesObj->GetTotalSpace($DriveRoot, TRUE);
-	$TotalFreeSpace += $FreeSpace;
-	$TotalSpace     += $Space;
-	
-	echo '
-	<tr id="Drive-'.$DriveID.'">
-	 <td style="text-align: center;">'.$DriveDate.'</td>
-	 <td>'.$DriveRootText.'</td>
-	 <td>'.$DrivesObj->BytesToHuman($FreeSpace).'</td>
-	 <td>'.$DrivesObj->BytesToHuman($Space).'</td>
-	 <td>'.$DrivesObj->GetFreeSpacePercentage($FreeSpace, $TotalSpace).'% free</td>
-	 <td style="text-align:center">'.$DriveActiveLink.' '.$DriveRemoveLink.' '.$DriveAdd.'</td>
-	</tr>'."\n";
-}
 }
 ?>
  <tfoot>
  <tr>
-  <th style="text-align: center;"></th>
-  <th>Total</td>
+  <th style="text-align:center">Total</th>
+  <th>&nbsp;</th>
+  <th>&nbsp;</th>
+  <th>&nbsp;</th>
+  <th>&nbsp;</td>
   <th><?php echo $DrivesObj->BytesToHuman($TotalFreeSpace); ?></th>
   <th><?php echo $DrivesObj->BytesToHuman($TotalSpace); ?></th>
   <th><?php echo $DrivesObj->GetFreeSpacePercentage($TotalFreeSpace, $TotalSpace).'% free'; ?></th>

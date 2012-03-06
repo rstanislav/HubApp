@@ -34,10 +34,10 @@ $('a[id|=FileManagerMove]').each(function() {
 <?php
 if(filter_has_var(INPUT_GET, 'crumbs')) {
 	if(array_key_exists(0, $_GET['crumbs'])) {
-		$Drive = $DrivesObj->GetDriveByLetter($_GET['crumbs'][0]);
+		$Drive = $DrivesObj->GetDriveByMount($_GET['crumbs'][0]);
 		
 		if(is_array($Drive)) {
-			$Crumb = $Drive['DriveLetter'];
+			$Crumb = $Drive['DriveMount'];
 			
 			if(sizeof($_GET['crumbs']) > 1) {
 				for($i = 1; $i <= (sizeof($_GET['crumbs']) - 1); $i++) {
@@ -59,7 +59,7 @@ if(filter_has_var(INPUT_GET, 'crumbs')) {
 	echo '<div class="head"><a href="#!/FileManager">File Manager</a> '.$Bread.' <small style="font-size: 12px;">(<a href="#!/Help/FileManager">?</a>)</small></div>';
 	
 	$HiddenFiles = array('$RECYCLE.BIN', 'pagefile.sys', 'System Volume Information');
-	$Iterator = new HubDirectoryIterator(($Drive['DriveNetwork']) ? str_replace($Drive['DriveLetter'], $Drive['DriveRoot'], $Crumb) : $Crumb);
+	$Iterator = new HubDirectoryIterator(($Drive['DriveNetwork']) ? str_replace($Drive['DriveMount'], $Drive['DriveShare'], $Crumb) : $Crumb);
 	echo '
 	<table>
 	 <thead>
@@ -123,7 +123,7 @@ if(filter_has_var(INPUT_GET, 'crumbs')) {
 else {
 	echo '<div class="head">File Manager <small style="font-size: 12px;">(<a href="#!/Help/FileManager">?</a>)</small></div>';
 	
-	$Drives = $DrivesObj->GetDrivesFromDB();
+	$Drives = $DrivesObj->GetDrives();
 
 	if(is_array($Drives)) {
 		echo '
@@ -135,12 +135,12 @@ else {
 		 </thead>'."\n";
 		
 		foreach($Drives AS $Drive) {
-			$DriveNetwork = ($Drive['DriveNetwork']) ? ' ('.$Drive['DriveRoot'].')' : '';
+			$DriveNetwork = ($Drive['DriveNetwork']) ? ' ('.$Drive['DriveShare'].')' : '';
 			
-			$DriveTxt = ($Drive['DriveActive']) ? '<strong>'.$Drive['DriveLetter'].$DriveNetwork.'</strong>' : $Drive['DriveLetter'].$DriveNetwork;
+			$DriveTxt = ($Drive['DriveActive']) ? '<strong>'.$Drive['DriveMount'].$DriveNetwork.'</strong>' : $Drive['DriveMount'].$DriveNetwork;
 			echo '
 			<tr>
-			 <td><a href="#!/FileManager/'.$Drive['DriveLetter'].'">'.$DriveTxt.'</a></td>
+			 <td><a href="#!/FileManager/'.$Drive['DriveMount'].'">'.$DriveTxt.'</a></td>
 			</tr>'."\n";
 		}
 		

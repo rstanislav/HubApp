@@ -10,7 +10,7 @@ class Drives extends Hub {
 			$Drive = self::GetDriveByID($this->ActiveDrive);
 			
 			if(is_array($Drive)) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 				
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
@@ -19,17 +19,17 @@ class Drives extends Hub {
 				}
 				else {
 					if(is_dir($DriveRoot.'/Downloads')) {
-						UTorrent::SetSetting('dir_active_download', $Drive['DriveLetter'].'/Downloads');
+						UTorrent::SetSetting('dir_active_download', $Drive['DriveMount'].'/Downloads');
 					}
 					else {
-						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Incomplete Downloads folder: "'.$Drive['DriveLetter'].'/Downloads" does not exist'));
+						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Incomplete Downloads folder: "'.$Drive['DriveMount'].'/Downloads" does not exist'));
 					}
 					
 					if(is_dir($DriveRoot.'/Completed')) {
-						UTorrent::SetSetting('dir_completed_download', $Drive['DriveLetter'].'/Completed');
+						UTorrent::SetSetting('dir_completed_download', $Drive['DriveMount'].'/Completed');
 					}
 					else {
-						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Completed Downloads folder: "'.$Drive['DriveLetter'].'/Completed" does not exist'));
+						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Completed Downloads folder: "'.$Drive['DriveMount'].'/Completed" does not exist'));
 					}
 					
 					if($Settings['SettingUTorrentWatchFolder'] && is_dir($Settings['SettingUTorrentWatchFolder'])) {
@@ -49,17 +49,65 @@ class Drives extends Hub {
 		}
 	}
 	
+	function DriveShareCredentials($DriveShare, $User = '', $Pass = '') {
+		$DriveShare = str_replace('\\', '/', $DriveShare);
+		
+		if(!empty($User) && !empty($Pass)) {
+			$DriveShare = str_replace('//', '//'.$User.':'.$Pass.'@', $DriveShare);
+		}
+		
+		return $DriveShare;
+	}
+	
+	function GetNetworkLocation($Location) {
+		if(strpos($Location, '/') != 0) {
+			$Drive = $this->PDO->query('SELECT * FROM Drives WHERE DriveMount LIKE "'.substr($Location, 0, strpos($Location, '/')).'%" LIMIT 1')->fetch();
+	
+			if(is_array($Drive)) {
+				return str_replace($Drive['DriveMount'], self::DriveShareCredentials($Drive['DriveShare'], $Drive['DriveUser'], $Drive['DrivePass']), $Location);
+			}
+			else {
+				return $Location;
+			}
+		}
+		else {
+			return $Location;
+		}
+	}
+	
+	function GetLocalLocation($Location) {
+		$Drive = $this->PDO->query('SELECT DriveShare, DriveMount FROM Drives WHERE DriveShare LIKE "'.substr($Location, 0, strpos($Location, '/')).'%" LIMIT 1')->fetch();
+	
+		if(is_array($Drive)) {
+			return str_replace($Drive['DriveShare'], $Drive['DriveMount'], $Location);
+		}
+		else {
+			return $Location;
+		}
+	}
+	
+	function GetDriveByMount($DriveMount) {
+		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveMount = :Mount');
+		$DrivePrep->execute(array(':Mount' => $DriveMount));
+	
+		if($DrivePrep->rowCount()) {
+			return $DrivePrep->fetch();
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
 	function DetermineNewActiveDrive() {
 		$Settings = Hub::GetSettings();
-		$Drives = Drives::GetDrivesFromDB();
+		$Drives = Drives::GetDrives();
 		
 		if(is_array($Drives)) {
 			foreach($Drives AS $Drive) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 				
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
-				
 				if(($FreeSpace / 1024 / 1024 / 1024) > $Settings['SettingHubMinimumActiveDiskFreeSpaceInGB']) {
 					self::SetActiveDrive($Drive['DriveID']);
 					
@@ -80,63 +128,8 @@ class Drives extends Hub {
 		}
 	}
 	
-	function GetUnusedDriveLetters() {
-		$Drives = array();
-		for($ASCII = 68; $ASCII <= 90; $ASCII++) {
-			$DriveLetter = chr($ASCII).':';
-		
-			if(!is_dir($DriveLetter) && !self::GetDriveByLetter($DriveLetter)) {
-				$Drives[] = $DriveLetter;
-			}
-		}
-		
-		return $Drives;
-	}
-	
 	function GetDrives() {
-		$Drives = array();
-		for($ASCII = 68; $ASCII <= 90; $ASCII++) {
-			$DriveLetter = chr($ASCII).':';
-		
-			if(is_dir($DriveLetter)) {
-				$SpaceFree  = @disk_free_space($DriveLetter);
-				$SpaceTotal = @disk_total_space($DriveLetter);
-				
-				if($SpaceFree != 0 && $SpaceTotal > ((1024 * 1024 * 1024) * 100)) {
-					$Drives[] = $DriveLetter;
-				}
-			}
-		}
-		
-		return $Drives;
-	}
-	
-	function GetDriveByLetter($DriveLetter) {
-		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveLetter = :Letter');
-		$DrivePrep->execute(array(':Letter' => $DriveLetter));
-		
-		if($DrivePrep->rowCount()) {
-			return $DrivePrep->fetch();
-		}
-		else {
-			return FALSE;
-		}
-	}
-	
-	function GetDrivesFromDB() {
 		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives ORDER BY DriveDate');
-		$DrivePrep->execute();
-		
-		if($DrivePrep->rowCount()) {
-			return $DrivePrep->fetchAll();
-		}
-		else {
-			return FALSE;
-		}
-	}
-	
-	function GetDrivesNetwork() {
-		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveNetwork = 1 ORDER BY DriveDate');
 		$DrivePrep->execute();
 		
 		if($DrivePrep->rowCount()) {
@@ -197,21 +190,29 @@ class Drives extends Hub {
 		}
 	}
 	
-	function GetFreeSpace($DriveLetter, $AsBytes = FALSE) {
+	function GetFreeSpace($DriveID, $AsBytes = FALSE) {
+		$Drive = self::GetDriveByID($DriveID);
+		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
+		$FreeSpace = @disk_free_space($DriveRoot);
+		
 		if($AsBytes) {
-			return @disk_free_space($DriveLetter);
+			return $FreeSpace;
 		}
 		else {
-			return $this->BytesToHuman(@disk_free_space($DriveLetter));
+			return $this->BytesToHuman($FreeSpace);
 		}
 	}
 	
-	function GetTotalSpace($DriveLetter, $AsBytes = FALSE) {
+	function GetTotalSpace($DriveID, $AsBytes = FALSE) {
+		$Drive = self::GetDriveByID($DriveID);
+		$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
+		$TotalSpace = @disk_total_space($DriveRoot);
+		
 		if($AsBytes) {
-			return @disk_total_space($DriveLetter);
+			return $TotalSpace;
 		}
 		else {
-			return $this->BytesToHuman(@disk_total_space($DriveLetter));
+			return $this->BytesToHuman($TotalSpace);
 		}
 	}
 	
@@ -234,13 +235,11 @@ class Drives extends Hub {
 		if($DrivePrep->rowCount()) {
 			$Drive = $DrivePrep->fetch();
 			UTorrent::Connect();
-			
-			$DriveRoot     = ($Drive['DriveNetwork']) ? $Drive['DriveRoot']                                : $Drive['DriveLetter'];
-			$DriveRootText = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'].' ('.$Drive['DriveLetter'].')' : $Drive['DriveLetter'];
+			$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 			
 			$this->ActiveDrive = $Drive['DriveID'];
-			Hub::AddLog(EVENT.'File System', 'Success', 'Set "'.$DriveRootText.'" as active drive');
-			Hub::NotifyUsers('NewActiveDrive', 'File System', 'Set "'.$DriveRootText.'" as active drive');
+			Hub::AddLog(EVENT.'File System', 'Success', 'Set "'.$Drive['DriveShare'].' ('.$Drive['DriveMount'].')" as active drive');
+			Hub::NotifyUsers('NewActiveDrive', 'File System', 'Set "'.$Drive['DriveShare'].' ('.$Drive['DriveMount'].')" as active drive');
 			
 			if(!is_dir($DriveRoot.'/Downloads')) {
 				mkdir($DriveRoot.'/Downloads');
@@ -250,10 +249,10 @@ class Drives extends Hub {
 				mkdir($DriveRoot.'/Completed');
 			}
 			
-			UTorrent::SetSetting('dir_active_download',    $Drive['DriveLetter'].'/Downloads');
-			UTorrent::SetSetting('dir_completed_download', $Drive['DriveLetter'].'/Completed');
+			UTorrent::SetSetting('dir_active_download',    $Drive['DriveMount'].'/Downloads');
+			UTorrent::SetSetting('dir_completed_download', $Drive['DriveMount'].'/Completed');
 			
-			Hub::AddLog(EVENT.'uTorrent', 'Success', 'Set "'.$DriveRootText.'" as active drive');
+			Hub::AddLog(EVENT.'uTorrent', 'Success', 'Set "'.$Drive['DriveShare'].' ('.$Drive['DriveMount'].')" as active drive');
 		}
 	}
 	
@@ -264,62 +263,60 @@ class Drives extends Hub {
 		$DrivePrep->execute(array(':ID' => $DriveID));
 		
 		$Drive = $DrivePrep->fetch();
-		$DriveRoot = ($Drive['DriveNetwork']) ? 'smb:'.$Drive['DriveRoot'] : $Drive['DriveLetter'];
+		$DriveShareCred = self::DriveShareCredentials($Drive['DriveShare'], $Drive['DriveUser'], $Drive['DrivePass']);
+	
+		if($Drive['DriveActive']) {
+			self::DetermineNewActiveDrive();
+		}
 		
-		if(!empty($DriveRoot)) {
-			$DriveDeletePrep = $this->PDO->prepare('DELETE FROM Drives WHERE DriveID = :ID');
-			$DriveDeletePrep->execute(array(':ID' => $DriveID));
-		
-			Hub::AddLog(EVENT.'File System', 'Success', 'Deleted "'.$Drive['DriveLetter'].'" from database');
-		
-			if($Drive['DriveActive']) {
-				self::DetermineNewActiveDrive();
-			}
+		if(is_file($Settings['SettingXBMCSourcesFile'])) {
+			$DocObj = new DOMDocument();
+			$DocObj->load($Settings['SettingXBMCSourcesFile']);
+	
+			$Sources = $DocObj->getElementsByTagName('source');
+			$PathArr = array();
 			
-			if(is_file($Settings['SettingXBMCSourcesFile'])) {
-				$DocObj = new DOMDocument();
-				$DocObj->load($Settings['SettingXBMCSourcesFile']);
-		
-				$Sources = $DocObj->getElementsByTagName('source');
-				$PathArr = array();
+			$LogPaths = array();
+			foreach($Sources AS $Source) {
+				$Names = $Source->getElementsByTagName('name');
+				$Name  = $Names->item(0)->nodeValue;
 				
-				$LogPaths = array();
-				foreach($Sources AS $Source) {
-					$Names = $Source->getElementsByTagName('name');
-					$Name  = $Names->item(0)->nodeValue;
-					
-					$DriveChk = $DriveRoot.'/Media/'.$Name.'/';
-					
-					$Paths = $Source->getElementsByTagName('path');
-					foreach($Paths AS $Path) {
-						if($Path->nodeValue == $DriveChk) {
-							$Source->removeChild($Path);
-							
-							$LogPaths[] = $DriveChk;
-						}
+				$DriveChk = 'smb:'.$DriveShareCred.'/Media/'.$Name.'/';
+				
+				$Paths = $Source->getElementsByTagName('path');
+				foreach($Paths AS $Path) {
+					if($Path->nodeValue == $DriveChk) {
+						$Source->removeChild($Path);
+						
+						$LogPaths[] = 'smb:'.$Drive['DriveShare'].'/Media/'.$Name.'/';
 					}
 				}
-			
-				$DocObj->save($Settings['SettingXBMCSourcesFile']);
-				
-				if(sizeof($LogPaths)) {
-					Hub::AddLog(EVENT.'XBMC', 'Success', 'Removed "'.implode(', ', $LogPaths).'" from Sources.xml');
-				}
 			}
-			else {
-				echo $Settings['SettingXBMCSourcesFile'].' does not exist.';
+		
+			$DocObj->save($Settings['SettingXBMCSourcesFile']);
+			
+			if(sizeof($LogPaths)) {
+				Hub::AddLog(EVENT.'XBMC', 'Success', 'Removed "'.implode(', ', $LogPaths).'" from '.$Settings['SettingXBMCSourcesFile']);
 			}
 		}
+		else {
+			echo $Settings['SettingXBMCSourcesFile'].' does not exist.';
+		}
+		
+		$DriveDeletePrep = $this->PDO->prepare('DELETE FROM Drives WHERE DriveID = :ID');
+		$DriveDeletePrep->execute(array(':ID' => $DriveID));
+		
+		Hub::AddLog(EVENT.'File System', 'Success', 'Deleted "'.$Drive['DriveShare'].' ('.$Drive['DriveMount'].')" from database');
 	}
 	
-	function AddDrive($DriveLetter, $DriveRoot = '') {
+	function AddDrive($DriveShare, $DriveUser, $DrivePass, $DriveMount, $DriveNetwork = 0) {
 		$Settings = Hub::GetSettings();
 		
 		if(!$Settings['SettingXBMCSourcesFile'] || !is_file($Settings['SettingXBMCSourcesFile'])) {
-			die('no such file');
+			die('File does not exist: '.$Settings['SettingXBMCSourcesFile']);
 		}
 		
-		$Drive = ($DriveRoot) ? $DriveRoot : $DriveLetter;
+		$DriveRoot = ($DriveNetwork) ? $DriveShare : $DriveMount;
 		
 		$RequiredFolders = array('Completed', 
 		                         'Downloads', 
@@ -329,37 +326,34 @@ class Drives extends Hub {
 		                         'Media/TV', 
 		                         'Unsorted');
 		
-		if(isset($Drive) && !empty($Drive)) {
-			if(is_dir($Drive)) {
-				$LogFolders = array();
-				foreach($RequiredFolders AS $RequiredFolder) {
-					if(!is_dir($Drive.'/'.$RequiredFolder)) {
-						if(mkdir($Drive.'/'.$RequiredFolder)) {
-							$LogFolders[] = $RequiredFolder;
-						}
+		if(!empty($DriveRoot) && is_dir($DriveRoot)) {
+			$LogFolders = array();
+			foreach($RequiredFolders AS $RequiredFolder) {
+				if(!is_dir($DriveRoot.'/'.$RequiredFolder)) {
+					if(mkdir($DriveRoot.'/'.$RequiredFolder)) {
+						$LogFolders[] = $RequiredFolder;
 					}
 				}
-				
-				if(sizeof($LogFolders)) {
-					Hub::AddLog(EVENT.'Drives', 'Success', 'Created folders: "'.implode(', ', $LogFolders).'" on "'.$Drive.'"');
-				}
+			}
+			
+			if(sizeof($LogFolders)) {
+				Hub::AddLog(EVENT.'Drives', 'Success', 'Created folders: "'.implode(', ', $LogFolders).'" on "'.$DriveShare.' ('.$DriveMount.')"');
 			}
 		}
 		
-		$DriveNetwork = (!empty($DriveRoot)) ? 1 : 0;
-		
-		$DriveAddPrep = $this->PDO->prepare('INSERT INTO Drives (DriveID, DriveDate, DriveRoot, DriveNetwork, DriveLetter, DriveActive) VALUES (NULL, :Date, :Root, :Network, :Letter, :Active)');
+		$DriveAddPrep = $this->PDO->prepare('INSERT INTO Drives (DriveID, DriveDate, DriveShare, DriveUser, DrivePass, DriveMount, DriveActive, DriveNetwork) VALUES (NULL, :Date, :Share, :User, :Pass, :Mount, :Active, :Network)');
 		$DriveAddPrep->execute(array(':Date'    => time(),
-		                             ':Root'    => $DriveRoot,
-		                             ':Network' => $DriveNetwork,
-		                             ':Letter'  => $DriveLetter,
-		                             ':Active'  => 0));
+		                             ':Share'   => $DriveShare,
+		                             ':User'    => $DriveUser,
+		                             ':Pass'    => $DrivePass,
+		                             ':Mount'   => $DriveMount,
+		                             ':Active'  => 0,
+		                             ':Network' => $DriveNetwork));
 		
-		Hub::AddLog(EVENT.'Drives', 'Success', 'Added "'.$DriveLetter.'" to the database');
+		Hub::AddLog(EVENT.'Drives', 'Success', 'Added "'.$DriveShare.' ('.$DriveMount.')" to the database');
+		$DriveShareCred = self::DriveShareCredentials($DriveShare, $DriveUser, $DrivePass);
 		
 		if(is_file($Settings['SettingXBMCSourcesFile'])) {
-			$DriveRoot = ($DriveNetwork) ? 'smb:'.$DriveRoot : $DriveLetter;
-			
 			$DocObj = new DOMDocument();
 			$DocObj->load($Settings['SettingXBMCSourcesFile']);
 		
@@ -375,8 +369,8 @@ class Drives extends Hub {
 					$PathArr[$Name][] = $Path->nodeValue;
 				}
 				
-				if(@!in_array($DriveRoot.'/'.'Media'.'/'.$Name.'/', @$PathArr[$Name])) {
-					$PathElement = $DocObj->createElement('path', $DriveRoot.'/'.'Media'.'/'.$Name.'/');
+				if(@!in_array('smb:'.$DriveShareCred.'/'.'Media'.'/'.$Name.'/', @$PathArr[$Name])) {
+					$PathElement = $DocObj->createElement('path', 'smb:'.$DriveShareCred.'/'.'Media'.'/'.$Name.'/');
 					$Source->appendChild($PathElement);
 			
 					$PathAttr = $DocObj->createAttribute('pathversion');
@@ -385,14 +379,14 @@ class Drives extends Hub {
 					$PathAttrText = $DocObj->createTextNode('1');
 					$PathAttr->appendChild($PathAttrText);
 					
-					$LogSources[] = $DriveRoot.'/'.'Media'.'/'.$Name.'/';
+					$LogSources[] = 'smb:'.$DriveShare.'/'.'Media'.'/'.$Name.'/';
 				}
 			}
 			
 			$DocObj->save($Settings['SettingXBMCSourcesFile']);
 			
 			if(sizeof($LogSources)) {
-				Hub::AddLog(EVENT.'XBMC', 'Success', 'Added "'.implode(', ', $LogSources).'" to Sources.xml');
+				Hub::AddLog(EVENT.'XBMC', 'Success', 'Added "'.implode(', ', $LogSources).'" to '.$Settings['SettingXBMCSourcesFile']);
 			}
 			
 			XBMC::Connect('default');

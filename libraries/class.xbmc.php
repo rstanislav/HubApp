@@ -42,8 +42,9 @@ class XBMC extends Hub {
 	
 	function PlayFile($File) {
 		$NetworkFile = Drives::GetNetworkLocation($File);
+		$LocalFile   = Drives::GetLocalLocation($File);
 		
-		if(is_file(str_replace('smb:', '', $File))) { // USE LOCAL FILE
+		if(is_file($LocalFile)) { // USE LOCAL FILE
 			try {
 				$NetworkFile = (!strstr($NetworkFile, 'smb:')) ? 'smb:'.$NetworkFile : $NetworkFile;
 				
@@ -54,7 +55,7 @@ class XBMC extends Hub {
 			}
 		}
 		else {
-			echo 'No such file: '.$File;
+			echo 'No such file: '.$LocalFile;
 		}
 	}
 	

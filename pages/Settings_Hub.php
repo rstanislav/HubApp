@@ -147,30 +147,6 @@
      <span>TheTVDB API key</span>
     </label>
    </div>
-  
-   <div class="field">
-    <span class="info">TheTVDB is the scraper service used to retrieve information about TV series</span>
-    <a target="_blank" href="#">Apply here</a>
-   </div>
-  
-   <div class="field">
-    <label>
-     <input type="text" name="" value="" placeholder="Dropbox Username" />
-     <span>Dropbox Username</span>
-    </label>
-   </div>
-  
-   <div class="field">
-    <label>
-     <input type="text" name="" value="" placeholder="Dropbox Password" />
-     <span>Dropbox Password</span>
-    </label>
-   </div>
-   
-   <div class="field">
-    <span class="info">Dropbox is used for sharing your wishlist and backing up your XBMC database</span>
-    <!--<a target="_blank" href="#">Apply here</a>//-->
-   </div>
   </dd>
   
   <div style="float: right">

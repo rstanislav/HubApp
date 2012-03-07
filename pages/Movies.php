@@ -32,6 +32,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				$FilePath = $Files;
 			}
 			
+			$FilePath = preg_replace('/[A-z0-9-]+\:[A-z0-9-]+@/', '', $FilePath);
 			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.urlencode($Movie['file']).'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
 
 			if(!empty($Movie['trailer'])) {
@@ -118,6 +119,12 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$MovieFanart    = (array_key_exists('fanart', $Movie[0]))    ? trim($Movie[0]['fanart'])    : '';
 			$MovieGenre     = (array_key_exists('genre', $Movie[0]))     ? trim($Movie[0]['genre'])     : '';
 			$MovieFile      = (array_key_exists('file', $Movie[0]))      ? $HubObj->ConcatFilePath(trim($Movie[0]['file']))      : '';
+			$FileManagerLink = '';
+			
+			$MovieFile = preg_replace('/[A-z0-9-]+\:[A-z0-9-]+@/', '', $MovieFile);
+			if(array_key_exists('file', $Movie[0]) && !is_array($Movie[0]['file'])) {
+				$FileManagerLink = '<a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Movie[0]['file'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Movie[0]['file'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
+			}
 			
 			if(array_key_exists('trailer', $Movie[0])) {
 				if(strstr($Movie[0]['trailer'], 'plugin.video.youtube')) {
@@ -139,7 +146,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				<tr>
 				 <td>'.$WatchedIcon.''.$MovieLabel.'</td>
 				 <td style="text-align:center">'.$MovieYear.'</td>
-				 <td>'.$MovieFile.'</td>
+				 <td>'.$FileManagerLink.$MovieFile.'</td>
 				 <td style="text-align: right">
 				  '.$MoviePlayLink.'
 				  '.$MovieInfoLink.'

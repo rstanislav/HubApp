@@ -10,12 +10,71 @@ if($UserObj->LoggedIn) {
 	$HubObj->LogActivity(urldecode($_SERVER['QUERY_STRING']));
 }
 
-$ErrorFreePages = array('Settings', 'ZonesDropdown', 'Drives', 'ZoneChange');
+$ErrorFreePages = array('Settings', 'Drives', 'ZoneChange');
 if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 	$HubObj->ShowError();
 }
 else {
 	switch($Page) {
+		case 'ZoneChange':
+			if(filter_has_var(INPUT_GET, 'Zone')) {
+				if(!$ZonesObj->SetZone($_GET['Zone'])) {
+					echo 'Failed to switch zones to "'.$_GET['Zone'].'"';
+				}
+			}
+		break;
+
+		case 'FileManagerFolderDelete':
+			if(filter_has_var(INPUT_GET, 'Folder')) {
+				if($DrivesObj->RecursiveDirRemove($_GET['Folder'])) {
+					$HubObj->AddLog(EVENT.'File Manager', 'Success', 'Deleted "'.$_GET['Folder'].'"');
+				}
+			}
+		break;
+	
+		case 'FileManagerFileDelete':
+			if(filter_has_var(INPUT_GET, 'File')) {
+				if(unlink($_GET['File'])) {
+					$HubObj->AddLog(EVENT.'File Manager', 'Success', 'Deleted "'.$_GET['File'].'"');
+				}
+			}
+		break;
+		
+		case 'FileManagerMove':
+			if(filter_has_var(INPUT_GET, 'From') && filter_has_var(INPUT_GET, 'To')) {
+				$OldLocation = $_GET['From'];
+				$NewLocation = $_GET['To'].'/'.basename($_GET['From']);
+				
+				if(is_dir($_GET['From']) || is_file($_GET['From'])) {
+					if(is_dir($_GET['To']) && !is_file($NewLocation)) {
+						if(rename($OldLocation, $NewLocation)) {
+							$HubObj->AddLog(EVENT.'File Manager', 'Success', 'Moved "'.$OldLocation.'" to "'.$NewLocation.'"');
+						}
+						else {
+							echo 'Failed to move "'.$OldLocation.'" to "'.$NewLocation.'"';
+						}
+					}
+				}
+			}
+			else {
+				if(filter_has_var(INPUT_GET, 'ID') && filter_has_var(INPUT_GET, 'Move')) {
+					include_once './pages/FileManagerMove.php';
+				}
+				else {
+					echo 'You need to specify ID and file/folder to move';
+				}
+			}
+		break;
+		
+		case 'FileManager':
+			include_once './pages/FileManager.php';
+		break;
+		
+		case 'CleanLog':
+			unlink(APP_PATH.'/tmp/schedule_error.log');
+			touch(APP_PATH.'/tmp/schedule_error.log');
+		break;
+		
 		case 'WishlistRefresh':
 			$WishlistObj->WishlistRefresh();
 		break;
@@ -25,6 +84,15 @@ else {
 				$XBMCObj->Connect();
 				if(is_object($XBMCObj->XBMCRPC)) {
 					$XBMCObj->PlayPause($_GET['PlayerID']);
+				}
+			}
+		break;
+		
+		case 'XBMCPlayStop':
+			if(filter_has_var(INPUT_GET, 'PlayerID')) {
+				$XBMCObj->Connect();
+				if(is_object($XBMCObj->XBMCRPC)) {
+					$XBMCObj->PlayStop($_GET['PlayerID']);
 				}
 			}
 		break;
@@ -70,7 +138,7 @@ else {
 		
 		case 'XBMCLibraryUpdate':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryUpdate')) {
-				$XBMCObj->Connect();
+				$XBMCObj->Connect('default');
 				if(is_object($XBMCObj->XBMCRPC)) {
 					$XBMCObj->ScanForContent();
 					
@@ -81,7 +149,7 @@ else {
 		
 		case 'XBMCLibraryClean':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCLibraryClean')) {
-				$XBMCObj->Connect();
+				$XBMCObj->Connect('default');
 				if(is_object($XBMCObj->XBMCRPC)) {
 					$XBMCObj->CleanLibrary();
 					
@@ -137,7 +205,12 @@ else {
 			
 		case 'FilePlay':
 			$XBMCObj->Connect();
-			$XBMCObj->PlayFile($_GET['File']);
+			if(is_object($XBMCObj->XBMCRPC)) {
+				$XBMCObj->PlayFile($_GET['File']);
+			}
+			else {
+				echo 'Unable to connect to XBMC in "'.$ZonesObj->GetCurrentZone().'"';
+			}
 		break;
 		
 		case 'Unlock':
@@ -209,8 +282,27 @@ else {
 		
 		case 'DriveAdd':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
-				if(filter_has_var(INPUT_GET, 'DriveLetter')) {
-					$DrivesObj->AddDrive($_GET['DriveLetter']);
+				if($UserObj->CheckPermission($UserObj->UserGroupID, 'DriveAdd')) {
+					$AddError = FALSE;
+					foreach($_POST AS $PostKey => $PostValue) {
+						$AllowedEmpty = array('DriveUser', 'DrivePass', 'DriveLocal');
+						if(!filter_has_var(INPUT_POST, $PostKey) || (empty($PostValue) && !in_array($PostKey, $AllowedEmpty))) {
+							$AddError = TRUE;
+						}
+					}
+					
+					if(!$AddError) {
+						$Settings = $HubObj->GetSettings();
+						$DriveNetwork = (stripos($_POST['DriveComputer'], $Settings['SettingHubLocalHostname']) !== FALSE || stripos($_POST['DriveComputer'], $Settings['SettingHubLocalIP']) !== FALSE) ? 0 : 1;
+						
+						$DrivesObj->AddDrive('//'.$_POST['DriveComputer'].'/'.$_POST['DriveShare'], $_POST['DriveUser'], $_POST['DrivePass'], $_POST['DriveMount'], $DriveNetwork);
+					}
+					else {
+						echo 'You have to fill in all the required fields';
+					}
+				}
+				else {
+					$_SESSION['Error'] = 'You are not allowed to add drives';
 				}
 			}
 			else {
@@ -759,14 +851,7 @@ else {
 		case 'UnsortedFileMove':
 			print_r($_POST);
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'UnsortedFilesMove')) {
-				if(filter_has_var(INPUT_POST, 'TVFolder')) {
-					$NewFolder = $_POST['TVFolder'].'/';
-				}
-				else {
-					$NewFolder = $_POST['ContentFolder'].'/';
-				}
-				
-				$UnsortedFilesObj->MoveFile($_POST['UnsortedFilePath'].$_POST['UnsortedFile'], $NewFolder.$_POST['UnsortedFile']);
+				$UnsortedFilesObj->MoveFile($_POST['UnsortedFilePath'].$_POST['UnsortedFile'], $_POST['ContentFolder'].'/'.$_POST['UnsortedFile']);
 			}
 			else {
 				$_SESSION['Error'] = 'You are not permitted to move unsorted files';
@@ -876,18 +961,6 @@ else {
 		
 		case 'Logout':
 			$UserObj->Logout();
-			header('Location: '.$_SERVER['HTTP_REFERER']);
-		break;
-		
-		case 'ForgotPassword':
-			$User  = (filter_has_var(INPUT_POST, 'HubUser')) ? $_POST['HubUser'] : '';
-			$EMail = (filter_has_var(INPUT_POST, 'HubEMail')) ? $_POST['HubEMail'] : '';
-			
-			if($User || $EMail) {
-				$UserObj->ResetPassword($User, $EMail);
-			}
-			
-			//header('Location: '.$_SERVER['HTTP_REFERER'].'#!/Password/');
 		break;
 		
 		case 'Settings':

@@ -3,8 +3,8 @@ require_once APP_PATH.'/libraries/api.thetvdb.php';
 require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
-	const HubVersion   = '2.4.4.1';
-	const MinDBVersion = '2.0.2';
+	const HubVersion   = '2.4.5';
+	const MinDBVersion = '2.0.3';
 	
 	public $PDO;
 	
@@ -64,7 +64,7 @@ class Hub {
 			foreach(glob('upgrade/db-*.php') AS $File) {
 				$NewDBVersion = str_replace('.php', '', str_replace('upgrade/db-', '', $File));
 				
-				if(str_replace('.', '', $NewDBVersion) >= str_replace('.', '', self::MinDBVersion)) {
+				if(str_replace('.', '', $NewDBVersion) <= str_replace('.', '', self::MinDBVersion)) {
 					$sql = '';
 			    	include_once $File;
 			    	
@@ -137,15 +137,23 @@ class Hub {
 		}
 	}
 	
-	function RecursiveGlob($sDir, $sPattern, $nFlags = NULL) {
-		$aFiles = glob($sDir.'/'.$sPattern, $nFlags);
-	
-		foreach(glob($sDir.'/*', GLOB_ONLYDIR) AS $sSubDir) {
-			$aSubFiles = $this->RecursiveGlob($sSubDir, $sPattern, $nFlags);
-			$aFiles    = array_merge($aFiles, $aSubFiles);
+	function RecursiveDirSearch($Directory, $Extensions = null) {
+		$Iterator = new IgnorantRecursiveDirectoryIterator($Directory);
+		$Extensions = (!is_array($Extensions)) ? array('mp4','mkv','avi','rar') : $Extensions;
+		
+		$Files = array();
+		foreach(new RecursiveIteratorIterator($Iterator, RecursiveIteratorIterator::SELF_FIRST) AS $Object) {
+			if($Object->isFile()) {
+				$File = str_replace('\\', '/', $Object->__toString());
+				$FileInfo = pathinfo($File);
+			
+				if(array_key_exists('extension', $FileInfo) && in_array($FileInfo['extension'], $Extensions)) {
+					$Files[] = $File;
+				}
+			}
 		}
-	
-		return $aFiles;
+		
+		return $Files;
 	}
 	
 	function AddLog($LogEvent, $LogType, $LogText, $LogError = FALSE, $LogAction = '') {
@@ -236,8 +244,9 @@ class Hub {
 				$HubBackup     = (isset($_POST['SettingHubBackup']))     ? 1 : 0;
 				$HubKillSwitch = (isset($_POST['SettingHubKillSwitch'])) ? 1 : 0;
 				
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch, SettingHubSearchURITVSeries = :SearchURITVSeries, SettingHubSearchURIMovies = :SearchURIMovies');
-				$EditSettingsPrep->execute(array(':LocalIP'                    => implode('.', $_POST['SettingHubLocalIP']),
+				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalHostname = :LocalHostname, SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch, SettingHubSearchURITVSeries = :SearchURITVSeries, SettingHubSearchURIMovies = :SearchURIMovies');
+				$EditSettingsPrep->execute(array(':LocalHostname'              => $_POST['SettingHubLocalHostname'],
+				                                 ':LocalIP'                    => implode('.', $_POST['SettingHubLocalIP']),
 				                                 ':MinActiveDiskFreeSpaceInGB' => $_POST['SettingHubMinimumActiveDiskFreeSpaceInGB'],
 				                                 ':MinDownloadQuality'         => $_POST['SettingHubMinimumDownloadQuality'],
 				                                 ':MaxDownloadQuality'         => $_POST['SettingHubMaximumDownloadQuality'],
@@ -359,6 +368,23 @@ class Hub {
 
 	function __destruct() {
 		$this->PDO = null;
+	}
+}
+
+class IgnorantRecursiveDirectoryIterator extends RecursiveDirectoryIterator {
+    function getChildren() {
+        try {
+            return parent::getChildren();
+        }
+        catch(UnexpectedValueException $e) {
+            return new RecursiveArrayIterator(array());
+        }
+    }
+}
+
+class HubDirectoryIterator extends DirectoryIterator {
+	function getSize() {
+		return ExtractFiles::GetFileSize($this->current()->getPath().'/'.$this->current()->getBasename());
 	}
 }
 ?>

@@ -26,8 +26,10 @@ if($Series) {
 		$SearchFile = $Serie['SerieTitle'].' s'.sprintf('%02s', $Serie['EpisodeSeason']).'e'.sprintf('%02s', $Serie['EpisodeEpisode']);
 		$RSSTorrents = $RSSObj->SearchTitle($SearchFile);
 		
+		$FileManagerLink = '';
 		if(!empty($Serie['EpisodeFile'])) {
-			$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.$Serie['EpisodeFile'].'"><img src="images/icons/control_play.png" title="Play '.$Serie['EpisodeFile'].'" /></a>' : '';
+			$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.urlencode($Serie['EpisodeFile']).'"><img src="images/icons/control_play.png" title="Play '.$Serie['EpisodeFile'].'" /></a>' : '';
+			$FileManagerLink = '<a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Serie['EpisodeFile'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Serie['EpisodeFile'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
 		}
 		else if($Serie['TorrentKey']) {
 			$FileAction = '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$Serie['TorrentKey'].'"><img src="images/icons/downloaded.png" title="Episode has been added to uTorrent. Click to re-download" /></a>';
@@ -37,7 +39,16 @@ if($Series) {
 				$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) ? '<a id="DownloadMultipleTorrent-'.$Serie['EpisodeID'].'" rel="load.php?page=DownloadMultiple&File='.urlencode($SearchFile).'&EpisodeID='.$Serie['EpisodeID'].'"><img src="images/icons/download_multiple.png" /></a>' : '';
 			}
 			else {
-				$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) ? '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'" title="Download \''.$RSSTorrents[0]['TorrentTitle'].'\' from \''.$RSSTorrents[0]['RSSTitle'].'\'"><img src="images/icons/download.png" /></a>' : '';
+				$Settings = $HubObj->Settings;
+				$TorrentQuality = $RSSObj->GetQualityRank($RSSTorrents[0]['TorrentTitle']);
+				if($TorrentQuality >= $Settings['SettingHubMinimumDownloadQuality'] && $TorrentQuality <= $Settings['SettingHubMaximumDownloadQuality']) {
+					$EpisodeControlImg = 'images/icons/download.png';
+				}
+				else if($TorrentQuality < $Settings['SettingHubMinimumDownloadQuality']) {
+					$EpisodeControlImg = 'images/icons/download_low_quality.png';
+				}
+				
+				$FileAction = ($UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) ? '<a id="DownloadTorrent-'.$Serie['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'" title="Download \''.$RSSTorrents[0]['TorrentTitle'].'\' from \''.$RSSTorrents[0]['RSSTitle'].'\'"><img src="'.$EpisodeControlImg.'" /></a>' : '';
 			}
 		}
 		else {
@@ -66,7 +77,7 @@ if($Series) {
 		echo '
 		<tr>
 		 <td style="text-align: center">'.$FileAction.'</td>
-		 <td><a href="#!/Series/'.urlencode($Serie['SerieTitle']).'">'.$Serie['SerieTitle'].'</a></td>
+		 <td><a href="#!/Series/'.urlencode($Serie['SerieTitle']).'">'.$FileManagerLink.$Serie['SerieTitle'].'</a></td>
 		 <td style="text-align: center">'.sprintf('%02s', $Serie['EpisodeSeason']).'x'.sprintf('%02s', $Serie['EpisodeEpisode']).'</td>
 		 <td>'.$Serie['EpisodeTitle'].'</td>
 		 <td style="text-align: right">'.$HubObj->ConvertSeconds(time() - $Serie['EpisodeAirDate'], FALSE).'</td>

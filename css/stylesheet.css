@@ -93,8 +93,8 @@ table.main {
 	font-weight: bold;
 }
 
-#navigation li .blue { background: #96A8C7; }
-#navigation li .red  { background: #E06785; }
+#navigation li .blue-badge { background: #96A8C7; }
+#navigation li .red-badge  { background: #E06785; }
 
 #navigation li .single {
 	-webkit-border-radius: 16px;
@@ -168,6 +168,7 @@ table.main {
 #navigation .series a        { background: url('../images/navigation/television.png') no-repeat 16px 1px;   }
 #navigation .movies a        { background: url('../images/navigation/film.png') no-repeat 16px 1px;         }
 #navigation .zones a         { background: url('../images/navigation/zones.png') no-repeat 16px 1px;        }
+#navigation .manager a       { background: url('../images/navigation/manager.png') no-repeat 16px 1px;         }
 #navigation .unsorted a      { background: url('../images/navigation/sort.png') no-repeat 16px 1px;         }
 #navigation .extract a       { background: url('../images/navigation/archive.png') no-repeat 16px 1px;      }
 #navigation .control-panel a { background: url('../images/navigation/controlpanel.png') no-repeat 16px 1px; }
@@ -292,6 +293,25 @@ table.main {
 	width: 175px;
 }
 
+#loading-wrapper {
+	width: 100%;
+	height: 100%;
+	position:fixed;
+	top:0;
+	left:0;
+	background:#000;
+   	z-index:1001;
+   	opacity:0.9;
+   	color: #fff;
+   	line-height: 50px;
+   	text-align: center;
+   	background-image: url('../images/spinners/ajax-dark-large.gif');
+   	background-repeat:no-repeat;
+   	background-attachment:fixed;
+   	background-position:center;
+   	display: none;
+}
+
 /*
 *
 * Upload Files
@@ -349,7 +369,7 @@ table.main {
 }
 
 #loading .spinner {
-	background-image: url('../images/spinners/ajax-large.gif'); 
+	background-image: url('../images/spinners/ajax-light-large.gif'); 
 	vertical-align: middle; 
 	position: relative;
 	height: 32px;

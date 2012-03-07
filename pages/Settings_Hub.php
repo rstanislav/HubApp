@@ -9,6 +9,13 @@
   <dd>
    <div class="field">
     <label>
+     <input name="SettingHubLocalHostname" type="text" value="<?php echo $Settings['SettingHubLocalHostname']; ?>" placeholder="Local hostname" />
+     <span>Local hostname</span>
+    </label>
+   </div>
+   
+   <div class="field">
+    <label>
      <?php
      $LocalIP = ($Settings['SettingHubLocalIP']) ? $Settings['SettingHubLocalIP'] : '127.0.0.1';
      $LocalIPArr = explode('.', $LocalIP);
@@ -139,30 +146,6 @@
      <input name="SettingHubTheTVDBAPIKey" type="text" value="<?php echo $Settings['SettingHubTheTVDBAPIKey']; ?>" />
      <span>TheTVDB API key</span>
     </label>
-   </div>
-  
-   <div class="field">
-    <span class="info">TheTVDB is the scraper service used to retrieve information about TV series</span>
-    <a target="_blank" href="#">Apply here</a>
-   </div>
-  
-   <div class="field">
-    <label>
-     <input type="text" name="" value="" placeholder="Dropbox Username" />
-     <span>Dropbox Username</span>
-    </label>
-   </div>
-  
-   <div class="field">
-    <label>
-     <input type="text" name="" value="" placeholder="Dropbox Password" />
-     <span>Dropbox Password</span>
-    </label>
-   </div>
-   
-   <div class="field">
-    <span class="info">Dropbox is used for sharing your wishlist and backing up your XBMC database</span>
-    <!--<a target="_blank" href="#">Apply here</a>//-->
    </div>
   </dd>
   

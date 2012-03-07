@@ -102,11 +102,12 @@ if(is_array($Series)) {
 		foreach($Seasons AS $Episode) {
 			$EpisodeControl = '';
 			$OtherOptions = FALSE;
+			$ExternalSubFolderLink = '';
 			
 			if($Episode['EpisodeFile']) {
-				$Episode['EpisodeFile'] = $HubObj->ConcatFilePath($Episode['EpisodeFile']);
-				
+				$ExternalSubFolderLink  = '<a href="#!/FileManager/'.dirname($Episode['EpisodeFile']).'" title="View \''.dirname($Episode['EpisodeFile']).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
 				$PlayFileLink      = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))           ? '<a id="FilePlay-'.urlencode($Episode['EpisodeFile']).'"><img src="images/icons/control_play.png" title="Play '.$Episode['EpisodeFile'].'" /></a>' : '';
+				$Episode['EpisodeFile'] = $HubObj->ConcatFilePath($Episode['EpisodeFile']);
 				$DeleteEpisodeLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'SerieDeleteEpisode')) ? '<a id="DeleteEpisode-'.$Episode['EpisodeID'].'" rel="'.$Serie['SerieTitle'].' s'.sprintf('%02s', $Episode['EpisodeSeason']).'e'.sprintf('%02s', $Episode['EpisodeEpisode']).'"><img src="images/icons/delete.png" /></a>'       : '';
 				
 				$EpisodeControl = $PlayFileLink.' '.$DeleteEpisodeLink;
@@ -142,12 +143,19 @@ if(is_array($Series)) {
 							$Settings = $HubObj->Settings;
 							$TorrentQuality = $RSSObj->GetQualityRank($RSSTorrents[0]['TorrentTitle']);
 							if($TorrentQuality >= $Settings['SettingHubMinimumDownloadQuality'] && $TorrentQuality <= $Settings['SettingHubMaximumDownloadQuality']) {
-								$EpisodeControl = '<a id="DownloadTorrent-'.$Episode['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'"><img src="images/icons/download.png" /></a>';
-								$Episode['EpisodeFile'] = 'Local Torrent Entry Available';
-								$OtherOptions = TRUE;
+								$EpisodeControlImg = 'images/icons/download.png';
+							}
+							else if($TorrentQuality < $Settings['SettingHubMinimumDownloadQuality']) {
+								$EpisodeControlImg = 'images/icons/download_low_quality.png';
 							}
 							else {
 								$Episode['EpisodeFile'] = 'Not Available';
+							}
+							
+							if($EpisodeControlImg) {
+								$EpisodeControl = '<a id="DownloadTorrent-'.$Episode['EpisodeID'].'-'.$RSSTorrents[0]['TorrentID'].'" title="Download \''.$RSSTorrents[0]['TorrentTitle'].'\' from \''.$RSSTorrents[0]['RSSTitle'].'\'"><img src="'.$EpisodeControlImg.'" /></a>';
+								$Episode['EpisodeFile'] = 'Local Torrent Entry Available';
+								$OtherOptions = TRUE;
 							}
 						}
 						
@@ -189,7 +197,7 @@ if(is_array($Series)) {
 			 <td>'.sprintf("S%02sE%02s", $Episode['EpisodeSeason'], $Episode['EpisodeEpisode']).'</td>
 			 <td>'.$Episode['EpisodeTitle'].'</td>
 			 <td>'.date('d.m.y', $Episode['EpisodeAirDate']).'</td>
-			 <td>'.$Episode['EpisodeFile'].'</td>
+			 <td>'.$ExternalSubFolderLink.$Episode['EpisodeFile'].'</td>
 			 <td style="text-align:right">
 			  '.$EpisodeControl.'
 			 </td>

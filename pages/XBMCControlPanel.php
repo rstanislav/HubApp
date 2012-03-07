@@ -19,9 +19,6 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		
 		$PlayerInfo = $XBMCObj->XBMCRPC->Player->GetProperties(array('playerid' => 1, 'properties' => array('speed', 'subtitleenabled', 'percentage', 'currentaudiostream', 'currentsubtitle', 'audiostreams', 'position', 'subtitles', 'totaltime', 'time')));
 		
-		//$HubObj->d($ItemInfo);
-		//$HubObj->d($PlayerInfo);
-		
 		$CurrentTime = sprintf('%02s:%02s:%02s', $PlayerInfo['time']['hours'], $PlayerInfo['time']['minutes'], $PlayerInfo['time']['seconds']);
 		$TotalTime   = sprintf('%02s:%02s:%02s', $PlayerInfo['totaltime']['hours'], $PlayerInfo['totaltime']['minutes'], $PlayerInfo['totaltime']['seconds']);
 		
@@ -118,6 +115,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$Title    = ($ItemInfo['item']['label'] == $ItemInfo['item']['originaltitle']) ? $ItemInfo['item']['label'] : $ItemInfo['item']['label '].' ('.$ItemInfo['item']['originaltitle'].')';
 			$Country  = !empty($ItemInfo['item']['country']) ? $ItemInfo['item']['country'] : 'NA';
 			$IMDBLink = ($ItemInfo['item']['imdbnumber']) ? '<a href="http://www.imdb.com/title/'.$ItemInfo['item']['imdbnumber'].'/" target="_blank"><img style="vertical-align:text-bottom;" src="images/icons/imdb.png" /></a>' : '';
+			$SubTitle = (is_array($PlayerInfo['currentsubtitle']) && array_key_exists('name', $PlayerInfo['currentsubtitle'])) ? $PlayerInfo['currentsubtitle']['name'] : 'NA';
 			
 			echo '
 			<div class="head">'.$PlayStatus.': '.$Title.' ('.$ItemInfo['item']['year'].') '.$IMDBLink.'</div>
@@ -161,7 +159,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			 </tr>
 			 <tr>
 			  <td><strong>Subtitle:</strong></td>
-			  <td>'.$PlayerInfo['currentsubtitle']['name'].'</td>
+			  <td>'.$SubTitle.'</td>
 			 </tr>
 			 <tr>
 			  <td><strong>File:</strong></td>
@@ -182,21 +180,39 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				
 			<div class="head">Cast</div>
 			<table style="width:520px">
+			 <thead>
 			 <tr>
 			  <th style="width:250px; text-align:right">Actor</th>
 			  <th style="width:20px">&nbsp;</th>
 			  <th style="width:250px">Role</th>
-			 </tr>'."\n";
-				 
+			 </tr>
+			 </thead>'."\n";
+			
+			$SupportingCast = '';
 			foreach($ItemInfo['item']['cast'] AS $Cast) {
+				if(!empty($Cast['name']) && !empty($Cast['role'])) {
+					echo '
+					<tr>
+					 <td style="text-align: right">'.$Cast['name'].'</td>
+					 <td style="text-align: center">as</td>
+					 <td>'.$Cast['role'].'</td>
+					</tr>'."\n";
+				}
+				else {
+					$SupportingCast .= $Cast['name'].', ';
+				}
+			}
+			
+			if(strlen($SupportingCast)) {
 				echo '
 				<tr>
-				 <td style="text-align: right">'.$Cast['name'].'</td>
-				 <td style="text-align: center">as</td>
-				 <td>'.$Cast['role'].'</td>
+				 <td colspan="3" style="text-align: center; font-weight: bold">Supporting actors</td>
+				</tr>
+				<tr>
+				 <td colspan="3" style="text-align: center">'.substr($SupportingCast, 0, -2).'</td>
 				</tr>'."\n";
 			}
-				
+			
 			echo '</table>'."\n";
 		}
 	}

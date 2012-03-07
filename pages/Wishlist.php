@@ -6,11 +6,11 @@ $('#AddWishlistItem').click(function(event) {
 	WishlistID = randomString();
 	$('#tbl-wishlist tbody tr:first').before(
 	    '<tr id="' + WishlistID + '">' +
-	     '<form name="' + WishlistID + '" method="post" action="load.php?page=WishlistAdd" style="display:none">' +
+	     '<form name="' + WishlistID + '" method="post" action="load.php?page=WishlistAdd">' +
 	      '<td><input name="WishlistTitle" style="width:250px" type="text" /></td>' +
 	      '<td><input name="WishlistYear" style="width:115px" type="text" /></td>' +
-	      '<td><input name="WishlistDate" type="hidden" value="1" />Now</td>' +
-	      '<td style="text-align:center">' +
+	      '<td><input name="WishlistDate" type="hidden" value="Now" /></td>' +
+	      '<td style="text-align:right">' +
 	       '<a onclick="javascript:ajaxSubmit(\'' + WishlistID + '\');"><img src="images/icons/add.png" /></a>' +
 	       '<a onclick="javascript:$(\'#' + WishlistID + '\').remove();"><img src="images/icons/delete.png" /></a>' +
 	      '</td>' +
@@ -26,20 +26,19 @@ $('#AddWishlistItem').click(function(event) {
  
 <div class="head">Wishlist <small style="font-size: 12px;">(<a href="#!/Help/Wishlist">?</a>)</small></div>
 
+<table id="tbl-wishlist">
+ <thead>
+  <tr>
+   <th>Title</th>
+   <th style="width:50px">Year</th>
+   <th style="width:150px">Since</th>
+   <th style="width:54px">&nbsp;</th>
+  </tr>
+ </thead>
 <?php
 $Wishes = $WishlistObj->GetUnfulfilledWishlistItems();
 
 if(is_array($Wishes)) {
-	echo '
-	<table id="tbl-wishlist">
-	 <thead>
-	 <tr>
-	  <th>Title</th>
-	  <th style="width:50px">Year</th>
-	  <th style="width:150px">Since</th>
-	  <th style="width:54px">&nbsp;</th>
-	 </tr>
-	 </thead>'."\n";
 	foreach($Wishes AS $Wish) {
 		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'" rel="'.$Wish['WishlistTitle'].' ('.$Wish['WishlistYear'].')"><img src="images/icons/delete.png" /></a>' : '';
 		
@@ -55,27 +54,17 @@ if(is_array($Wishes)) {
 		 </td>
 		</tr>'."\n";
 	}
-	echo '</table>'."\n";
 }
 else {
 	echo '
-	<table id="tbl-wishlist">
-	 <thead>
-	 <tr>
-	  <th>Title</th>
-	  <th style="width:50px">Year</th>
-	  <th style="width:150px">Since</th>
-	  <th style="width:36px">&nbsp;</th>
-	 </tr>
-	 </thead>
 	 <tr>
       <td colspan="4">
        <div class="notification information">No data available</div>
       </td>
-     </tr>
-    </table>'."\n";
+     </tr>'."\n";
 }
 ?>
+</table>
 
 <br />
 
@@ -101,6 +90,7 @@ if(is_array($Wishes)) {
 		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'" rel="'.$Wish['WishlistTitle'].' ('.$Wish['WishlistYear'].')"><img src="images/icons/delete.png" /></a>' : '';
 		$WishListStatusImg = '';
 		
+		$FileManagerLink = '';
 		if($Wish['TorrentKey'] && !$Wish['WishlistFile'] && !$Wish['WishlistFileGone']) {
 			$Torrent = $RSSObj->GetTorrentByID($Wish['TorrentKey']);
 			$FileText = $Torrent['TorrentTitle'].' has been added to uTorrent';
@@ -110,6 +100,7 @@ if(is_array($Wishes)) {
 		}
 		else {
 			$FileText = $HubObj->ConcatFilePath($Wish['WishlistFile']);
+			$FileManagerLink = '<a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Wish['WishlistFile'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Wish['WishlistFile'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
 		}
 		
 		
@@ -117,7 +108,8 @@ if(is_array($Wishes)) {
 			$FileText = 'Movie has been downloaded, but the file is missing';
 			$WishlistPlayLink   = '';
 			$WishlistDeleteLink = $WishlistDeleteLink;
-			$WishListStatusImg  = '<img src="images/icons/error.png" />';
+			$WishListStatusImg  = '<img src="images/icons/file_error.png" />';
+			$FileManagerLink = '';
 		}
 		
 		echo '
@@ -125,7 +117,7 @@ if(is_array($Wishes)) {
 		 <td>'.$Wish['WishlistTitle'].'</td>
 		 <td style="width:50px">'.$Wish['WishlistYear'].'</td>
 		 <td style="width:150px">Granted on '.date('d.m.y H:i', $Wish['WishlistDownloadDate']).'</td>
-		 <td>'.$FileText.'</td>
+		 <td>'.$FileManagerLink.$FileText.'</td>
 		 <td style="text-align: center;width:54px">
 		  '.$WishListStatusImg.'
 		  '.$WishlistPlayLink.'

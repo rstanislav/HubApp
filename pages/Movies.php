@@ -5,7 +5,7 @@
 <div class="head">Recently added movies <small style="font-size: 12px;">(<a href="#!/Help/Movies">?</a>)</small></div>
 
 <?php
-$XBMCObj->Connect();
+$XBMCObj->Connect('default');
 
 if(is_object($XBMCObj->XBMCRPC)) {
     $RecentMovies = $XBMCObj->GetRecentlyAddedMovies();
@@ -32,7 +32,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				$FilePath = $Files;
 			}
 			
-			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="MoviePlay-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
+			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.urlencode($Movie['file']).'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
 
 			if(!empty($Movie['trailer'])) {
 				if(strstr($Movie['trailer'], 'plugin.video.youtube')) {
@@ -65,7 +65,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			echo '
 			<td style="text-align: center; width:33%;">
 			 <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
-			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
+			 <a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
 			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span><br /><br />
 			</td>'."\n";
 			
@@ -104,7 +104,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		 </thead>'."\n";
 		
 		foreach($Movies AS $Movie) {
-			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="MoviePlay-'.$Movie[0]['movieid'].'"><img src="images/icons/control_play.png" /></a>' : '';
+			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="FilePlay-'.urlencode($Movie[0]['file']).'"><img src="images/icons/control_play.png" /></a>' : '';
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie[0]['movieid'].'"><img src="images/icons/information.png" /></a>'  : '';
 			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie[0]['movieid'].'"><img src="images/icons/delete.png" /></a>'    : '';
 			

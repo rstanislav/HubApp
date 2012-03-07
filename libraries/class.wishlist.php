@@ -13,13 +13,13 @@ class Wishlist extends Hub {
 	}
 	
 	function GetMovieFiles() {
-		$Drives = Drives::GetDrivesFromDB();
+		$Drives = Drives::GetDrives();
 		
 		if(is_array($Drives)) {
 			$MovieFiles = array();
 			foreach($Drives AS $Drive) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
-				$Files[$DriveRoot] = glob($DriveRoot.'/Media/Movies/{*.mp4,*.mkv,*.avi,*.mp4}', GLOB_BRACE);
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
+				$Files[$DriveRoot] = Hub::RecursiveDirSearch($DriveRoot.'/Media/Movies/');
 				
 				if(sizeof($Files[$DriveRoot])) {
 					$MovieFiles = array_merge((array)$MovieFiles, (array)$Files[$DriveRoot]);
@@ -33,7 +33,7 @@ class Wishlist extends Hub {
 	}
 
 	function GetFulfilledWishlistItems() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE  WishlistDownloadDate != "" ORDER BY WishlistDownloadDate DESC');
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate != "" ORDER BY WishlistDownloadDate DESC');
 		$WishPrep->execute();
 		
 		if($WishPrep->rowCount()) {
@@ -211,7 +211,7 @@ class Wishlist extends Hub {
 	}
 	
 	function GetBadge() {
-		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate = 0 OR WishlistFile = ""');
+		$WishPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistDownloadDate = ""');
 		$WishPrep->execute();
 		
 		$WishlistSize = $WishPrep->rowCount();
@@ -223,10 +223,10 @@ class Wishlist extends Hub {
 		$WishlistNewSize = $WishPrep->rowCount();
 		
 		if($WishlistNewSize > 0 && $WishlistSize > 0) {
-			echo '<span class="badge dual rightbadge blue">'.$WishlistSize.'</span><span class="badge dual leftbadge red">'.$WishlistNewSize.'</span>';
+			echo '<span class="badge dual rightbadge blue-badge">'.$WishlistSize.'</span><span class="badge dual leftbadge red-badge">'.$WishlistNewSize.'</span>';
 		}
 		else if($WishlistSize > 0) {
-			echo '<span class="badge single blue">'.$WishlistSize.'</span>';
+			echo '<span class="badge single blue-badge">'.$WishlistSize.'</span>';
 		}
 	}
 }

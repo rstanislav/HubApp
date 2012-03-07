@@ -50,17 +50,15 @@ $HubObj->CheckForDBUpgrade();
  <script type="text/javascript" src="js/jquery.qtip.js"></script>
  <script type="text/javascript" src="js/jquery.alerts.js"></script>
  <script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
- <script type="text/javascript" src="js/selectToUISlider.jQuery.js"></script>
+ <script type="text/javascript" src="js/jquery.selectToUISlider.js"></script>
  <script type="text/javascript" src="js/jquery.form.js"></script>
  <script type="text/javascript" src="js/jquery.jeditable.js"></script>
  <script type="text/javascript" src="js/jquery.timers.js"></script>
  <script type="text/javascript" src="js/jquery.selectBox.js"></script>
- <script type="text/javascript" src="js/valums.file-uploader.js"></script>
  <script type="text/javascript" src="js/jquery.noty.js"></script>
- <script type="text/javascript" src="js/hub.script.js"></script>
- 
- <script type="text/javascript" src="js/jquery.mousewheel-3.0.4.pack.js"></script>
+ <script type="text/javascript" src="js/valums.file-uploader.js"></script>
  <script type="text/javascript" src="js/jquery.fancybox-1.3.4.pack.js"></script>
+ <script type="text/javascript" src="js/hub.script.js"></script>
 </head>
 
 <body>
@@ -77,6 +75,7 @@ else {
 </div>
 
 <div id="upload-wrapper"></div>
+<div id="loading-wrapper"></div>
 
 <div id="error" style="display:none">
  <img src="images/alerts/confirm.png" />
@@ -101,7 +100,7 @@ else {
   </td>
   <td class="header right">
    <?php
-   require_once './pages/ZoneSwitch.php';
+   include_once './pages/ZoneSwitch.php';
    ?>
   </td>
  </tr>
@@ -126,9 +125,6 @@ else {
    </div>
    <ul>
     <?php
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewDrives')) {
-    	echo '<li class="drive"><a rel="Drives" href="#!/Drives">Drives</a></li>'."\n";
-    }
     if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewSeries')) {
     	echo '<li class="series"><a rel="Series" href="#!/Series">Series</a></li>'."\n";
     }
@@ -138,9 +134,17 @@ else {
     if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewWishlist')) {
     	echo '<li class="wishlist"><a rel="Wishlist" href="#!/Wishlist">Wishlist</a><span id="WishlistBadge"></span></li>'."\n";
     }
+    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewDrives')) {
+    	echo '<li class="drive"><a rel="Drives" href="#!/Drives">Drives</a></li>'."\n";
+    }
+    
+    echo '<li class="manager"><a rel="FileManager" href="#!/FileManager">File Manager</a></li>'."\n";
+    
+    /*
     if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewUnsortedFiles')) {
     	echo '<li class="unsorted"><a rel="UnsortedFiles" href="#!/UnsortedFiles">Unsorted Files</a></li>'."\n";
     }
+    */
     if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewExtractFiles')) {
     	echo '<li class="extract"><a rel="ExtractFiles" href="#!/ExtractFiles">Extract Files</a></li>'."\n";
     }

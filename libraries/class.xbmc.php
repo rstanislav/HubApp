@@ -2,8 +2,13 @@
 class XBMC extends Hub {
 	public $XBMCRPC;
 	
-	function Connect() {
-		$Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
+	function Connect($Zone = '') {
+		if($Zone == 'default') {
+			$Zone = Zones::GetZoneByName(Zones::GetDefaultZone());
+		}
+		else {
+			$Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
+		}
 		
 		if(is_array($Zone)) {
 			require_once APP_PATH.'/libraries/xbmc-rpc/rpc/HTTPClient.php';
@@ -19,23 +24,54 @@ class XBMC extends Hub {
 		}
 	}
 	
+	function CheckConnection($User, $Pass, $Host, $Port) {
+		require_once APP_PATH.'/libraries/xbmc-rpc/rpc/HTTPClient.php';
+		try {
+			$TempConnection = new XBMC_RPC_HTTPClient($User.':'.$Pass.'@'.$Host.':'.$Port);
+			
+			if(is_object($TempConnection)) {
+				unset($TempConnection);
+				
+				return TRUE;
+			}
+		}
+		catch(XBMC_RPC_ConnectionException $e) {
+		    die($e->getMessage());
+		}
+	}
+	
 	function PlayFile($File) {
-		if(is_file($File)) {
+		$NetworkFile = Drives::GetNetworkLocation($File);
+		
+		if(is_file(str_replace('smb:', '', $File))) { // USE LOCAL FILE
 			try {
-				return $this->XBMCRPC->Player->Open(array('params' => array('item' => array('file' => $File))));
+				$NetworkFile = (!strstr($NetworkFile, 'smb:')) ? 'smb:'.$NetworkFile : $NetworkFile;
+				
+ 				return $this->XBMCRPC->Player->Open(array('item' => array('file' => $NetworkFile))); // USE NETWORK FILE
 			}
 			catch(XBMC_RPC_Exception $e) {
 				die($e->getMessage());
 			}
 		}
+		else {
+			echo 'No such file: '.$File;
+		}
 	}
 	
 	function PlayPause($PlayerID) {
 		try {
-			return $this->XBMCRPC->Player->PlayPause(array('params' => 1));
+			return $this->XBMCRPC->Player->PlayPause(array('playerid' => 1));
 		}
 		catch(XBMC_RPC_Exception $e) {
-			Hub::d($e);
+			die($e->getMessage());
+		}
+	}
+	
+	function PlayStop($PlayerID) {
+		try {
+			return $this->XBMCRPC->Player->Stop(array('playerid' => 1));
+		}
+		catch(XBMC_RPC_Exception $e) {
 			die($e->getMessage());
 		}
 	}

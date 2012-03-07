@@ -79,7 +79,11 @@ $(document).ready(function() {
 	'a[id|="DriveAdd"],' +
 	'a[id|="UserGroupDelete"],' +
 	'a[id|="XBMCPlayPause"],' +
-	'a[id|="WishlistRefresh"]').click(function(event) {
+	'a[id|="XBMCPlayStop"],' +
+	'a[id|="WishlistRefresh"],' +
+	'a[id|="FileManagerFolderDelete"],' +
+	'a[id|="FileManagerFileDelete"],' +
+	'a[id|="FileManagerMove"]').click(function(event) {
 		event.preventDefault();
 		
 		if($(this).hasClass('button')) {
@@ -180,6 +184,10 @@ function randomString() {
 
 function ajaxSubmit(ID) {
 	$('form[name=' + ID + ']').ajaxSubmit({
+		beforeSubmit: function() {
+			Button = $('#' + ID).find('a')[0];
+		    $(Button).html('<img src="images/spinners/ajax-light.gif" />');
+		},
 		success: ajaxSubmitResponse
 	});
 }
@@ -199,6 +207,9 @@ function ajaxSubmitResponse(responseText, statusText, xhr, $form)  {
 		});
 	}
 	else {
+		Button = $('#' + $form.attr('name')).find('a')[0];
+		$(Button).html('<img src="images/icons/add.png" />');
+		
 		noty({
 			text: responseText,
 			type: 'error',
@@ -258,7 +269,7 @@ function AjaxButton(Button, Extra) {
 		break;
 		
 		case 'XBMCPlayPause':
-			if(ButtonVal = 'Play') {
+			if(ButtonVal == 'Play') {
 				NewPlayState = 'Pause';
 			}
 			else {
@@ -286,6 +297,32 @@ function AjaxButton(Button, Extra) {
 					else {
 						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
 						$(ButtonObj).contents().find('.label').text(NewPlayState);
+					}
+				}
+			});
+		break;
+		
+		case 'XBMCPlayStop':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=XBMCPlayStop&PlayerID=' + ID,
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Loading ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
+					}
+					else {
+						$(ButtonObj).contents().find('.label').text('Stopped');
 					}
 				}
 			});
@@ -735,6 +772,64 @@ function AjaxLink(Link) {
 	LinkVal  = $(Link).html();
 	
 	switch(Action) {
+		case 'FileManagerFolderDelete':
+			jPrompt('Are you sure you want to delete "' + $(Link).attr('rel') + '"?' + "\n\n" + '<strong>This will delete the folder along with the contents!</strong>' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Folder', function(response) {
+				if(response == 'delete') {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=FileManagerFolderDelete&Folder=' + $(Link).attr('rel'),
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
+							}
+							else {
+								$('#FileManager-' + FirstID).slideUp('slow').remove();
+							}
+						}
+					});
+				}
+			});
+		break;
+		
+		case 'FileManagerFileDelete':
+			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '"?', 'Delete File', function(response) {
+				if(response) {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=FileManagerFileDelete&File=' + $(Link).attr('rel'),
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
+							}
+							else {
+								$('#FileManager-' + FirstID).slideUp('slow').remove();
+							}
+						}
+					});
+				}
+			});
+		break;
+		
 		case 'DeleteEpisode':
 			jConfirm('Are you sure you want to delete "' + $(Link).attr('rel') + '"?', 'Delete Episode', function(response) {
 				if(response) {
@@ -851,31 +946,6 @@ function AjaxLink(Link) {
 			});
 		break;
 		
-		case 'DriveAdd':
-			$.ajax({
-				method: 'get',
-				url:    'load.php',
-				data:   'page=DriveAdd&DriveLetter='+ FirstID,
-				beforeSend: function() {
-					$(Link).html('<img src="images/spinners/ajax-light.gif" />');
-				},
-				success: function(Return) {
-					if(Return != '') {
-						$(Link).html('<img src="images/icons/error.png" />');
-								
-						noty({
-							text: Return,
-							type: 'error',
-							timeout: false,
-						});
-					}
-					else {
-						$(Link).html('<img src="images/icons/check.png" />');
-					}
-				}
-			});
-		break;
-		
 		case 'DriveActive':
 			$.ajax({
 				method: 'get',
@@ -902,10 +972,12 @@ function AjaxLink(Link) {
 		break;
 	
 		case 'FilePlay':
+			File = $(Link).attr('id').replace(new RegExp(Action + '-', 'i'), '');
+			
 			$.ajax({
 				method: 'get',
 				url:    'load.php',
-				data:   'page=FilePlay&File='+ FirstID + '-' + SecondID,
+				data:   'page=FilePlay&File='+ File,
 				beforeSend: function() {
 					$(Link).html('<img src="images/spinners/ajax-light.gif" />');
 				},

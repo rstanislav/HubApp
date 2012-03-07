@@ -48,6 +48,16 @@ $(document).ready(function() {
 			});
 			
 		}
+		else if(event.pathNames[0] == 'FileManager') {
+			var Crumbs = '';
+			for(x in event.pathNames) {
+				if(event.pathNames[x] != 'FileManager') {
+					Crumbs += '&crumbs[]=' + event.pathNames[x];
+				}
+			}
+			
+			loadURL('FileManager' + Crumbs);
+		}
 		else if(event.pathNames[0] == 'Password') {
 			$.ajax({
 				method: 'get',
@@ -63,7 +73,7 @@ $(document).ready(function() {
 				url:    'load.php',
 				data:   'page=Logout',
 				success: function(html) {
-					window.location='/hub/';
+					window.location = location.href.replace(new RegExp('#!/Logout', 'i'), '');
 				}
 			});
 		}
@@ -211,45 +221,30 @@ $(document).ready(function() {
 	   	}
 	});
 	
-	$('select').selectBox({ menuTransition: 'slide' });
-	
-	$('#zone').each(function() {
-		$(this).qtip( {
-			content: {
-				text: '<img class="spinner" src="images/blank.gif" /><span class="spinnertext"> Loading...</span>',
-	            ajax: {
-	               url: 'load.php?page=ZonesDropdown'
-	            }
-	        },
-	        position: {
-	            at: 'bottom right',
-	            my: 'top left',
-	            viewport: $(window)
-	        },
-	        show: {
-	            event: 'mousedown',
-	            solo: true
-	        },
-	        hide: {
-	        	event: 'unfocus',
-	            fixed: true,
-	        },
-	        style: {
-	            tip: {
-	            	corner: false
-	            }
-	        }
-	    })
-	      
-	    .click(function() { return false; });
-	});
-	
-	$('#zone').mousedown(function() {
-		$('#zone').addClass('sel');
-	});
-	
-	$('#zone').mouseup(function() {
-		$('#zone').removeClass('sel');
+	$('select[name="zoneSelect"]').selectBox().change(function() {
+		$('#loading-wrapper').show();
+		
+		$.ajax({
+			method: 'get',
+			url:    'load.php',
+			data:   'page=ZoneChange&Zone=' + $(this).val(),
+			success: function(Return) {
+				if(Return != '') {
+					$('#loading-wrapper').hide();
+					
+					noty({
+						text: Return,
+						type: 'error',
+						timeout: false,
+					});
+				}
+				else {
+					location.reload(true);
+				}
+				
+				
+			}
+		});
 	});
 });
 

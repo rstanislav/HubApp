@@ -114,17 +114,19 @@ class UTorrent extends Hub {
 	function CheckTorrentForFile($FileCheck) {
 		if(is_object($this->UTorrentAPI)) {
 			$Torrents = UTorrent::GetTorrents();
-				
-			foreach($Torrents AS $Torrent) {
-				$SeedStatuses = array(137, 200, 201); // Seeding (F), Queued Seed, Seeding
-				if(in_array($Torrent[UTORRENT_TORRENT_STATUS], $SeedStatuses)) {
-					$Files = UTorrent::GetFiles($Torrent[0]);
-				
-					foreach($Files AS $File) {
-						if(is_array($File)) {
-							foreach($File AS $FileTmp) {
-								if(($FileTmp[0] == $FileCheck) || (pathinfo($FileTmp[0], PATHINFO_BASENAME) == pathinfo($FileCheck, PATHINFO_BASENAME))) {
-									return TRUE;
+			
+			if(is_array($Torrents)) {
+				foreach($Torrents AS $Torrent) {
+					$SeedStatuses = array(137, 200, 201); // Seeding (F), Queued Seed, Seeding
+					if(in_array($Torrent[UTORRENT_TORRENT_STATUS], $SeedStatuses)) {
+						$Files = UTorrent::GetFiles($Torrent[0]);
+					
+						foreach($Files AS $File) {
+							if(is_array($File)) {
+								foreach($File AS $FileTmp) {
+									if(($FileTmp[0] == $FileCheck) || (pathinfo($FileTmp[0], PATHINFO_BASENAME) == pathinfo($FileCheck, PATHINFO_BASENAME))) {
+										return TRUE;
+									}
 								}
 							}
 						}
@@ -257,13 +259,13 @@ class UTorrent extends Hub {
 				}
 		
 				if($TorrentFinishedSize > 0 && $TorrentSize == 0) {
-					echo '<span class="badge single red">'.$TorrentFinishedSize.'</span>';
+					echo '<span class="badge single red-badge">'.$TorrentFinishedSize.'</span>';
 				}
 				else if($TorrentFinishedSize > 0 && $TorrentSize > 0) {
-					echo '<span class="badge dual rightbadge blue">'.$TorrentSize.'</span><span class="badge dual leftbadge red">'.$TorrentFinishedSize.'</span>';
+					echo '<span class="badge dual rightbadge blue-badge">'.$TorrentSize.'</span><span class="badge dual leftbadge red-badge">'.$TorrentFinishedSize.'</span>';
 				}
 				else if($TorrentSize > 0) {
-					echo '<span class="badge single blue">'.$TorrentSize.'</span>';
+					echo '<span class="badge single blue-badge">'.$TorrentSize.'</span>';
 				}
 			}
 		}

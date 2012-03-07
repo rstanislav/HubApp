@@ -157,10 +157,10 @@ class Series extends Hub {
 					$Serie->SeriesName = str_replace(array(':', '\'', '(', ')', '*'), '', $Serie->SeriesName);
 					$Serie->Genre      = str_replace('|', ', ', trim($Serie->Genre, '|'));
 				
-					$Drives = Drives::GetDrivesFromDB();
+					$Drives = Drives::GetDrives();
 					if(is_array($Drives)) {
 						foreach($Drives AS $Drive) {
-							$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+							$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 							
 							if(!is_dir($DriveRoot.'/Media/TV/'.$Serie->SeriesName)) {
 								if(!mkdir($DriveRoot.'/Media/TV/'.$Serie->SeriesName)) {
@@ -292,14 +292,14 @@ class Series extends Hub {
 	}
 	
 	function DeleteSerie($SerieID) {
-		$Drives = Drives::GetDrivesFromDB();
+		$Drives = Drives::GetDrives();
 		
 		if(is_array($Drives)) {
 			$Serie = $this->PDO->query('SELECT SerieTitle, SerieTitleAlt FROM Series WHERE SerieID = "'.$SerieID.'"')->fetch();
 			
 			if(strlen($Serie['SerieTitle'])) {
 				foreach($Drives AS $Drive) {
-					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 					
 					Drives::RecursiveDirRemove($DriveRoot.'/Media/TV/'.$Serie['SerieTitle']);
 					
@@ -540,18 +540,18 @@ class Series extends Hub {
 		
 		if($DriveRoot) {
 			if(is_dir($DriveRoot.'/Media/TV/')) {
-				$SeriesDir = glob($DriveRoot.'/Media/TV/*');
+				$SeriesDir = array_filter(glob($DriveRoot.'/Media/TV/*'), 'is_dir');
 				$SeriesDirArr = array_merge($SeriesDirArr, $SeriesDir);
 			}
 		}
 		else {
-			$Drives = Drives::GetDrivesFromDB();
+			$Drives = Drives::GetDrives();
 			if(is_array($Drives)) {
 				foreach($Drives AS $Drive) {
-					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+					$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 					
 					if(is_dir($DriveRoot.'/Media/TV/')) {
-						$SeriesDir = glob($DriveRoot.'/Media/TV/*');
+						$SeriesDir = array_filter(glob($DriveRoot.'/Media/TV/*'), 'is_dir');
 						$SeriesDirArr = array_merge($SeriesDirArr, $SeriesDir);
 					}
 				}
@@ -574,7 +574,7 @@ class Series extends Hub {
 			
 			foreach($SeriesDirectoriesArr AS $SerieDirectory) {
 				if($Serie == substr($SerieDirectory, (strrpos($SerieDirectory, '/') + 1))) {
-					$SerieEpisodes = Hub::RecursiveGlob($SerieDirectory, '{*.mp4,*.avi,*.mkv}', GLOB_BRACE);
+					$SerieEpisodes = Hub::RecursiveDirSearch($SerieDirectory);
 				    @$SeriesInfoArr[$Serie]['TotalEpisodes'] += sizeof($SerieEpisodes);
 				    
 				    if($EpisodeLocations) {
@@ -602,13 +602,13 @@ class Series extends Hub {
 			
 		$RebuildTimeStart = time();
 		$EpisodesRebuilt = 0;
-		$Drives = Drives::GetDrivesFromDB();
+		$Drives = Drives::GetDrives();
 		if(is_array($Drives)) {
 			$EpisodesPrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = ""');
 			$EpisodesPrep->execute();
 			
 			foreach($Drives AS $Drive) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 				$SeriesInfoArr = $this->GetSeriesInfo($DriveRoot, TRUE);
 		
 				foreach($SeriesInfoArr AS $SerieTitle => $Series) {
@@ -676,12 +676,12 @@ class Series extends Hub {
 			}
 		}
 		
-		$Drives = Drives::GetDrivesFromDB();
+		$Drives = Drives::GetDrives();
 		$Series = $this->GetSeries();
 		if(is_array($Drives) && is_array($Series)) {
 			$RebuiltFolders = 0;
 			foreach($Drives AS $Drive) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveRoot'] : $Drive['DriveLetter'];
+				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 				
 				foreach($Series AS $Serie) {
 					$Folder = $DriveRoot.'/Media/TV/'.$Serie['SerieTitle'];

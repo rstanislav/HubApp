@@ -963,17 +963,6 @@ else {
 			$UserObj->Logout();
 		break;
 		
-		case 'ForgotPassword':
-			$User  = (filter_has_var(INPUT_POST, 'HubUser')) ? $_POST['HubUser'] : '';
-			$EMail = (filter_has_var(INPUT_POST, 'HubEMail')) ? $_POST['HubEMail'] : '';
-			
-			if($User || $EMail) {
-				$UserObj->ResetPassword($User, $EMail);
-			}
-			
-			//header('Location: '.$_SERVER['HTTP_REFERER'].'#!/Password/');
-		break;
-		
 		case 'Settings':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewSettings')) {
 				include_once './pages/Settings.php';

@@ -76,8 +76,9 @@ class Drives extends Hub {
 	}
 	
 	function GetLocalLocation($Location) {
+		$Location = str_replace('smb:', '', $Location);
+		
 		if(strpos($Location, '/') === 0) {
-			$Location = str_replace('smb:', '', $Location);
 			$Location = preg_replace('/[A-z0-9-]+\:[A-z0-9-]+@/', '', $Location);
 			
 			$Drives = Drives::GetDrives();

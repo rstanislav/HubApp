@@ -65,7 +65,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			echo '
 			<td style="text-align: center; width:33%;">
 			 <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
-			 <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
+			 <a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
 			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span><br /><br />
 			</td>'."\n";
 			

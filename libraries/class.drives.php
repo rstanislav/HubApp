@@ -76,10 +76,22 @@ class Drives extends Hub {
 	}
 	
 	function GetLocalLocation($Location) {
-		$Drive = $this->PDO->query('SELECT DriveShare, DriveMount FROM Drives WHERE DriveShare LIKE "'.substr($Location, 0, strpos($Location, '/')).'%" LIMIT 1')->fetch();
-	
-		if(is_array($Drive)) {
-			return str_replace($Drive['DriveShare'], $Drive['DriveMount'], $Location);
+		if(strpos($Location, '/') === 0) {
+			$Location = str_replace('smb:', '', $Location);
+			$Location = preg_replace('/[A-z0-9-]+\:[A-z0-9-]+@/', '', $Location);
+			
+			$Drives = Drives::GetDrives();
+			
+			if(is_array($Drives)) {
+				foreach($Drives AS $Drive) {
+					if(strstr($Location, $Drive['DriveShare'])) {
+						return str_replace($Drive['DriveShare'], $Drive['DriveMount'], $Location);
+					}
+				}
+			}
+			else {
+				return $Location;
+			}
 		}
 		else {
 			return $Location;

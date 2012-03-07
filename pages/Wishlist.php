@@ -90,6 +90,7 @@ if(is_array($Wishes)) {
 		$WishlistDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistDelete')) ? '<a id="WishlistDelete-'.$Wish['WishlistID'].'" rel="'.$Wish['WishlistTitle'].' ('.$Wish['WishlistYear'].')"><img src="images/icons/delete.png" /></a>' : '';
 		$WishListStatusImg = '';
 		
+		$FileManagerLink = '';
 		if($Wish['TorrentKey'] && !$Wish['WishlistFile'] && !$Wish['WishlistFileGone']) {
 			$Torrent = $RSSObj->GetTorrentByID($Wish['TorrentKey']);
 			$FileText = $Torrent['TorrentTitle'].' has been added to uTorrent';
@@ -99,6 +100,7 @@ if(is_array($Wishes)) {
 		}
 		else {
 			$FileText = $HubObj->ConcatFilePath($Wish['WishlistFile']);
+			$FileManagerLink = '<a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Wish['WishlistFile'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Wish['WishlistFile'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
 		}
 		
 		
@@ -107,6 +109,7 @@ if(is_array($Wishes)) {
 			$WishlistPlayLink   = '';
 			$WishlistDeleteLink = $WishlistDeleteLink;
 			$WishListStatusImg  = '<img src="images/icons/file_error.png" />';
+			$FileManagerLink = '';
 		}
 		
 		echo '
@@ -114,7 +117,7 @@ if(is_array($Wishes)) {
 		 <td>'.$Wish['WishlistTitle'].'</td>
 		 <td style="width:50px">'.$Wish['WishlistYear'].'</td>
 		 <td style="width:150px">Granted on '.date('d.m.y H:i', $Wish['WishlistDownloadDate']).'</td>
-		 <td>'.$FileText.'</td>
+		 <td>'.$FileManagerLink.$FileText.'</td>
 		 <td style="text-align: center;width:54px">
 		  '.$WishListStatusImg.'
 		  '.$WishlistPlayLink.'

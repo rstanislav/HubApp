@@ -85,7 +85,7 @@ foreach($Drives AS $Drive) {
 	echo '
 	<tr id="Drive-'.$Drive['DriveID'].'">
 	 <td style="text-align: center;">'.date('d.m.y', $Drive['DriveDate']).'</td>
-	 <td>'.$Drive['DriveShare'].'</td>
+	 <td><a href="#!/FileManager/'.$Drive['DriveMount'].'" title="View \''.$Drive['DriveMount'].'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> '.$Drive['DriveShare'].'</td>
 	 <td>'.$DriveUser.'</td>
 	 <td>'.$DrivePass.'</td>
 	 <td>'.$Drive['DriveMount'].'</td>

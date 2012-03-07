@@ -83,18 +83,14 @@ if(filter_has_var(INPUT_GET, 'crumbs')) {
 				$Size = 'NA';
 			}
 			
-			if($Obj->isWritable()) {
-				$MoveLink   = '<a id="FileManagerMove-'.$RandomID.'" title="Move \''.$Obj->__toString().'\'" rel="load.php?page=FileManagerMove&Move='.urlencode($Obj->getPath().'/'.$Obj->__toString()).'&ID='.$RandomID.'"><img src="images/icons/file_move.png" /></a>';
-				
-				if($Obj->isFile()) {
-					$DeleteLink = '<a id="FileManagerFileDelete-'.$RandomID.'" title="Delete \''.$Obj->__toString().'\'" rel="'.$Obj->getPath().'/'.$Obj->__toString().'"><img src="images/icons/file_delete.png" /></a>';
-				}
-				else {
-					$DeleteLink = '<a id="FileManagerFolderDelete-'.$RandomID.'" title="Delete \''.$Obj->__toString().'\'" rel="'.$Obj->getPath().'/'.$Obj->__toString().'"><img src="images/icons/folder_delete.png" /></a>';
-				}
+			$ObjectPath = ($Drive['DriveNetwork']) ? str_replace($Drive['DriveMount'], $Drive['DriveShare'], $Crumb) : $Crumb;
+			$MoveLink   = '<a id="FileManagerMove-'.$RandomID.'" title="Move \''.$Obj->__toString().'\'" rel="load.php?page=FileManagerMove&Move='.urlencode($ObjectPath.'/'.$Obj->__toString()).'&ID='.$RandomID.'"><img src="images/icons/file_move.png" /></a>';
+			
+			if($Obj->isFile()) {
+				$DeleteLink = '<a id="FileManagerFileDelete-'.$RandomID.'" title="Delete \''.$Obj->__toString().'\'" rel="'.$ObjectPath.'/'.$Obj->__toString().'"><img src="images/icons/file_delete.png" /></a>';
 			}
 			else {
-				$MoveLink = $DeleteLink = '';
+				$DeleteLink = '<a id="FileManagerFolderDelete-'.$RandomID.'" title="Delete \''.$Obj->__toString().'\'" rel="'.$ObjectPath.'/'.$Obj->__toString().'"><img src="images/icons/folder_delete.png" /></a>';
 			}
 			
 			echo '
@@ -135,12 +131,12 @@ else {
 		 </thead>'."\n";
 		
 		foreach($Drives AS $Drive) {
-			$DriveNetwork = ($Drive['DriveNetwork']) ? ' ('.$Drive['DriveShare'].')' : '';
+			$DriveText = $Drive['DriveMount'].' ('.$Drive['DriveShare'].')';
+			$DriveText = ($Drive['DriveActive']) ? '<strong>'.$DriveText.'</strong>' : $DriveText;
 			
-			$DriveTxt = ($Drive['DriveActive']) ? '<strong>'.$Drive['DriveMount'].$DriveNetwork.'</strong>' : $Drive['DriveMount'].$DriveNetwork;
 			echo '
 			<tr>
-			 <td><a href="#!/FileManager/'.$Drive['DriveMount'].'">'.$DriveTxt.'</a></td>
+			 <td><a href="#!/FileManager/'.$Drive['DriveMount'].'">'.$DriveText.'</a></td>
 			</tr>'."\n";
 		}
 		

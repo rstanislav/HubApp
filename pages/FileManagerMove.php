@@ -55,7 +55,7 @@ function AllowedDirectories($Directory) {
 	 }
 }
 
-function NestedFolderTreeSelect($Path, $Level = 0, $Parent = '') {
+function NestedFolderTreeSelect($Path, $Level = 0, $Parent = '', $DrivesObj) {
 	$Paths = array_filter(glob(str_replace('\\', '/', $Path).'*', GLOB_ONLYDIR | GLOB_NOSORT), 'AllowedDirectories');
 	
 	if(!empty($Paths)) {
@@ -74,12 +74,23 @@ function NestedFolderTreeSelect($Path, $Level = 0, $Parent = '') {
 
 <select id="MoveTo-<?php echo $_GET['ID']; ?>" class="dark">
 <option disabled="disabled">Select a new location</option>
-
 <?php
-list($Drive) = explode('/', $_GET['Move']);
-NestedFolderTreeSelect($Drive.'/', 0, basename($_GET['Move']));
-?>
+$Drives = $DrivesObj->GetDrives();
+if(is_array($Drives)) {
+	foreach($Drives AS $Drive) {
+		if(strstr($_GET['Move'], $Drive['DriveShare'])) {
+			$Path = $Drive['DriveShare'];
+			break;
+		}
+		else if(strstr($_GET['Move'], $Drive['DriveMount'])) {
+			$Path = $Drive['DriveMount'];
+			break;
+		}
+	}
+}
 
-</select> 
+NestedFolderTreeSelect($Path.'/', 0, basename($_GET['Move']), $DrivesObj);
+?>
+</select>
 <a id="FileManagerMoveSubmit-<?php echo $_GET['ID']; ?>"><img style="vertical-align: middle" src="images/icons/check.png" /></a> 
 <a id="FileManagerMoveCancel-<?php echo $_GET['ID']; ?>"><img style="vertical-align: middle" src="images/icons/delete.png" /></a>

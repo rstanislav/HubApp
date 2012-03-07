@@ -23,6 +23,7 @@ else {
 				}
 			}
 		break;
+
 		case 'FileManagerFolderDelete':
 			if(filter_has_var(INPUT_GET, 'Folder')) {
 				if($DrivesObj->RecursiveDirRemove($_GET['Folder'])) {
@@ -204,7 +205,12 @@ else {
 			
 		case 'FilePlay':
 			$XBMCObj->Connect();
-			$XBMCObj->PlayFile($_GET['File']);
+			if(is_object($XBMCObj->XBMCRPC)) {
+				$XBMCObj->PlayFile($_GET['File']);
+			}
+			else {
+				echo 'Unable to connect to XBMC in "'.$ZonesObj->GetCurrentZone().'"';
+			}
 		break;
 		
 		case 'Unlock':

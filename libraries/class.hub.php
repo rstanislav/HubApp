@@ -3,7 +3,7 @@ require_once APP_PATH.'/libraries/api.thetvdb.php';
 require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
-	const HubVersion   = '2.4.5.1';
+	const HubVersion   = '2.4.5.3';
 	const MinDBVersion = '2.0.3';
 	
 	public $PDO;
@@ -64,7 +64,7 @@ class Hub {
 			foreach(glob('upgrade/db-*.php') AS $File) {
 				$NewDBVersion = str_replace('.php', '', str_replace('upgrade/db-', '', $File));
 				
-				if(str_replace('.', '', $NewDBVersion) <= str_replace('.', '', self::MinDBVersion)) {
+				if(str_replace('.', '', $NewDBVersion) > str_replace('.', '', $DB['CurrentDBVersion'])) {
 					$sql = '';
 			    	include_once $File;
 			    	

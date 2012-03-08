@@ -41,12 +41,13 @@ class XBMC extends Hub {
 	}
 	
 	function PlayFile($File) {
+		$File = str_replace('smb:', '', $File);
 		$NetworkFile = Drives::GetNetworkLocation($File);
 		$LocalFile   = Drives::GetLocalLocation($File);
 		
-		if(is_file($LocalFile)) { // USE LOCAL FILE
+		if(is_file($LocalFile) || is_file($NetworkFile)) {
 			try {
-				$NetworkFile = (!strstr($NetworkFile, 'smb:')) ? 'smb:'.$NetworkFile : $NetworkFile;
+				$NetworkFile = 'smb:'.$NetworkFile;
 				
  				return $this->XBMCRPC->Player->Open(array('item' => array('file' => $NetworkFile))); // USE NETWORK FILE
 			}

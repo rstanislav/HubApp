@@ -74,7 +74,7 @@ if($Series) {
 		echo '
 		<tr>
 		 <td style="text-align:center">'.$FileAction.'</td>
-		 <td><a href="#!/Series/'.urlencode($Serie['SerieTitle']).'">'.$FileManagerLink.$Serie['SerieTitle'].'</a></td>
+		 <td>'.$FileManagerLink.'<a href="#!/Series/'.urlencode($Serie['SerieTitle']).'">'.$Serie['SerieTitle'].'</a></td>
 		 <td style="text-align: center">'.sprintf('%02s', $Serie['EpisodeSeason']).'x'.sprintf('%02s', $Serie['EpisodeEpisode']).'</td>
 		 <td>'.$Serie['EpisodeTitle'].'</td>
 		 <td style="text-align: right">'.$HubObj->ConvertSeconds($Serie['EpisodeAirDate'] - time(), FALSE).'</td>

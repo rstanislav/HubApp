@@ -105,7 +105,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		 </thead>'."\n";
 		
 		foreach($Movies AS $Movie) {
-			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="FilePlay-'.urlencode($Movie[0]['file']).'"><img src="images/icons/control_play.png" /></a>' : '';
+			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="FilePlay-'.urlencode($DrivesObj->GetNetworkLocation($Movie[0]['file'])).'"><img src="images/icons/control_play.png" /></a>' : '';
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie[0]['movieid'].'"><img src="images/icons/information.png" /></a>'  : '';
 			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie[0]['movieid'].'"><img src="images/icons/delete.png" /></a>'    : '';
 			
@@ -124,6 +124,14 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$MovieFile = preg_replace('/[A-z0-9-]+\:[A-z0-9-]+@/', '', $MovieFile);
 			if(array_key_exists('file', $Movie[0]) && !is_array($Movie[0]['file'])) {
 				$FileManagerLink = '<a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Movie[0]['file'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Movie[0]['file'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
+			}
+			else {
+				$FileManagerLink = '';
+			}
+			
+			if(is_array($MovieFile)) {
+				$FileManagerLink = '';
+				$MovieFile = implode('<br />', $MovieFile);
 			}
 			
 			if(array_key_exists('trailer', $Movie[0])) {

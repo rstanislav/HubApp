@@ -103,19 +103,19 @@ $FolderRebuild = $HubObj->GetSetting('LastFolderRebuild');
 $SerieRefresh  = $HubObj->GetSetting('LastSerieRefresh');
 $SerieRebuild  = $HubObj->GetSetting('LastSerieRebuild');
 
-$LatestUpdate = max($FolderRebuild['Last'], $SerieRefresh['Last'], $SerieRebuild['Last']);
+$LatestUpdate = max($FolderRebuild, $SerieRefresh, $SerieRebuild);
 if((date('G') >= 3 && date('G') <= 7) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
-	if(date('dmy', $FolderRebuild['Last']) != date('dmy')) {
+	if(date('dmy', $FolderRebuild) != date('dmy')) {
 		$SeriesObj->RebuildFolders();
 	}
 
-	if(date('dmy', $SerieRefresh['Last']) != date('dmy')) {
+	if(date('dmy', $SerieRefresh) != date('dmy')) {
 		if(is_object($SeriesObj->TheTVDBAPI)) {
 			$SeriesObj->RefreshAllSeries();
 		}
 	}
 
-	if(date('dmy', $SerieRebuild['Last']) != date('dmy')) {
+	if(date('dmy', $SerieRebuild) != date('dmy')) {
 		if(is_object($SeriesObj->TheTVDBAPI)) {
 			$SeriesObj->RebuildEpisodes();
 		}

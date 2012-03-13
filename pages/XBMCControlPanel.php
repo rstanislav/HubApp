@@ -104,7 +104,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			'.nl2br($ItemInfo['item']['plot'])."\n";
 		}
 		else if($ItemInfo['item']['type'] == 'movie') {
-			if(is_file(APP_PATH.'/posters/thumbnails/movie-'.$ItemInfo['item']['id'].'.jpg')) {
+			if(array_key_exists('id', $ItemInfo['item']) && is_file(APP_PATH.'/posters/thumbnails/movie-'.$ItemInfo['item']['id'].'.jpg')) {
 				$Thumbnail = 'posters/thumbnails/movie-'.$ItemInfo['item']['id'].'.jpg';
 			}
 			else {
@@ -112,13 +112,29 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			}
 
 			$Tagline  = !empty($ItemInfo['item']['tagline']) ? $ItemInfo['item']['tagline'] : 'NA';
-			$Title    = ($ItemInfo['item']['label'] == $ItemInfo['item']['originaltitle']) ? $ItemInfo['item']['label'] : $ItemInfo['item']['label '].' ('.$ItemInfo['item']['originaltitle'].')';
+			
+			if($ItemInfo['item']['label'] == $ItemInfo['item']['originaltitle']) {
+				$Title = $ItemInfo['item']['label'];
+			}
+			else {
+				if($ItemInfo['item']['originaltitle']) {
+					$Title = $ItemInfo['item']['label'].' ('.$ItemInfo['item']['originaltitle'].')';
+				}
+				else {
+					$Title = $Title = $ItemInfo['item']['label'];
+				}
+			}
+			
 			$Country  = !empty($ItemInfo['item']['country']) ? $ItemInfo['item']['country'] : 'NA';
-			$IMDBLink = ($ItemInfo['item']['imdbnumber']) ? '<a href="http://www.imdb.com/title/'.$ItemInfo['item']['imdbnumber'].'/" target="_blank"><img style="vertical-align:text-bottom;" src="images/icons/imdb.png" /></a>' : '';
-			$SubTitle = (is_array($PlayerInfo['currentsubtitle']) && array_key_exists('name', $PlayerInfo['currentsubtitle'])) ? $PlayerInfo['currentsubtitle']['name'] : 'NA';
+			$IMDBLink = ($ItemInfo['item']['imdbnumber'])    ? '<a href="http://www.imdb.com/title/'.$ItemInfo['item']['imdbnumber'].'/" target="_blank"><img style="vertical-align:text-bottom;" src="images/icons/imdb.png" /></a>' : '';
+			$SubTitle = (is_array($PlayerInfo['currentsubtitle']) && array_key_exists('name', $PlayerInfo['currentsubtitle'])) ? $PlayerInfo['currentsubtitle']['name']                                              : 'NA';
+			$Year     = ($ItemInfo['item']['year'])          ? ' ('.$ItemInfo['item']['year'].')' : '';
+			$Studio   = ($ItemInfo['item']['studio'])        ? $ItemInfo['item']['studio']        : 'NA';
+			$MPAA     = ($ItemInfo['item']['mpaa'])          ? $ItemInfo['item']['mpaa']          : 'NA';
+			$Plot     = ($ItemInfo['item']['plot'])          ? nl2br($ItemInfo['item']['plot'])   : 'NA';
 			
 			echo '
-			<div class="head">'.$PlayStatus.': '.$Title.' ('.$ItemInfo['item']['year'].') '.$IMDBLink.'</div>
+			<div class="head">'.$PlayStatus.': '.$Title.$Year.' '.$IMDBLink.'</div>
 			
 			<table width="300" class="nostyle">
 			 <tr>
@@ -151,11 +167,11 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			 </tr>
 			 <tr>
 			  <td><strong>Studio:</strong></td>
-			  <td>'.$ItemInfo['item']['studio'].'</td>
+			  <td>'.$Studio.'</td>
 			 </tr>
 			 <tr>
 			  <td><strong>MPAA:</strong></td>
-			  <td>'.$ItemInfo['item']['mpaa'].'</td>
+			  <td>'.$MPAA.'</td>
 			 </tr>
 			 <tr>
 			  <td><strong>Subtitle:</strong></td>
@@ -169,7 +185,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			<br />
 				
 			<div class="head">Plot</div>
-			'.nl2br($ItemInfo['item']['plot'])."\n";
+			'.$Plot."\n";
 		}
 		else {
 			echo '<div class="notification information">Unable to decipher what is playing at the moment</div>';

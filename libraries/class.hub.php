@@ -21,7 +21,7 @@ class Hub {
 	public $BoxcarAPI;
 	
 	function __construct() {
-		$ReqExts = array('gd', 'pdo', 'curl', 'SimpleXML', 'mysql', 'json', 'pdo_mysql');
+		$ReqExts = array('gd', 'pdo', 'curl', 'SimpleXML', 'mysql', 'json', 'pdo_mysql', 'zip');
 		$ExtError = FALSE;
 		foreach($ReqExts AS $ReqExt) {
 			if(!extension_loaded($ReqExt)) {

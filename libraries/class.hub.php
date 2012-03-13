@@ -347,9 +347,159 @@ class Hub {
 		}
 	}
 	
-	function GetSettings() {
-		$SettingsPrep = $this->PDO->prepare('SELECT * FROM Settings LIMIT 1');
-		$SettingsPrep->execute();
+	function GetMySQLDumpLocation() {
+		$Locations = shell_exec('where /r c:\\ mysqldump.exe');
+		$Locations = explode("\n", trim($Locations));
+		
+		if(sizeof($Locations) > 1) {
+			$LatestVersion  = 0;
+			$LatestVersionLocation = '';
+			foreach($Locations AS $Location) {
+				preg_match('/[0-9]+\.[0-9]+\.[0-9]+/i', $Location, $Matches);
+				
+				if(is_array($Matches)) {
+					foreach($Matches AS $Match) {
+						if(str_replace('.', '', $Match) > $LatestVersion) {
+							$LatestVersion  = $Match;
+							$LatestVersionLocation = $Location;
+						}
+					}
+				}
+			}
+			
+			if($LatestVersionLocation != '' && is_file($LatestVersionLocation)) {
+				return $LatestVersionLocation;
+			}
+			else {
+				// echo 'Unable to determine latest version or "'.$LatestVersionLocation.'" does not exist';
+				
+				return FALSE;
+			}
+		}
+		else if(sizeof($Locations) == 1) {
+			if(is_file($Locations[0])) {
+				return $Locations[0];
+			}
+			else {
+				// echo '"'.$Locations[0].'" does not exist';
+				
+				return FALSE;
+			}
+		}
+		else {
+			// echo 'Not found';
+			
+			return FALSE;
+		}
+	}
+	
+	function BackupDatabase($User = '', $Pass = '', $Database, $BackupLocation = '') {
+		if(empty($BackupLocation)) {
+			$BackupLocation = Hub::GetSetting('BackupFolder');
+		}
+		
+		$BackupLocation = str_replace('\\', '/', $BackupLocation);
+		
+		if(!is_dir($BackupLocation)) {
+			return FALSE;
+		}
+		
+		$BackupFile  = $Database.'-database-'.date('d-m-Y').'.sql';
+		
+		if(is_file($BackupLocation.'/'.$BackupFile) || is_file($BackupLocation.'/'.$BackupFile.'.gz')) {
+			return FALSE;
+		}
+		
+		$UserStr = (empty($User)) ? '' : ' -u '.$User;
+		$PassStr = (empty($Pass)) ? '' : ' -p '.$Pass;
+		
+		$MySQLDump = Hub::GetMySQLDumpLocation();
+		if($MySQLDump) {
+			$CmdResponse = shell_exec($MySQLDump.$UserStr.$PassStr.' '.$Database.' > '.$BackupLocation.'/'.$BackupFile);
+			
+			if(!trim($CmdResponse)) {
+				$RegularHandle    = fopen($BackupLocation.'/'.$BackupFile, 'rb');
+				$CompressedHandle = fopen($BackupLocation.'/'.$BackupFile.'.gz', 'w');
+				
+				$CompressError = FALSE;
+				while(!feof($RegularHandle)) {
+					$CompressedData = gzencode(fread($RegularHandle, 8192), 9);
+					if(!fwrite($CompressedHandle, $CompressedData)) {
+						$CompressError = TRUE;
+						
+						break;
+					}
+				}
+				
+				fclose($RegularHandle);
+				fclose($CompressedHandle);
+				
+				if($CompressError) {
+					unlink($BackupLocation.'/'.$BackupFile.'.gz');
+				}
+				else {
+					unlink($BackupLocation.'/'.$BackupFile);
+					$BackupFile = $BackupFile.'.gz';
+				}
+				
+				Hub::AddLog(EVENT.'Backup', 'Success', 'Backed up "'.$Database.'" database to "'.$BackupLocation.'/'.$BackupFile.'"');
+				
+				return TRUE;
+			}
+			else {
+				Hub::AddLog(EVENT.'Backup', 'Failure', 'Failed to backup "'.$Database.'" database to "'.$BackupLocation.'/'.$BackupFile.'"');
+				
+				return FALSE;
+			}
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function ZipDirectory($Directory, $ZipFile) {
+	    if(!extension_loaded('zip') || !file_exists($Directory)) {
+	        return FALSE;
+	    }
+	
+	    $ZipObj = new ZipArchive();
+	    if(!$ZipObj->open($ZipFile, ZIPARCHIVE::CREATE)) {
+	        return FALSE;
+	    }
+	
+	    $Directory = str_replace('\\', '/', realpath($Directory));
+		if(is_dir($Directory)) {
+	        $Files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($Directory), RecursiveIteratorIterator::SELF_FIRST);
+			$FileCount = 0;
+			foreach($Files AS $File) {
+	            $File = str_replace('\\', '/', realpath($File));
+	
+	            if(is_dir($File)) {
+	                $ZipObj->addEmptyDir(str_replace($Directory.'/', '', $File.'/'));
+	            }
+	            else if(is_file($File)) {
+	            	$ZipObj->addFile($File, str_replace($Directory.'/', '', $File));
+	            }
+	            
+	            if($FileCount++ == 500) { 
+	            	$ZipObj->close(); 
+	                if($ZipObj = new ZipArchive()) { 
+	                	$ZipObj->open($ZipFile); 
+	                    $FileCount = 0; 
+	                } 
+	        	}
+	        }
+	    }
+	    else if(is_file($Directory)) {
+	        $ZipObj->addFile($Directory, str_replace($Directory.'/', '', $File));
+	    }
+	
+	    return $ZipObj->close();
+	}
+	
+	function GetSetting($Setting) {
+		$SettingsPrep = $this->PDO->prepare('SELECT * FROM Hub WHERE Setting = :Setting');
+		$SettingsPrep->execute(array(':Setting' => $Setting));
 		
 		if($SettingsPrep->rowCount()) {
 			$this->Settings = $SettingsPrep->fetch();

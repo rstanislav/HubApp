@@ -28,12 +28,42 @@ $XBMCObj->Connect('default');
 // Check for existing active drive and that all required folders are present
 $DrivesObj->CheckActiveDrive();
 
-if(date('G') > 4 && date('G') < 6) {
+if(date('G') >= 4 && date('G') <= 6) {
 	// Refresh all wishlist items
 	$WishlistObj->WishlistRefresh();
 	
-	// Backup XBMC Files
-	// ...
+	if(is_dir($HubObj->GetSetting('BackupFolder'))) {
+		if($HubObj->GetSetting('BackupHubFiles')) {
+			if(!is_file($HubObj->GetSetting('BackupFolder').'/hub-files-'.date('d-m-Y').'.zip')) {
+				if($HubObj->ZipDirectory(APP_PATH, $HubObj->GetSetting('BackupFolder').'/hub-files-'.date('d-m-Y').'.zip')) {
+					$HubObj->AddLog(EVENT.'Backup', 'Success', 'Backed up Hub files to "'.$HubObj->GetSetting('BackupFolder').'/hub-files-'.date('d-m-Y').'.zip"');
+				}
+			}
+		}
+	
+		if($HubObj->GetSetting('BackupHubDatabase')) {
+			$HubObj->BackupDatabase(DB_USER, DB_PASS, DB_NAME, $HubObj->GetSetting('BackupFolder'));
+		}
+	
+		if($HubObj->GetSetting('BackupXBMCFiles')) {
+			if(is_dir($HubObj->GetSetting('XBMCDataFolder'))) {
+				if(!is_file($HubObj->GetSetting('BackupFolder').'/xbmc-files-'.date('d-m-Y').'.zip')) {
+					if($HubObj->ZipDirectory($HubObj->GetSetting('XBMCDataFolder'), $HubObj->GetSetting('BackupFolder').'/xbmc-files-'.date('d-m-Y').'.zip')) {
+						$HubObj->AddLog(EVENT.'Backup', 'Success', 'Backed up XBMC files to "'.$HubObj->GetSetting('BackupFolder').'/xbmc-files-'.date('d-m-Y').'.zip"');
+					}
+				}
+			}
+		}
+	
+		if($HubObj->GetSetting('BackupXBMCDatabase')) {
+			$XBMCDatabases = $XBMCObj->FindDatabaseNames();
+			if(is_array($XBMCDatabases)) {
+				foreach($XBMCDatabases AS $XBMCDatabase) {
+					$HubObj->BackupDatabase(DB_USER, DB_PASS, $XBMCDatabase, $HubObj->GetSetting('BackupFolder'));
+				}
+			}
+		}
+	}
 }
 
 // Update RSS Feeds

@@ -12,6 +12,7 @@ else {
 	define('EVENT', '');
 }
 
+if(!is_dir(APP_PATH.'/backup/'))                 { mkdir(APP_PATH.'/backup/');                 }
 if(!is_dir(APP_PATH.'/posters/'))                { mkdir(APP_PATH.'/posters/');                }
 if(!is_dir(APP_PATH.'/posters/thumbnails/'))     { mkdir(APP_PATH.'/posters/thumbnails/');     }
 if(!is_dir(APP_PATH.'/screenshots/'))            { mkdir(APP_PATH.'/screenshots/');            }

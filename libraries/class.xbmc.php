@@ -239,11 +239,46 @@ class XBMC extends Hub {
 		}
 	}
 	
-	function GetLogFile($ToTime = '', $Lines = 50) {
-		$Settings = Hub::GetSettings();
+	function FindDatabaseNames() {
+		$DeterminedDatabases = array();
 		
-		if(is_file($Settings['SettingXBMCLogFile'])) {
-			$LogFile = array_reverse(file($Settings['SettingXBMCLogFile'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+		if(is_dir(Hub::GetSetting('XBMCDataFolder'))) {
+			$Files = glob(Hub::GetSetting('XBMCDataFolder').'/userdata/Database/*.db');
+			
+			if(is_array($Files)) {
+				$Databases = $this->PDO->query('SHOW DATABASES')->fetchAll();
+				
+				foreach($Files AS $File) {
+					if(stristr($File, 'videos') || stristr($File, 'music')) {
+						preg_match('/[0-9]+/', basename($File), $Matches);
+						
+						if(is_array($Matches)) {
+							if(sizeof($Matches) == 1) {
+								if(is_array($Databases)) {
+									foreach($Databases AS $Database) {
+										if(strrpos($Database['Database'], $Matches[0]) !== FALSE) {
+											$DeterminedDatabases[] = $Database['Database'];
+										}
+									}
+								}
+							}
+						}
+				    }
+				}
+			}
+		}
+		
+		if(sizeof($DeterminedDatabases)) {
+			return $DeterminedDatabases;
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function GetLogFile($ToTime = '', $Lines = 50) {
+		if(is_file(Hub::GetSetting('XBMCDataFolder').'/xbmc.log')) {
+			$LogFile = array_reverse(file(Hub::GetSetting('XBMCDataFolder').'/xbmc.log', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
 		
 			$LogArr = array();
 			$Line = 0;

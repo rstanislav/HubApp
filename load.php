@@ -71,7 +71,10 @@ else {
 		break;
 		
 		case 'CleanLog':
-			unlink(APP_PATH.'/tmp/schedule_error.log');
+			if(is_file(APP_PATH.'/tmp/schedule_error.log')) {
+				unlink(APP_PATH.'/tmp/schedule_error.log');
+			}
+			
 			touch(APP_PATH.'/tmp/schedule_error.log');
 		break;
 		

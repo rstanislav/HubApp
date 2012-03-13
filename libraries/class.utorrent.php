@@ -242,7 +242,7 @@ class UTorrent extends Hub {
 	
 	function GetBadge() {
 		if(!$this->UTorrentAPI->Token) {
-			echo '<span class="badge single red"><img style="margin-top:2px" src="images/icons/offline.png" /></span>';
+			echo '<span class="badge single red-badge"><img style="margin-top:2px" src="images/icons/offline.png" /></span>';
 		}
 		else {
 			$Torrents = self::GetTorrents();

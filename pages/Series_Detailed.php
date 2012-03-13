@@ -140,12 +140,11 @@ if(is_array($Series)) {
 							$OtherOptions = TRUE;
 						}
 						else {
-							$Settings = $HubObj->Settings;
 							$TorrentQuality = $RSSObj->GetQualityRank($RSSTorrents[0]['TorrentTitle']);
-							if($TorrentQuality >= $Settings['SettingHubMinimumDownloadQuality'] && $TorrentQuality <= $Settings['SettingHubMaximumDownloadQuality']) {
+							if($TorrentQuality >= Hub::GetSetting('MinimumDownloadQuality') && $TorrentQuality <= Hub::GetSetting('MaximumDownloadQuality')) {
 								$EpisodeControlImg = 'images/icons/download.png';
 							}
-							else if($TorrentQuality < $Settings['SettingHubMinimumDownloadQuality']) {
+							else if($TorrentQuality < Hub::GetSetting('MinimumDownloadQuality')) {
 								$EpisodeControlImg = 'images/icons/download_low_quality.png';
 							}
 							else {

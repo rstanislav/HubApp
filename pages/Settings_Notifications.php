@@ -4,7 +4,7 @@ $('#CheckAllNotifications').click(function() {
 });
 </script>
 
-<div class="head">Settings <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
+<div class="head">Settings &raquo; Notifications  <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
 
 <?php
 if($UserObj->UserEMail) {

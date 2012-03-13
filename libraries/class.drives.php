@@ -1,8 +1,6 @@
 <?php
 class Drives extends Hub {
 	function CheckActiveDrive() {
-		$Settings = Hub::GetSettings();
-		
 		self::GetActiveDrive();
 		UTorrent::Connect();
 		
@@ -14,7 +12,7 @@ class Drives extends Hub {
 				
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
-				if(($FreeSpace / 1024 / 1024 / 1024) <= $Settings['SettingHubMinimumActiveDiskFreeSpaceInGB']) {
+				if(($FreeSpace / 1024 / 1024 / 1024) <= Hub::GetSetting('MinimumDiskSpaceRequired')) {
 					self::DetermineNewActiveDrive();
 				}
 				else {
@@ -32,11 +30,11 @@ class Drives extends Hub {
 						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Completed Downloads folder: "'.$Drive['DriveMount'].'/Completed" does not exist'));
 					}
 					
-					if($Settings['SettingUTorrentWatchFolder'] && is_dir($Settings['SettingUTorrentWatchFolder'])) {
-						UTorrent::SetSetting('dir_autoload', $Settings['SettingUTorrentWatchFolder']);
+					if(is_dir(Hub::GetSetting('UTorrentWatchFolder'))) {
+						UTorrent::SetSetting('dir_autoload', Hub::GetSetting('UTorrentWatchFolder'));
 					}
 					else {
-						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Watch folder: "'.$Settings['SettingUTorrentWatchFolder'].'" does not exist'));
+						die(Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Watch folder: "'.Hub::GetSetting('UTorrentWatchFolder').'" does not exist'));
 					}
 				}
 			}
@@ -112,7 +110,6 @@ class Drives extends Hub {
 	}
 	
 	function DetermineNewActiveDrive() {
-		$Settings = Hub::GetSettings();
 		$Drives = Drives::GetDrives();
 		
 		if(is_array($Drives)) {
@@ -121,7 +118,7 @@ class Drives extends Hub {
 				
 				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
 				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
-				if(($FreeSpace / 1024 / 1024 / 1024) > $Settings['SettingHubMinimumActiveDiskFreeSpaceInGB']) {
+				if(($FreeSpace / 1024 / 1024 / 1024) > Hub::GetSetting('MinimumDiskSpaceRequired')) {
 					self::SetActiveDrive($Drive['DriveID']);
 					
 					break;
@@ -270,8 +267,6 @@ class Drives extends Hub {
 	}
 	
 	function RemoveDrive($DriveID) {
-		$Settings = Hub::GetSettings();
-		
 		$DrivePrep = $this->PDO->prepare('SELECT * FROM Drives WHERE DriveID = :ID');
 		$DrivePrep->execute(array(':ID' => $DriveID));
 		
@@ -282,9 +277,9 @@ class Drives extends Hub {
 			self::DetermineNewActiveDrive();
 		}
 		
-		if(is_file($Settings['SettingXBMCSourcesFile'])) {
+		if(is_file(Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml')) {
 			$DocObj = new DOMDocument();
-			$DocObj->load($Settings['SettingXBMCSourcesFile']);
+			$DocObj->load(Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml');
 	
 			$Sources = $DocObj->getElementsByTagName('source');
 			$PathArr = array();
@@ -306,14 +301,14 @@ class Drives extends Hub {
 				}
 			}
 		
-			$DocObj->save($Settings['SettingXBMCSourcesFile']);
+			$DocObj->save(Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml');
 			
 			if(sizeof($LogPaths)) {
-				Hub::AddLog(EVENT.'XBMC', 'Success', 'Removed "'.implode(', ', $LogPaths).'" from '.$Settings['SettingXBMCSourcesFile']);
+				Hub::AddLog(EVENT.'XBMC', 'Success', 'Removed "'.implode(', ', $LogPaths).'" from '.Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml');
 			}
 		}
 		else {
-			echo $Settings['SettingXBMCSourcesFile'].' does not exist.';
+			echo Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml does not exist.';
 		}
 		
 		$DriveDeletePrep = $this->PDO->prepare('DELETE FROM Drives WHERE DriveID = :ID');
@@ -323,10 +318,8 @@ class Drives extends Hub {
 	}
 	
 	function AddDrive($DriveShare, $DriveUser, $DrivePass, $DriveMount, $DriveNetwork = 0) {
-		$Settings = Hub::GetSettings();
-		
-		if(!$Settings['SettingXBMCSourcesFile'] || !is_file($Settings['SettingXBMCSourcesFile'])) {
-			die('File does not exist: '.$Settings['SettingXBMCSourcesFile']);
+		if(!is_file(Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml')) {
+			die('File does not exist: '.Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml');
 		}
 		
 		$DriveRoot = ($DriveNetwork) ? $DriveShare : $DriveMount;
@@ -366,9 +359,9 @@ class Drives extends Hub {
 		Hub::AddLog(EVENT.'Drives', 'Success', 'Added "'.$DriveShare.' ('.$DriveMount.')" to the database');
 		$DriveShareCred = self::DriveShareCredentials($DriveShare, $DriveUser, $DrivePass);
 		
-		if(is_file($Settings['SettingXBMCSourcesFile'])) {
+		if(is_file(Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml')) {
 			$DocObj = new DOMDocument();
-			$DocObj->load($Settings['SettingXBMCSourcesFile']);
+			$DocObj->load(Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml');
 		
 			$Sources = $DocObj->getElementsByTagName('source');
 			$PathArr = array();
@@ -396,10 +389,10 @@ class Drives extends Hub {
 				}
 			}
 			
-			$DocObj->save($Settings['SettingXBMCSourcesFile']);
+			$DocObj->save(Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml');
 			
 			if(sizeof($LogSources)) {
-				Hub::AddLog(EVENT.'XBMC', 'Success', 'Added "'.implode(', ', $LogSources).'" to '.$Settings['SettingXBMCSourcesFile']);
+				Hub::AddLog(EVENT.'XBMC', 'Success', 'Added "'.implode(', ', $LogSources).'" to '.Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml');
 			}
 			
 			XBMC::Connect('default');
@@ -410,7 +403,7 @@ class Drives extends Hub {
 			}
 		}
 		else {
-			echo $Settings['SettingXBMCSourcesFile'].' does not exist.';
+			echo Hub::GetSetting('XBMCDataFolder').'/userdata/sources.xml'.' does not exist.';
 		}
 	}
 }

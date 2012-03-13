@@ -5,9 +5,8 @@ class Series extends Hub {
 	function ConnectTheTVDB() {
 		require_once APP_PATH.'/libraries/api.thetvdb.php';
 		
-		$Settings = Hub::GetSettings();
-		if(array_key_exists('SettingHubTheTVDBAPIKey', $Settings)) {
-			$this->TheTVDBAPI = new TheTVDBAPI($Settings['SettingHubTheTVDBAPIKey']);
+		if(Hub::GetSetting('SearchURITVSeries')) {
+			$this->TheTVDBAPI = new TheTVDBAPI(Hub::GetSetting('TheTVDBAPIKey'));
 			
 			if(!is_object($this->TheTVDBAPI)) {
 				$this->Error[] = 'Unable to connect to TheTVDB API';
@@ -232,7 +231,6 @@ class Series extends Hub {
 	}
 	
 	function GetSerieEpisodeTorrents($TheTVDBID) {
-		$Settings = Hub::GetSettings();
 		$Serie = $this->PDO->query('SELECT SerieID, SerieTitle FROM Series WHERE SerieTheTVDBID = "'.$TheTVDBID.'"')->fetch();
 		
 		$DownloadArr = array();
@@ -254,7 +252,7 @@ class Series extends Hub {
 									
 									foreach($Parsed['Episodes'] AS $SerieEp) {
 										$NewQuality = RSS::GetQualityRank($Torrent['TorrentTitle']);
-										if($NewQuality >= $Settings['SettingHubMinimumDownloadQuality'] && $NewQuality <= $Settings['SettingHubMaximumDownloadQuality']) {
+										if($NewQuality >= Hub::GetSetting('MinimumDownloadQuality') && $NewQuality <= Hub::GetSetting('MaximumDownloadQuality')) {
 											if(!isset($DownloadArr[$SerieTitle.'-'.$SerieEp[0].$SerieEp[1]])) {
 												$DownloadArr[$SerieTitle.'-'.$SerieEp[0].$SerieEp[1]] = array();
 											}
@@ -262,7 +260,7 @@ class Series extends Hub {
 											if(isset($DownloadArr[$SerieTitle.'-'.$SerieEp[0].$SerieEp[1]][0])) {
 												$OldQuality = RSS::GetQualityRank($DownloadArr[$SerieTitle.'-'.$SerieEp[0].$SerieEp[1]][0]);
 									
-												if($NewQuality > $OldQuality && $NewQuality >= $Settings['SettingHubMinimumDownloadQuality']) {
+												if($NewQuality > $OldQuality && $NewQuality >= Hub::GetSetting('MinimumDownloadQuality')) {
 													$DownloadArr[$SerieTitle.'-'.$SerieEp[0].$SerieEp[1]][0] = $Torrent['TorrentURI'];
 													$DownloadArr[$SerieTitle.'-'.$SerieEp[0].$SerieEp[1]][1] = $Episode['EpisodeID'];
 													$DownloadArr[$SerieTitle.'-'.$SerieEp[0].$SerieEp[1]][2] = $Torrent['TorrentID'];

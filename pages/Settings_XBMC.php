@@ -1,4 +1,4 @@
-<div class="head">Settings <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
+<div class="head">Settings &raquo; XBMC  <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
 
 <form id="SettingsForm" name="SettingsXBMC" method="post" action="load.php?page=SaveSettings">
 <input type="hidden" name="SettingSection" value="XBMC" />
@@ -9,29 +9,8 @@
   <dd>
    <div class="field">
     <label>
-     <input name="SettingXBMCLogFile" style="width: 400px" type="text" value="<?php echo $Settings['SettingXBMCLogFile']; ?>" />
-     <span>Log file</span>
-    </label>
-   </div>
-   
-   <div class="field">
-    <label>
-     <input name="SettingXBMCSourcesFile" style="width: 400px" type="text" value="<?php echo $Settings['SettingXBMCSourcesFile']; ?>" />
-     <span>Sources.xml</span>
-    </label>
-   </div>
-   
-   <div class="field">
-    <label>
-     <input name="SettingXBMCRSSFile" style="width: 400px" type="text" value="<?php echo $Settings['SettingXBMCRSSFile']; ?>" />
-     <span>RSS_Feeds.xml</span>
-    </label>
-   </div>
-   
-   <div class="field">
-    <label>
-     <input name="SettingXBMCDatabaseFolder" style="width: 400px" type="text" value="<?php echo $Settings['SettingXBMCDatabaseFolder']; ?>" />
-     <span>Database folder</span>
+     <input name="XBMCDataFolder" style="width: 400px" type="text" value="<?php echo $HubObj->GetSetting('XBMCDataFolder'); ?>" />
+     <span>XBMC data folder</span>
     </label>
    </div>
   </dd>

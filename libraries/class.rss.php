@@ -54,8 +54,6 @@ class RSS extends Hub {
 	}
 	
 	function DownloadWantedTorrents() {
-		$Settings = Hub::GetSettings();
-		
 		$TorrentsPrep = $this->PDO->prepare('SELECT Torrents.*, RSS.RSSTitle FROM Torrents, RSS WHERE TorrentDate > :Date AND RSSID = RSSKey ORDER BY TorrentDate');
 		$TorrentsPrep->execute(array(':Date' => strtotime('-10 days')));
 				
@@ -81,7 +79,7 @@ class RSS extends Hub {
 							$DownloadArrID = $SerieTitle.'-'.$Parsed['Episodes'][0][0].$Parsed['Episodes'][0][1];
 							
 							$NewQuality = RSS::GetQualityRank($Torrent['TorrentTitle']);
-							if($NewQuality >= $Settings['SettingHubMinimumDownloadQuality'] && $NewQuality <= $Settings['SettingHubMaximumDownloadQuality']) {
+							if($NewQuality >= Hub::GetSetting('MinimumDownloadQuality') && $NewQuality <= Hub::GetSetting('MaximumDownloadQuality')) {
 								if(!isset($DownloadArr[$DownloadArrID])) {
 									$DownloadArr[$DownloadArrID] = array();
 								}
@@ -89,7 +87,7 @@ class RSS extends Hub {
 								if(isset($DownloadArr[$DownloadArrID][0])) {
 									$OldQuality = RSS::GetQualityRank($DownloadArr[$DownloadArrID][0]);
 								
-									if($NewQuality > $OldQuality && $NewQuality >= $Settings['SettingHubMinimumDownloadQuality']) {
+									if($NewQuality > $OldQuality && $NewQuality >= Hub::GetSetting('MinimumDownloadQuality')) {
 										$DownloadArr[$DownloadArrID][0] = $Torrent['TorrentURI'];
 										$DownloadArr[$DownloadArrID][1] = $Episode['EpisodeID'];
 										$DownloadArr[$DownloadArrID][2] = $Torrent['TorrentID'];
@@ -104,7 +102,7 @@ class RSS extends Hub {
 								if($Episode['EpisodeFile']) {
 									$OldQuality = RSS::GetQualityRank($Episode['EpisodeFile']);
 								
-									if($NewQuality > $OldQuality && $NewQuality >= $Settings['SettingHubMinimumDownloadQuality']) {
+									if($NewQuality > $OldQuality && $NewQuality >= Hub::GetSetting('MinimumDownloadQuality')) {
 										if(is_file($Episode['EpisodeFile'])) {
 											if(unlink($Episode['EpisodeFile'])) {
 												Hub::AddLog(EVENT.'Series', 'Success', 'Deleted "'.$Episode['EpisodeFile'].'" in favour of "'.$TorrentTitle.'"', 0, 'clean');
@@ -130,7 +128,7 @@ class RSS extends Hub {
 									$Torrents = $this->PDO->query('SELECT TorrentTitle AS Title FROM Torrents WHERE TorrentID = '.$Episode['TorrentKey'])->fetch();
 								
 									$OldQuality = RSS::GetQualityRank($Torrents['Title']);
-									if($NewQuality > $OldQuality && $NewQuality >= $Settings['SettingHubMinimumDownloadQuality']) {
+									if($NewQuality > $OldQuality && $NewQuality >= Hub::GetSetting('MinimumDownloadQuality')) {
 										$DownloadArr[$DownloadArrID][0] = $Torrent['TorrentURI'];
 										$DownloadArr[$DownloadArrID][1] = $Episode['EpisodeID'];
 										$DownloadArr[$DownloadArrID][2] = $Torrent['TorrentID'];
@@ -154,7 +152,7 @@ class RSS extends Hub {
 						
 							foreach($Wishlists AS $Wishlist) {
 								$NewQuality = RSS::GetQualityRank($Torrent['TorrentTitle']);
-								if($NewQuality >= $Settings['SettingHubMinimumDownloadQuality'] && $NewQuality <= $Settings['SettingHubMaximumDownloadQuality']) {
+								if($NewQuality >= Hub::GetSetting('MinimumDownloadQuality') && $NewQuality <= Hub::GetSetting('MaximumDownloadQuality')) {
 									if(!isset($DownloadArr[$Parsed['Title']])) {
 										$DownloadArr[$Parsed['Title']] = array();
 									}
@@ -162,7 +160,7 @@ class RSS extends Hub {
 									if(isset($DownloadArr[$Parsed['Title']][0])) {
 										$OldQuality = RSS::GetQualityRank($DownloadArr[$Parsed['Title']][0]);
 							
-										if($NewQuality > $OldQuality && $NewQuality >= $Settings['SettingHubMinimumDownloadQuality']) {
+										if($NewQuality > $OldQuality && $NewQuality >= Hub::GetSetting('MinimumDownloadQuality')) {
 											$DownloadArr[$Parsed['Title']][0] = $Torrent['TorrentURI'];
 											$DownloadArr[$Parsed['Title']][1] = 99999999;
 											$DownloadArr[$Parsed['Title']][2] = $Torrent['TorrentID'];
@@ -179,7 +177,7 @@ class RSS extends Hub {
 									if($Wishlist['WishlistFile']) {
 										$OldQuality = RSS::GetQualityRank($Wishlist['WishlistFile']);
 									
-										if($NewQuality > $OldQuality && $NewQuality >= $Settings['SettingHubMinimumDownloadQuality']) {
+										if($NewQuality > $OldQuality && $NewQuality >= Hub::GetSetting('MinimumDownloadQuality')) {
 											if(is_file($Wishlist['WishlistFile'])) {
 												if(unlink($Wishlist['WishlistFile'])) {
 													Hub::AddLog(EVENT.'Wishlist', 'Success', 'Deleted "'.$Wishlist['WishlistFile'].'"  in favour of "'.$TorrentTitle.'"', 0, 'clean');
@@ -206,7 +204,7 @@ class RSS extends Hub {
 										$Torrents = $this->PDO->query('SELECT TorrentTitle AS Title FROM Torrents WHERE TorrentID = '.$Wishlist['TorrentKey'])->fetch();
 								
 										$OldQuality = RSS::GetQualityRank($Torrents['Title']);
-										if($NewQuality > $OldQuality && $NewQuality >= $Settings['SettingHubMinimumDownloadQuality']) {
+										if($NewQuality > $OldQuality && $NewQuality >= Hub::GetSetting('MinimumDownloadQuality')) {
 											$DownloadArr[$Parsed['Title']][0] = $Torrent['TorrentURI'];
 											$DownloadArr[$Parsed['Title']][1] = 99999999;
 											$DownloadArr[$Parsed['Title']][2] = $Torrent['TorrentID'];
@@ -440,19 +438,17 @@ class RSS extends Hub {
 	}
 	
 	function CreateSearchLink($Query, $Type) {
-		$Settings = Hub::GetSettings();
-		
 		$DeadLink = '<img src="images/icons/search_dark.png" title="Add a search URI in the settings to enable searching" />';
 		switch($Type) {
 			case 'movie':
-				if(!empty($Settings['SettingHubSearchURIMovies'])) {
-					$Link = $Settings['SettingHubSearchURIMovies'];
+				if(Hub::GetSetting('SearchURIMovies')) {
+					$Link = Hub::GetSetting('SearchURIMovies');
 				}
 			break;
 			
 			case 'tv':
-				if(!empty($Settings['SettingHubSearchURITVSeries'])) {
-					$Link = $Settings['SettingHubSearchURITVSeries'];
+				if(Hub::GetSetting('SearchURITVSeries')) {
+					$Link = Hub::GetSetting('SearchURITVSeries');
 				}
 			break;
 		}
@@ -483,10 +479,9 @@ class RSS extends Hub {
 				$FileContents = stream_get_contents($FileHandle);
 				fclose($FileHandle);
 			
-				$Settings = Hub::GetSettings();
-				if(!is_file($Settings['SettingUTorrentWatchFolder'].'\\'.$File)) {
-					if(touch($Settings['SettingUTorrentWatchFolder'].'\\'.$File)) {
-						$FilePointer = fopen($Settings['SettingUTorrentWatchFolder'].'\\'.$File, 'w');
+				if(!is_file(Hub::GetSetting('UTorrentWatchFolder').'/'.$File)) {
+					if(touch(Hub::GetSetting('UTorrentWatchFolder').'/'.$File)) {
+						$FilePointer = fopen(Hub::GetSetting('UTorrentWatchFolder').'/'.$File, 'w');
 						fwrite($FilePointer, $FileContents);
 						fclose($FilePointer);
 					

@@ -1,4 +1,4 @@
-<div class="head">Settings <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
+<div class="head">Settings &raquo; uTorrent  <small style="font-size: 12px;">(<a href="#!/Help/Main">?</a>)</small></div>
 
 <form id="SettingsForm" name="SettingsUTorrent" method="post" action="load.php?page=SaveSettings">
 <input type="hidden" name="SettingSection" value="UTorrent" />
@@ -10,13 +10,13 @@
    <div class="field">
     <label>
      <?php
-     $UTorrentAPIIP = ($Settings['SettingUTorrentHostname']) ? $Settings['SettingUTorrentHostname'] : '127.0.0.1';
-     $UTorrentAPIIPArr = explode('.', $UTorrentAPIIP);
+     $UTorrentIP = ($HubObj->GetSetting('UTorrentIP')) ? $HubObj->GetSetting('UTorrentIP') : '127.0.0.1';
+     $UTorrentIPArr = explode('.', $UTorrentIP);
      	
-     echo '<input name="SettingUTorrentHostname[1]" class="ip" type="text" value="'.$UTorrentAPIIPArr[0].'" />.'.
-     	  '<input name="SettingUTorrentHostname[2]" class="ip" type="text" value="'.$UTorrentAPIIPArr[1].'" />.'.
-     	  '<input name="SettingUTorrentHostname[3]" class="ip" type="text" value="'.$UTorrentAPIIPArr[2].'" />.'.
-     	  '<input name="SettingUTorrentHostname[4]" class="ip" type="text" value="'.$UTorrentAPIIPArr[3].'" />'."\n";
+     echo '<input name="UTorrentIP[1]" class="ip" type="text" value="'.$UTorrentIPArr[0].'" />.'.
+     	  '<input name="UTorrentIP[2]" class="ip" type="text" value="'.$UTorrentIPArr[1].'" />.'.
+     	  '<input name="UTorrentIP[3]" class="ip" type="text" value="'.$UTorrentIPArr[2].'" />.'.
+     	  '<input name="UTorrentIP[4]" class="ip" type="text" value="'.$UTorrentIPArr[3].'" />'."\n";
      ?>
      <span>IP Address</span>
     </label>
@@ -24,21 +24,21 @@
    
    <div class="field">
     <label>
-     <input name="SettingUTorrentPort" type="text" value="<?php echo $Settings['SettingUTorrentPort']; ?>" />
+     <input name="UTorrentPort" type="text" value="<?php echo $HubObj->GetSetting('UTorrentPort'); ?>" />
      <span>Port</span>
     </label>
    </div>
    
    <div class="field">
     <label>
-     <input name="SettingUTorrentUsername" type="text" value="<?php echo $Settings['SettingUTorrentUsername']; ?>" />
+     <input name="UTorrentUsername" type="text" value="<?php echo $HubObj->GetSetting('UTorrentUsername'); ?>" />
      <span>Username</span>
     </label>
    </div>
    
    <div class="field">
     <label>
-     <input name="SettingUTorrentPassword" type="text" value="<?php echo $Settings['SettingUTorrentPassword']; ?>" />
+     <input name="UTorrentPassword" type="text" value="<?php echo $HubObj->GetSetting('UTorrentPassword'); ?>" />
      <span>Password</span>
     </label>
    </div>
@@ -54,23 +54,23 @@
   <dd>
    <div class="field">
     <label>
-     <input name="SettingUTorrentWatchFolder" type="text" value="<?php echo $Settings['SettingUTorrentWatchFolder']; ?>" />
+     <input name="UTorrentWatchFolder" type="text" value="<?php echo $HubObj->GetSetting('UTorrentWatchFolder'); ?>" />
      <span>Watch folder</span>
     </label>
    </div>
   
    <div class="field">
     <label>
-     <input name="SettingUTorrentDefaultDownSpeed" style="width: 40px; text-align:center" type="text" value="<?php echo $Settings['SettingUTorrentDefaultDownSpeed']; ?>" /> / 
-     <input name="SettingUTorrentDefaultUpSpeed" style="width: 40px; text-align:center" type="text" value="<?php echo $Settings['SettingUTorrentDefaultUpSpeed']; ?>" />
+     <input name="UTorrentDefaultDownSpeed" style="width: 40px; text-align:center" type="text" value="<?php echo $HubObj->GetSetting('UTorrentDefaultDownSpeed'); ?>" /> / 
+     <input name="UTorrentDefaultUpSpeed" style="width: 40px; text-align:center" type="text" value="<?php echo $HubObj->GetSetting('UTorrentDefaultUpSpeed'); ?>" />
      <span>Regular down/up speed in KiB/s</span>
     </label>
    </div>
   
    <div class="field">
     <label>
-     <input name="SettingUTorrentDefinedDownSpeed" style="width: 40px; text-align:center" type="text" value="<?php echo $Settings['SettingUTorrentDefinedDownSpeed']; ?>" /> / 
-     <input name="SettingUTorrentDefinedUpSpeed" style="width: 40px; text-align:center" type="text" value="<?php echo $Settings['SettingUTorrentDefinedUpSpeed']; ?>" />
+     <input name="UTorrentDefinedDownSpeed" style="width: 40px; text-align:center" type="text" value="<?php echo $HubObj->GetSetting('UTorrentDefinedDownSpeed'); ?>" /> / 
+     <input name="UTorrentDefinedUpSpeed" style="width: 40px; text-align:center" type="text" value="<?php echo $HubObj->GetSetting('UTorrentDefinedUpSpeed'); ?>" />
      <span>Limited down/up speed in KiB/s</span>
     </label>
    </div>

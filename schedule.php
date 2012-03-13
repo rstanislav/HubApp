@@ -12,9 +12,7 @@ require_once realpath(dirname(__FILE__)).'/libraries/libraries.php';
 
 $HubObj->CheckForDBUpgrade();
 
-$Settings = $HubObj->Settings;
-
-if($Settings['SettingHubKillSwitch'] || $HubObj->CheckLock()) {
+if($HubObj->GetSetting('KillSwitch') || $HubObj->CheckLock()) {
 	die();
 }
 else {
@@ -101,12 +99,12 @@ if(is_object($XBMCObj->XBMCRPC)) {
 	$XBMCObj->CacheCovers();
 }
 
-$FolderRebuild = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastFolderRebuild"')->fetch();
-$SerieRefresh  = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRefresh"')->fetch();
-$SerieRebuild  = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRebuild"')->fetch();
+$FolderRebuild = $HubObj->GetSetting('LastFolderRebuild');
+$SerieRefresh  = $HubObj->GetSetting('LastSerieRefresh');
+$SerieRebuild  = $HubObj->GetSetting('LastSerieRebuild');
 
 $LatestUpdate = max($FolderRebuild['Last'], $SerieRefresh['Last'], $SerieRebuild['Last']);
-if((date('G') > 3 && date('G') < 7) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
+if((date('G') >= 3 && date('G') <= 7) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
 	if(date('dmy', $FolderRebuild['Last']) != date('dmy')) {
 		$SeriesObj->RebuildFolders();
 	}

@@ -5,15 +5,19 @@ class UTorrent extends Hub {
 	function Connect() {
 		require_once APP_PATH.'/libraries/api.utorrent.php';
 		
-		$Settings = Hub::GetSettings();
-		if(array_key_exists('SettingUTorrentHostname', $Settings)) {
-			if(array_key_exists('SettingUTorrentPort', $Settings)) {
-				if(array_key_exists('SettingUTorrentUsername', $Settings)) {
-					if(array_key_exists('SettingUTorrentPassword', $Settings)) {
-						$this->UTorrentAPI = new UTorrentAPI($Settings['SettingUTorrentHostname'], 
-						                                     $Settings['SettingUTorrentUsername'],
-						                                     $Settings['SettingUTorrentPassword'],
-						                                     $Settings['SettingUTorrentPort']);
+		$UTorrent = array('Host' => Hub::GetSetting('UTorrentIP'),
+		                  'Port' => Hub::GetSetting('UTorrentPort'),
+		                  'User' => Hub::GetSetting('UTorrentUsername'),
+		                  'Pass' => Hub::GetSetting('UTorrentPassword'));
+
+		if(!empty($UTorrent['Host'])) {
+			if(!empty($UTorrent['Port'])) {
+				if(!empty($UTorrent['User'])) {
+					if(!empty($UTorrent['Pass'])) {
+						$this->UTorrentAPI = new UTorrentAPI($UTorrent['Host'], 
+						                                     $UTorrent['User'],
+						                                     $UTorrent['Pass'],
+						                                     $UTorrent['Port']);
 						
 						if(!$this->UTorrentAPI->Token) {
 							$this->Error[] = 'Unable to connect to uTorrent';

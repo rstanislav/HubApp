@@ -4,15 +4,13 @@ require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
 	const HubVersion   = '2.4.5.3';
-	const MinDBVersion = '2.0.3';
+	const MinDBVersion = '2.0.4';
 	
 	public $PDO;
 	
 	public $TheTVDBAPI;
 	
 	public $Error;
-	
-	public $Settings;
 	
 	public $CurrentZone;
 	
@@ -35,7 +33,7 @@ class Hub {
 		if($ExtError) { die('Modify your php.ini to include the required extensions'); }
 		
 		try {
-		    $this->PDO = new PDO(DB_TYPE.':host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
+		    $this->PDO = new PDO(DB_TYPE.':host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS, array(PDO::MYSQL_ATTR_FOUND_ROWS => TRUE));
 		    $this->PDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 		    $this->PDO->setAttribute(PDO::ATTR_CASE,               PDO::CASE_NATURAL);
 		    $this->PDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
@@ -51,7 +49,6 @@ class Hub {
 	}
 	
 	function CheckHub() {
-		self::GetSettings();
 		Drives::GetActiveDrive();
 		Zones::GetCurrentZone();
 		RSS::CheckTLRSS();
@@ -241,20 +238,44 @@ class Hub {
 	function SaveSettings($Section = 'Hub') {
 		switch($Section) {
 			case 'Hub':
-				$HubBackup     = (isset($_POST['SettingHubBackup']))     ? 1 : 0;
-				$HubKillSwitch = (isset($_POST['SettingHubKillSwitch'])) ? 1 : 0;
+				$_POST['KillSwitch'] = (array_key_exists('KillSwitch', $_POST)) ? 1 : 0;
+				$_POST['LocalIP']    = (array_key_exists('LocalIP',    $_POST)) ? implode('.', $_POST['LocalIP']) : '127.0.0.1';
 				
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingHubLocalHostname = :LocalHostname, SettingHubLocalIP = :LocalIP, SettingHubMinimumActiveDiskFreeSpaceInGB = :MinActiveDiskFreeSpaceInGB, SettingHubMinimumDownloadQuality = :MinDownloadQuality, SettingHubMaximumDownloadQuality = :MaxDownloadQuality, SettingHubBackup = :HubBackup, SettingHubTheTVDBAPIKey = :TheTVDBAPIKey, SettingHubKillSwitch = :HubKillSwitch, SettingHubSearchURITVSeries = :SearchURITVSeries, SettingHubSearchURIMovies = :SearchURIMovies');
-				$EditSettingsPrep->execute(array(':LocalHostname'              => $_POST['SettingHubLocalHostname'],
-				                                 ':LocalIP'                    => implode('.', $_POST['SettingHubLocalIP']),
-				                                 ':MinActiveDiskFreeSpaceInGB' => $_POST['SettingHubMinimumActiveDiskFreeSpaceInGB'],
-				                                 ':MinDownloadQuality'         => $_POST['SettingHubMinimumDownloadQuality'],
-				                                 ':MaxDownloadQuality'         => $_POST['SettingHubMaximumDownloadQuality'],
-				                                 ':HubBackup'                  => $HubBackup,
-				                                 ':TheTVDBAPIKey'              => $_POST['SettingHubTheTVDBAPIKey'],
-				                                 ':HubKillSwitch'              => $HubKillSwitch,
-				                                 ':SearchURITVSeries'          => $_POST['SettingHubSearchURITVSeries'],
-				                                 ':SearchURIMovies'            => $_POST['SettingHubSearchURIMovies']));
+				foreach($_POST AS $Setting => $Value) {
+					if($Setting != 'SettingSection') {
+						$EditSettingsPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Value WHERE Setting = :Setting');
+						$EditSettingsPrep->execute(array(':Value'   => $Value,
+						                                 ':Setting' => $Setting));
+						
+						if(!$EditSettingsPrep->rowCount()) {
+							$AddSettingsPrep = $this->PDO->prepare('INSERT INTO Hub (Setting, Value) VALUES (:Setting, :Value)');
+							$AddSettingsPrep->execute(array(':Value'   => $Value,
+							                                ':Setting' => $Setting));
+						}
+					}
+				}
+			break;
+		
+			case 'Backup':
+				$_POST['BackupFolder']       = (array_key_exists('BackupFolder',       $_POST)) ? str_replace('\\', '/', $_POST['BackupFolder']) : '';
+				$_POST['BackupHubFiles']     = (array_key_exists('BackupHubFiles',     $_POST)) ? 1 : 0;
+				$_POST['BackupHubDatabase']  = (array_key_exists('BackupHubDatabase',  $_POST)) ? 1 : 0;
+				$_POST['BackupXBMCFiles']    = (array_key_exists('BackupXBMCFiles',    $_POST)) ? 1 : 0;
+				$_POST['BackupXBMCDatabase'] = (array_key_exists('BackupXBMCDatabase', $_POST)) ? 1 : 0;
+				
+				foreach($_POST AS $Setting => $Value) {
+					if($Setting != 'SettingSection') {
+						$EditSettingsPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Value WHERE Setting = :Setting');
+						$EditSettingsPrep->execute(array(':Value'   => $Value,
+						                                 ':Setting' => $Setting));
+						
+						if(!$EditSettingsPrep->rowCount()) {
+							$AddSettingsPrep = $this->PDO->prepare('INSERT INTO Hub (Setting, Value) VALUES (:Setting, :Value)');
+							$AddSettingsPrep->execute(array(':Value'   => $Value,
+							                                ':Setting' => $Setting));
+						}
+					}
+				}
 			break;
 			
 			case 'Notifications':
@@ -262,8 +283,6 @@ class Hub {
 				
 				$ClearNotificationsPrep = $this->PDO->prepare('DELETE FROM UserNotifications WHERE UserKey = :UserID');
 				$ClearNotificationsPrep->execute(array(':UserID' => $UserInfo['UserID']));
-				
-				Hub::d($_POST);
 				
 				if(is_array($_POST['Notification'])) {
 					foreach($_POST['Notification'] AS $NotificationID => $Notification) {
@@ -275,24 +294,40 @@ class Hub {
 			break;
 			
 			case 'XBMC':
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingXBMCLogFile = :XBMCLogFile, SettingXBMCSourcesFile = :XBMCSourcesFile, SettingXBMCRSSFile = :XBMCRSSFile, SettingXBMCDatabaseFolder = :XBMCDatabaseFolder');
-				$EditSettingsPrep->execute(array(':XBMCLogFile'        => $_POST['SettingXBMCLogFile'],
-				                                 ':XBMCSourcesFile'    => $_POST['SettingXBMCSourcesFile'],
-				                                 ':XBMCRSSFile'        => $_POST['SettingXBMCRSSFile'],
-				                                 ':XBMCDatabaseFolder' => $_POST['SettingXBMCDatabaseFolder']));
+				$_POST['XBMCDataFolder'] = (array_key_exists('XBMCDataFolder', $_POST)) ? str_replace('\\', '/', $_POST['XBMCDataFolder']) : '';
+				
+				foreach($_POST AS $Setting => $Value) {
+					if($Setting != 'SettingSection') {
+						$EditSettingsPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Value WHERE Setting = :Setting');
+						$EditSettingsPrep->execute(array(':Value'   => $Value,
+						                                 ':Setting' => $Setting));
+						
+						if(!$EditSettingsPrep->rowCount()) {
+							$AddSettingsPrep = $this->PDO->prepare('INSERT INTO Hub (Setting, Value) VALUES (:Setting, :Value)');
+							$AddSettingsPrep->execute(array(':Value'   => $Value,
+							                                ':Setting' => $Setting));
+						}
+					}
+				}
 			break;
 			
 			case 'UTorrent':
-				$EditSettingsPrep = $this->PDO->prepare('UPDATE Settings SET SettingUTorrentHostname = :Hostname, SettingUTorrentPort = :Port, SettingUTorrentUsername = :Username, SettingUTorrentPassword = :Password, SettingUTorrentWatchFolder = :WatchFolder, SettingUTorrentDefaultUpSpeed = :DefaultUpSpeed, SettingUTorrentDefaultDownSpeed = :DefaultDownSpeed, SettingUTorrentDefinedUpSpeed = :DefinedUpSpeed, SettingUTorrentDefinedDownSpeed = :DefinedDownSpeed');
-				$EditSettingsPrep->execute(array(':Hostname'         => implode('.', $_POST['SettingUTorrentHostname']),
-				                                 ':Port'             => $_POST['SettingUTorrentPort'],
-				                                 ':Username'         => $_POST['SettingUTorrentUsername'],
-				                                 ':Password'         => $_POST['SettingUTorrentPassword'],
-				                                 ':WatchFolder'      => $_POST['SettingUTorrentWatchFolder'],
-				                                 ':DefaultUpSpeed'   => $_POST['SettingUTorrentDefaultUpSpeed'],
-				                                 ':DefaultDownSpeed' => $_POST['SettingUTorrentDefaultDownSpeed'],
-				                                 ':DefinedUpSpeed'   => $_POST['SettingUTorrentDefinedUpSpeed'],
-				                                 ':DefinedDownSpeed' => $_POST['SettingUTorrentDefinedDownSpeed']));
+				$_POST['UTorrentWatchFolder'] = (array_key_exists('UTorrentWatchFolder', $_POST)) ? str_replace('\\', '/', $_POST['UTorrentWatchFolder']) : '';
+				$_POST['UTorrentIP'] = (array_key_exists('UTorrentIP', $_POST)) ? implode('.', $_POST['UTorrentIP']) : '127.0.0.1';
+				
+				foreach($_POST AS $Setting => $Value) {
+					if($Setting != 'SettingSection') {
+						$EditSettingsPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Value WHERE Setting = :Setting');
+						$EditSettingsPrep->execute(array(':Value'   => $Value,
+						                                 ':Setting' => $Setting));
+						
+						if(!$EditSettingsPrep->rowCount()) {
+							$AddSettingsPrep = $this->PDO->prepare('INSERT INTO Hub (Setting, Value) VALUES (:Setting, :Value)');
+							$AddSettingsPrep->execute(array(':Value'   => $Value,
+							                                ':Setting' => $Setting));
+						}
+					}
+				}
 			break;
 		}
 	}
@@ -502,10 +537,14 @@ class Hub {
 		$SettingsPrep->execute(array(':Setting' => $Setting));
 		
 		if($SettingsPrep->rowCount()) {
-			$this->Settings = $SettingsPrep->fetch();
+			$Settings = $SettingsPrep->fetch();
+			
+			if(!empty($Settings['Value'])) {
+				return $Settings['Value'];
+			}
 		}
 		
-		return $this->Settings;
+		return FALSE;
 	}
 	
 	function GetRandomID() {

@@ -99,11 +99,13 @@ if(is_object($XBMCObj->XBMCRPC)) {
 	$XBMCObj->CacheCovers();
 }
 
-$FolderRebuild = $HubObj->GetSetting('LastFolderRebuild');
-$SerieRefresh  = $HubObj->GetSetting('LastSerieRefresh');
-$SerieRebuild  = $HubObj->GetSetting('LastSerieRebuild');
+$FolderRebuild   = $HubObj->GetSetting('LastFolderRebuild');
+$SerieRefresh    = $HubObj->GetSetting('LastSerieRefresh');
+$SerieRebuild    = $HubObj->GetSetting('LastSerieRebuild');
+$WishlistUpdate  = $HubObj->GetSetting('LastWishlistUpdate');
+$MoviesUpdate    = $HubObj->GetSetting('LastMoviesUpdate');
 
-$LatestUpdate = max($FolderRebuild, $SerieRefresh, $SerieRebuild);
+$LatestUpdate = max($FolderRebuild, $SerieRefresh, $SerieRebuild, $WishlistUpdate, $MoviesUpdate);
 if((date('G') >= 3 && date('G') <= 7) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
 	if(date('dmy', $FolderRebuild) != date('dmy')) {
 		$SeriesObj->RebuildFolders();
@@ -118,6 +120,24 @@ if((date('G') >= 3 && date('G') <= 7) || (time() - $LatestUpdate) >= (60 * 60 * 
 	if(date('dmy', $SerieRebuild) != date('dmy')) {
 		if(is_object($SeriesObj->TheTVDBAPI)) {
 			$SeriesObj->RebuildEpisodes();
+		}
+	}
+	
+	if($HubObj->GetSetting('ShareMovies')) {
+		if(date('dmy', $MoviesUpdate) != date('dmy')) {
+			if(is_object($XBMCObj->XBMCRPC)) {
+				$Movies = $XBMCObj->GetMovies();
+				
+				if(is_array($Movies)) {
+					$ShareObj->UpdateMovies($Movies);
+				}
+			}
+		}
+	}
+	
+	if($HubObj->GetSetting('ShareWishlist')) {
+		if(date('dmy', $WishlistUpdate) != date('dmy')) {
+			$ShareObj->UpdateWishlist();
 		}
 	}
 }

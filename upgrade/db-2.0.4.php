@@ -11,10 +11,10 @@ if($SettingsPrep->rowCount()) {
 	("LocalHostname",            "'.$Settings[0]['SettingHubLocalHostname'].'"),
 	("LocalIP",                  "'.$Settings[0]['SettingHubLocalIP'].'"),
 	("BackupFolder",             ""),
-	("BackupHubFiles",           ""),
-	("BackupHubDatabase",        ""),
-	("BackupXBMCFiles",          ""),
-	("BackupXBMCDatabase",       ""),
+	("BackupHubFiles",           "0"),
+	("BackupHubDatabase",        "0"),
+	("BackupXBMCFiles",          "0"),
+	("BackupXBMCDatabase",       "0"),
 	("MinimumDiskSpaceRequired", "'.$Settings[0]['SettingHubMinimumActiveDiskFreeSpaceInGB'].'"),
 	("MinimumDownloadQuality",   "'.$Settings[0]['SettingHubMinimumDownloadQuality'].'"),
 	("MaximumDownloadQuality",   "'.$Settings[0]['SettingHubMaximumDownloadQuality'].'"),
@@ -31,7 +31,11 @@ if($SettingsPrep->rowCount()) {
 	("UTorrentDefaultUpSpeed",   "'.$Settings[0]['SettingUTorrentDefaultUpSpeed'].'"),
 	("UTorrentDefaultDownSpeed", "'.$Settings[0]['SettingUTorrentDefaultDownSpeed'].'"),
 	("UTorrentDefinedUpSpeed",   "'.$Settings[0]['SettingUTorrentDefinedUpSpeed'].'"),
-	("UTorrentDefinedDownSpeed", "'.$Settings[0]['SettingUTorrentDefinedDownSpeed'].'")');
+	("UTorrentDefinedDownSpeed", "'.$Settings[0]['SettingUTorrentDefinedDownSpeed'].'"),
+	("ShareMovies",              "0"),
+	("ShareWishlist",            "0"),
+	("LastWishlistUpdate",       "0"),
+	("LastMoviesUpdate",         "0")');
 	
 	$this->PDO->query('DROP TABLE Settings');
 }

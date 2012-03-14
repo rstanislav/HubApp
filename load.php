@@ -16,6 +16,28 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'SharedWishlistUpdate':
+			$ShareObj->UpdateWishlist();
+		break;
+		
+		case 'SharedMoviesUpdate':
+			$XBMCObj->Connect('default');
+			
+			if(is_object($XBMCObj->XBMCRPC)) {
+				$Movies = $XBMCObj->GetMovies();
+				
+				if(is_array($Movies)) {
+					$ShareObj->UpdateMovies($Movies);
+				}
+				else {
+					echo 'Unable to get movies from XBMC';
+				}
+			}
+			else {
+				echo 'Unable to connect to XBMC';
+			}
+		break;
+		
 		case 'ZoneChange':
 			if(filter_has_var(INPUT_GET, 'Zone')) {
 				if(!$ZonesObj->SetZone($_GET['Zone'])) {

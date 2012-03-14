@@ -1,4 +1,9 @@
 <div class="head-control">
+<?php 
+if($HubObj->GetSetting('ShareMovies')) {
+	echo '<a id="SharedMoviesUpdate-0" class="button positive"><span class="inner"><span class="label" nowrap="">Update Shared Movies</span></span></a>';
+}
+?>
  <a id="MovieTogglePath-0" class="button positive"><span class="inner"><span class="label" nowrap="">Toggle File Path</span></span></a>
 </div>
 

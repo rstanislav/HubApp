@@ -83,7 +83,9 @@ $(document).ready(function() {
 	'a[id|="WishlistRefresh"],' +
 	'a[id|="FileManagerFolderDelete"],' +
 	'a[id|="FileManagerFileDelete"],' +
-	'a[id|="FileManagerMove"]').click(function(event) {
+	'a[id|="FileManagerMove"],' +
+	'a[id|="SharedWishlistUpdate"],' +
+	'a[id|="SharedMoviesUpdate"]').click(function(event) {
 		event.preventDefault();
 		
 		if($(this).hasClass('button')) {
@@ -241,6 +243,60 @@ function AjaxButton(Button, Extra) {
 	if(!ButtonClass)                      ButtonClass = 'positive';
 	
 	switch(Action) {
+		case 'SharedWishlistUpdate':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=SharedWishlistUpdate',
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Updating ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
+		case 'SharedMoviesUpdate':
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=SharedMoviesUpdate',
+				beforeSend: function() {
+					$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+					$(ButtonObj).contents().find('.label').text('Updating ...');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$(ButtonObj).contents().find('.label').text('Error!');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
+					}
+					else {
+						$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+						$(ButtonObj).contents().find('.label').text(ButtonVal);
+					}
+				}
+			});
+		break;
+		
 		case 'WishlistRefresh':
 			$.ajax({
 				method: 'get',

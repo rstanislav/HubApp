@@ -20,6 +20,11 @@ $('#AddWishlistItem').click(function(event) {
 </script>
 
 <div class="head-control">
+<?php 
+if($HubObj->GetSetting('ShareWishlist')) {
+	echo '<a id="SharedWishlistUpdate-0" class="button positive"><span class="inner"><span class="label" nowrap="">Update Shared Wishlist</span></span></a>';
+}
+?>
  <a id="AddWishlistItem" class="button positive"><span class="inner"><span class="label" nowrap="">Add Wish</span></span></a>
  <a id="WishlistRefresh-0" class="button positive"><span class="inner"><span class="label" nowrap="">Refresh Wishlist</span></span></a>
 </div>

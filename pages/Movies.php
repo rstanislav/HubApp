@@ -92,7 +92,13 @@ if(is_object($XBMCObj->XBMCRPC)) {
 	if(is_array($AllMovies)) {
 		$Movies = array();
 		foreach($AllMovies['movies'] AS $Movie) {
-			$Title = trim(str_replace('The ', '', trim($Movie['label'])));
+			if(!trim($Movie['label'])) {
+				$Title = trim(str_replace('The ', '', trim($Movie['originaltitle'])));
+			}
+			else {
+				$Title = trim(str_replace('The ', '', trim($Movie['label'])));
+			}
+			
 			$Movies[$Title][] = $Movie;
 		}
 		

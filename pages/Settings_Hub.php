@@ -138,6 +138,34 @@
             
   <dd class="clear"></dd>
   
+  <dt>Public Sharing</dt>
+  <dd>
+   <div class="field">
+    <label>
+     <?php
+     $ShareMovies   = ($HubObj->GetSetting('ShareMovies')) ? ' checked="checked"' : '';
+     echo '<input name="ShareMovies" type="checkbox"'.$ShareMovies.' />'."\n";
+     ?>
+     <span>Make a list of your movies available at <strong>http://<em>&lt;hub external ip&gt;</em>/share/movies.html</strong></span>
+    </label>
+   </div>
+   <div class="field">
+    <label>
+     <?php
+     $ShareWishlist = ($HubObj->GetSetting('ShareWishlist')) ? ' checked="checked"' : '';
+     echo '<input name="ShareWishlist" type="checkbox"'.$ShareWishlist.' />'."\n";
+     ?>
+     <span>Make a list of your wishlist available at <strong>http://<em>&lt;hub external ip&gt;</em>/share/wishlist.html</strong></span>
+    </label>
+   </div>
+  </dd>
+  
+  <div style="float: right">
+   <a rel="SettingsSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
+  </div>
+            
+  <dd class="clear"></dd>
+  
   <dt>Remote Services</dt>
   <dd>
    <div class="field">

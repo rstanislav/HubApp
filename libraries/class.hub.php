@@ -238,8 +238,26 @@ class Hub {
 	function SaveSettings($Section = 'Hub') {
 		switch($Section) {
 			case 'Hub':
-				$_POST['KillSwitch'] = (array_key_exists('KillSwitch', $_POST)) ? 1 : 0;
-				$_POST['LocalIP']    = (array_key_exists('LocalIP',    $_POST)) ? implode('.', $_POST['LocalIP']) : '127.0.0.1';
+				$_POST['KillSwitch']    = (array_key_exists('KillSwitch',    $_POST)) ? 1 : 0;
+				$_POST['ShareMovies']   = (array_key_exists('ShareMovies',   $_POST)) ? 1 : 0;
+				$_POST['ShareWishlist'] = (array_key_exists('ShareWishlist', $_POST)) ? 1 : 0;
+				$_POST['LocalIP']       = (array_key_exists('LocalIP',       $_POST)) ? implode('.', $_POST['LocalIP']) : '127.0.0.1';
+				
+				if(!$_POST['ShareMovies']) {
+					if(is_file(APP_PATH.'/share/movies.html')) {
+						if(unlink(APP_PATH.'/share/movies.html')) {
+							Hub::AddLog(EVENT.'Public Sharing', 'Success', 'Deleted "/share/movies.html"');
+						}
+					}
+				}
+				
+				if(!$_POST['ShareWishlist']) {
+					if(is_file(APP_PATH.'/share/wishlist.html')) {
+						if(unlink(APP_PATH.'/share/wishlist.html')) {
+							Hub::AddLog(EVENT.'Public Sharing', 'Success', 'Updated "/share/wishlist.html"');
+						}
+					}
+				}
 				
 				foreach($_POST AS $Setting => $Value) {
 					if($Setting != 'SettingSection') {

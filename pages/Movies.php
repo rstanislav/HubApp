@@ -123,7 +123,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$WatchedIcon = ($Movie[0]['playcount']) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';
 			
 			$MovieID        = trim($Movie[0]['movieid']);
-			$MovieLabel     = trim($Movie[0]['label']);
+			$MovieLabel     = (trim($Movie[0]['label'])) ? trim($Movie[0]['label']) : trim($Movie[0]['originaltitle']);
 			$MovieFile      = trim($Movie[0]['file']);
 			$MovieYear      = (array_key_exists('year', $Movie[0]))      ? trim($Movie[0]['year'])      : '';
 			$MovieThumbnail = (array_key_exists('thumbnail', $Movie[0])) ? trim($Movie[0]['thumbnail']) : '';

@@ -508,6 +508,9 @@ class Hub {
 		else {
 			return FALSE;
 		}
+		
+		$UpdatePrep = $this->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastBackup"');
+		$UpdatePrep->execute(array(':Time' => time()));
 	}
 	
 	function ZipDirectory($Directory, $ZipFile) {

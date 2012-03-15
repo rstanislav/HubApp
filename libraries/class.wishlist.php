@@ -163,6 +163,9 @@ class Wishlist extends Hub {
 			}
 		}
 		
+		$UpdatePrep = $this->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastWishlistRefresh"');
+		$UpdatePrep->execute(array(':Time' => time()));
+		
 		if($WishlistItems) {
 			Hub::AddLog(EVENT.'Wishlist', 'Success', 'Refreshed '.$WishlistItems.' wishlist items');
 		}

@@ -35,7 +35,9 @@ if($SettingsPrep->rowCount()) {
 	("ShareMovies",              "0"),
 	("ShareWishlist",            "0"),
 	("LastWishlistUpdate",       "0"),
-	("LastMoviesUpdate",         "0")');
+	("LastMoviesUpdate",         "0"),
+	("LastWishlistRefresh",      "0"),
+	("LastBackup",               "0")');
 	
 	$this->PDO->query('DROP TABLE Settings');
 }

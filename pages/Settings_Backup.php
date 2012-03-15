@@ -21,7 +21,7 @@ if(is_dir($HubObj->GetSetting('BackupFolder'))) {
     <label>
      <select name="BackupAge">
      <?php
-     $DaysArr = array(1, 2, 3, 4, 5, 6, 7, 14, 21, 28);
+     $DaysArr = array(2, 3, 4, 5, 6, 7, 14, 21, 28);
     
      foreach($DaysArr AS $Days) {
     	 $DaySelected = ($Days == $HubObj->GetSetting('BackupAge')) ? ' selected="selected"' : '';

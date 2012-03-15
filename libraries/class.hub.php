@@ -553,6 +553,35 @@ class Hub {
 	    return $ZipObj->close();
 	}
 	
+	function CleanBackupFolder() {
+		$BackupFolder = Hub::GetSetting('BackupFolder');
+		$BackupAge    = (Hub::GetSetting('BackupAge')) ? Hub::GetSetting('BackupAge') : 7;
+		$DeletedFiles = 0;
+		$DeletedSize  = 0;
+		
+		if(is_dir($BackupFolder)) {
+			$Files = glob($BackupFolder.'/*');
+			
+			foreach($Files AS $File) {
+				preg_match('/[0-9]{2}-[0-9]{2}-[0-9]{4}/', $File, $Matches);
+				
+				if(is_array($Matches)) {
+					if((time() - strtotime($Matches[0])) > (60 * 60 * 24 * $BackupAge)) {
+						$FileSize = ExtractFiles::GetFileSize($File);
+						if(unlink($File)) {
+							$DeletedFiles++;
+							$DeletedSize += $FileSize;
+						}
+					}
+				}
+			}
+		}
+		
+		if($DeletedFiles) {
+			Hub::AddLog(EVENT.'Backup', 'Success', 'Deleted '.$DeletedFiles.' files totaling '.Hub::BytesToHuman($DeletedSize).' from your backup folder older than '.$BackupAge.' days');
+		}
+	}
+	
 	function GetSetting($Setting) {
 		$SettingsPrep = $this->PDO->prepare('SELECT * FROM Hub WHERE Setting = :Setting');
 		$SettingsPrep->execute(array(':Setting' => $Setting));

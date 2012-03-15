@@ -37,6 +37,9 @@ if(is_object($UTorrentObj->UTorrentAPI)) {
 	$UTorrentObj->DeleteFinishedTorrents();
 }
 
+// Delete backup files older than x days as defined in Hub settings
+$HubObj->CleanBackupFolder();
+
 // Extract and/or move completed downloads across all drives
 $ExtractFilesObj->ExtractAndMoveAllFiles();
 

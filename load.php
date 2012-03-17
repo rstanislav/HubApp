@@ -123,11 +123,11 @@ else {
 		break;
 		
 		case 'Upload':
-			if(is_dir(Hub::GetSetting('UTorrentWatchFolder')) && $UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) {
+			if(is_dir($HubObj->GetSetting('UTorrentWatchFolder')) && $UserObj->CheckPermission($UserObj->UserGroupID, 'TorrentDownload')) {
 				require_once './libraries/valums.file-uploader.php';
 			
 				$UploaderObj = new qqFileUploader();
-				$UploadResult = $UploaderObj->handleUpload(Hub::GetSetting('UTorrentWatchFolder').'/');
+				$UploadResult = $UploaderObj->handleUpload($HubObj->GetSetting('UTorrentWatchFolder').'/');
 				
 				if(array_key_exists('success', $UploadResult)) {
 					if($UploadResult['success']) {
@@ -309,7 +309,7 @@ else {
 					}
 					
 					if(!$AddError) {
-						$DriveNetwork = (stripos($_POST['DriveComputer'], Hub::GetSetting('LocalHostname')) !== FALSE || stripos($_POST['DriveComputer'], Hub::GetSetting('LocalIP')) !== FALSE) ? 0 : 1;
+						$DriveNetwork = (stripos($_POST['DriveComputer'], $HubObj->GetSetting('LocalHostname')) !== FALSE || stripos($_POST['DriveComputer'], $HubObj->GetSetting('LocalIP')) !== FALSE) ? 0 : 1;
 						
 						$DrivesObj->AddDrive('//'.$_POST['DriveComputer'].'/'.$_POST['DriveShare'], $_POST['DriveUser'], $_POST['DrivePass'], $_POST['DriveMount'], $DriveNetwork);
 					}

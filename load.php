@@ -770,6 +770,9 @@ else {
 							                                   ':EpisodeID'  => $_GET['EpisodeID']));
 						}
 					}
+					else {
+						echo 'There was an error when trying to downloading the torrent';
+					}
 				}
 			}
 			else {

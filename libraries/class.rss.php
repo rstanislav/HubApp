@@ -466,34 +466,45 @@ class RSS extends Hub {
 		
 		if($Torrent['TorrentURI']) {
 			UTorrent::Connect();
+			$TorrentData       = @file_get_contents($Torrent['TorrentURI']);
+			$TorrentDownloadOK = FALSE;
+			
+			if(is_array($http_response_header)) {
+				if(array_key_exists(0, $http_response_header) && $http_response_header[0] == 'HTTP/1.1 200 OK') {
+					$TorrentDownloadOK = TRUE;
+				}
+			}
 			
 			if(is_object($this->UTorrentAPI)) {
-				UTorrent::TorrentAdd(urldecode($Torrent['TorrentURI']));
+				if($TorrentDownloadOK && RSS::BDecode($TorrentData)) {
+					UTorrent::TorrentAdd(urldecode($Torrent['TorrentURI']));
 				
-				Hub::AddLog(EVENT.'uTorrent', 'Success', 'Downloaded "'.urldecode($Torrent['TorrentTitle']).'"');
+					Hub::AddLog(EVENT.'uTorrent', 'Success', 'Downloaded "'.urldecode($Torrent['TorrentTitle']).'"');
+					
+					return TRUE;
+				}
+				else {
+					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to add "'.urldecode($Torrent['TorrentTitle']).'", but it\'s not a valid torrent file');
+					
+					return FALSE;
+				}
 			}
 			else {
 				$File = urlencode(substr($Torrent['TorrentURI'], (strrpos($Torrent['TorrentURI'], '/') + 1)));
-			
-				$FileHandle   = fopen($Torrent['TorrentURI'], 'rb');
-				$FileContents = stream_get_contents($FileHandle);
-				fclose($FileHandle);
-			
-				if(!is_file(Hub::GetSetting('UTorrentWatchFolder').'/'.$File)) {
-					if(touch(Hub::GetSetting('UTorrentWatchFolder').'/'.$File)) {
-						$FilePointer = fopen(Hub::GetSetting('UTorrentWatchFolder').'/'.$File, 'w');
-						fwrite($FilePointer, $FileContents);
-						fclose($FilePointer);
-					
-						Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
-						Hub::NotifyUsers('TorrentDownloadManual', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
+				
+				if($TorrentDownloadOK) {
+					if(!is_file(Hub::GetSetting('UTorrentWatchFolder').'/'.$File)) {
+						if(file_put_contents(Hub::GetSetting('UTorrentWatchFolder').'/'.$File, $TorrentData)) {
+							Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
+							Hub::NotifyUsers('TorrentDownloadManual', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
 						
-						return TRUE;
-					}
-					else {
-						Hub::AddLog(EVENT.'Watch Folder', 'Failure', 'Failed to download "'.urldecode($File).'"');
-					
-						return FALSE;
+							return TRUE;
+						}
+						else {
+							Hub::AddLog(EVENT.'Watch Folder', 'Failure', 'Failed to download "'.urldecode($File).'"');
+						
+							return FALSE;
+						}
 					}
 				}
 			}
@@ -556,6 +567,105 @@ class RSS extends Hub {
 		else {
 			return FALSE;
 		}
+	}
+	
+	function BDecode($Str) {
+	    $Pos = 0;
+	    
+	    return RSS::BDecodeRecursive($Str, $Pos);
+	}
+	
+	function BDecodeRecursive($Str, &$Pos) {
+	    $StrLength = strlen($Str);
+	    if(($Pos < 0) || ($Pos >= $StrLength)) {
+	    	return NULL;
+	    }
+	    else if($Str{$Pos} == 'i') {
+	    	$Pos++;
+	    	$NumLength = strspn($Str, '-0123456789', $Pos);
+	    	$StrPos    = $Pos;
+	    	$Pos      += $NumLength;
+	    	
+	    	if(($Pos >= $StrLength) || ($Str{$Pos} != 'e')) {
+	    		return NULL;
+	    	}
+	    	else {
+	    		$Pos++;
+	    		
+	    		return intval(substr($Str, $StrPos, $NumLength));
+	    	}
+	    }
+	    else if($Str{$Pos} == 'd') {
+	    	$Pos++;
+	    	$ReturnValue = array();
+	    	while($Pos < $StrLength) {
+	    		if($Str{$Pos} == 'e') {
+	    			$Pos++;
+	    			
+	    			return $ReturnValue;
+	    		}
+	    		else {
+	    			$Key = RSS::BDecodeRecursive($Str, $Pos);
+	    			if($Key == NULL) {
+	    				return NULL;
+	    			}
+	    			else {
+	    				$Val = RSS::BDecodeRecursive($Str, $Pos);
+	    				if($Val == NULL) {
+	    					return NULL;
+	    				}
+	    				else if(!is_array($Key)) {
+	    					$ReturnValue[$Key] = $Val;
+	    				}
+	    			}
+	    		}
+	    	}
+	    
+	    	return NULL;
+		}
+	    else if($Str{$Pos} == 'l') {
+	    	$Pos++;
+	    	$ReturnValue = array();
+	    	while($Pos < $StrLength) {
+	    		if($Str{$Pos} == 'e') {
+	    			$Pos++;
+	    			
+	    			return $ReturnValue;
+	    		}
+	    		else {
+	    			$Val = RSS::BDecodeRecursive($Str, $Pos);
+	    			if($Val == NULL) {
+		    			return NULL;
+	    			}
+	    			else {
+	    				$ReturnValue[] = $Val;
+	    			}
+	    		}
+	    	}
+	    	
+	    	return NULL;
+	    }
+	    else {
+	    	$NumLength = strspn($Str, '0123456789', $Pos);
+	    	$StrPos    = $Pos;
+	    	$Pos      += $NumLength;
+	    	if(($Pos >= $StrLength) || ($Str{$Pos} != ':')) {
+	    		return NULL;
+	    	}
+	    	else {
+	    		$ValLength = intval(substr($Str, $StrPos, $NumLength));
+	    		$Pos++;
+	    		$Val = substr($Str, $Pos, $ValLength);
+	    		if(strlen($Val) != $ValLength) {
+		    		return NULL;
+	    		}
+	    		else {
+	    			$Pos += $ValLength;
+	    			
+	    			return $Val;
+	    		}
+	    	}
+	    }
 	}
 	
 	function GetBadge($RSSID) {

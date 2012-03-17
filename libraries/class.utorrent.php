@@ -42,54 +42,68 @@ class UTorrent extends Hub {
 	
 	function DownloadTorrents($DownloadArr) {
 		foreach($DownloadArr AS $Serie => $TorrentURI) {
-			$TorrentTitle = substr($TorrentURI[0], (strrpos($TorrentURI[0], '/') + 1));
+			$TorrentData       = @file_get_contents($TorrentURI);
+			$TorrentDownloadOK = FALSE;
 			
-			$Parsed = RSS::ParseRelease($TorrentTitle);
-			$Torrents = self::GetTorrents();
+			if(is_array($http_response_header)) {
+				if(array_key_exists(0, $http_response_header) && $http_response_header[0] == 'HTTP/1.1 200 OK') {
+					$TorrentDownloadOK = TRUE;
+				}
+			}
+			
+			if($TorrentDownloadOK && RSS::BDecode($TorrentData)) {
+				$TorrentTitle = substr($TorrentURI[0], (strrpos($TorrentURI[0], '/') + 1));
 				
-			foreach($Torrents AS $Torrent) {
-				$TorrentInfo = RSS::ParseRelease($Torrent[UTORRENT_TORRENT_NAME]);
-			
-				if(is_array($Parsed) && $Parsed['Type'] == 'TV' && $TorrentInfo['Title'] == $Parsed['Title']) {
-					if($TorrentInfo['Episodes'][0][0] == $Parsed['Episodes'][0][0] && $TorrentInfo['Episodes'][0][1] == $Parsed['Episodes'][0][1]) {
-						$OldQuality = RSS::GetQualityRank($Torrent[UTORRENT_TORRENT_NAME]);
-						$NewQuality = RSS::GetQualityRank($TorrentTitle);
-						
-						if($NewQuality > $OldQuality) {
-							self::TorrentDeleteData($Torrent[UTORRENT_TORRENT_HASH]);
+				$Parsed = RSS::ParseRelease($TorrentTitle);
+				$Torrents = self::GetTorrents();
+					
+				foreach($Torrents AS $Torrent) {
+					$TorrentInfo = RSS::ParseRelease($Torrent[UTORRENT_TORRENT_NAME]);
+				
+					if(is_array($Parsed) && $Parsed['Type'] == 'TV' && $TorrentInfo['Title'] == $Parsed['Title']) {
+						if($TorrentInfo['Episodes'][0][0] == $Parsed['Episodes'][0][0] && $TorrentInfo['Episodes'][0][1] == $Parsed['Episodes'][0][1]) {
+							$OldQuality = RSS::GetQualityRank($Torrent[UTORRENT_TORRENT_NAME]);
+							$NewQuality = RSS::GetQualityRank($TorrentTitle);
 							
-							Hub::AddLog(EVENT.'uTorrent', 'Success', 'Removed "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
-							Hub::NotifyUsers('FileHigherQuality', 'uTorrent', 'Removed "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
+							if($NewQuality > $OldQuality) {
+								self::TorrentDeleteData($Torrent[UTORRENT_TORRENT_HASH]);
+								
+								Hub::AddLog(EVENT.'uTorrent', 'Success', 'Removed "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
+								Hub::NotifyUsers('FileHigherQuality', 'uTorrent', 'Removed "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
+							}
+							else {
+								$TorrentURI = FALSE;
+							}
 						}
-						else {
-							$TorrentURI = FALSE;
+					}
+				}
+			
+				if($TorrentURI) {
+					self::TorrentAdd($TorrentURI[0]);
+					
+					if($TorrentURI[1] != 99999999) {
+						if(!empty($TorrentURI[2]) && !empty($TorrentURI[1])) {
+							$EpisodePrep = $this->PDO->prepare('UPDATE Episodes SET TorrentKey = :TorrentKey WHERE EpisodeID = :EpisodeID');
+							$EpisodePrep->execute(array(':TorrentKey' => $TorrentURI[2],
+							                            ':EpisodeID'  => $TorrentURI[1]));
+							
+							Hub::AddLog(EVENT.'Series', 'Success', 'Downloaded "'.$TorrentTitle.'"');
+							Hub::NotifyUsers('NewUTorrentEpisode', 'uTorrent/Series', 'Downloaded "'.$TorrentTitle.'"');
 						}
+					}
+					else {
+						$WishlistPrep = $this->PDO->prepare('UPDATE Wishlist Set WishlistDownloadDate = :Date, TorrentKey = :TorrentKey WHERE WishlistTitle = :WishlistTitle');
+						$WishlistPrep->execute(array(':Date'          => time(),
+						                             ':TorrentKey'    => $TorrentURI[2],
+						                             ':WishlistTitle' => $TorrentURI[3]));
+						
+						Hub::AddLog(EVENT.'Wishlist', 'Success', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
+						Hub::NotifyUsers('NewUTorrentWish', 'uTorrent/Wishlist', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
 					}
 				}
 			}
-		
-			if($TorrentURI) {
-				self::TorrentAdd($TorrentURI[0]);
-				
-				if($TorrentURI[1] != 99999999) {
-					if(!empty($TorrentURI[2]) && !empty($TorrentURI[1])) {
-						$EpisodePrep = $this->PDO->prepare('UPDATE Episodes SET TorrentKey = :TorrentKey WHERE EpisodeID = :EpisodeID');
-						$EpisodePrep->execute(array(':TorrentKey' => $TorrentURI[2],
-						                            ':EpisodeID'  => $TorrentURI[1]));
-						
-						Hub::AddLog(EVENT.'Series', 'Success', 'Downloaded "'.$TorrentTitle.'"');
-						Hub::NotifyUsers('NewUTorrentEpisode', 'uTorrent/Series', 'Downloaded "'.$TorrentTitle.'"');
-					}
-				}
-				else {
-					$WishlistPrep = $this->PDO->prepare('UPDATE Wishlist Set WishlistDownloadDate = :Date, TorrentKey = :TorrentKey WHERE WishlistTitle = :WishlistTitle');
-					$WishlistPrep->execute(array(':Date'          => time(),
-					                             ':TorrentKey'    => $TorrentURI[2],
-					                             ':WishlistTitle' => $TorrentURI[3]));
-					
-					Hub::AddLog(EVENT.'Wishlist', 'Success', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
-					Hub::NotifyUsers('NewUTorrentWish', 'uTorrent/Wishlist', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
-				}
+			else {
+				Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to download "'.$TorrentTitle.'" but it\'s not a valid torrent file');
 			}
 		}
 	}

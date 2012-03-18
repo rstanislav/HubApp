@@ -119,7 +119,6 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	
 	$('a[id|="DriveActive"]').click(function(event) {
 		DriveID = $(this).attr('id').replace('DriveActive-', '');
 		Link = this;

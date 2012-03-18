@@ -4,7 +4,7 @@ require_once APP_PATH.'/libraries/api.boxcar.php';
 
 class Hub {
 	const HubVersion   = '2.4.5.3';
-	const MinDBVersion = '2.0.4';
+	const MinDBVersion = '2.0.5';
 	
 	public $PDO;
 	

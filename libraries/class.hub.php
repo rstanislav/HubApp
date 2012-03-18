@@ -495,6 +495,9 @@ class Hub {
 					$BackupFile = $BackupFile.'.gz';
 				}
 				
+				$UpdatePrep = $this->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastBackup"');
+				$UpdatePrep->execute(array(':Time' => time()));
+				
 				Hub::AddLog(EVENT.'Backup', 'Success', 'Backed up "'.$Database.'" database to "'.$BackupLocation.'/'.$BackupFile.'"');
 				
 				return TRUE;
@@ -508,9 +511,6 @@ class Hub {
 		else {
 			return FALSE;
 		}
-		
-		$UpdatePrep = $this->PDO->prepare('UPDATE Hub SET Value = :Time WHERE Setting = "LastBackup"');
-		$UpdatePrep->execute(array(':Time' => time()));
 	}
 	
 	function ZipDirectory($Directory, $ZipFile) {

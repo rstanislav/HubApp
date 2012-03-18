@@ -167,8 +167,10 @@ class UTorrentAPI {
     public function torrentAdd($Filename, &$ErrorStr = FALSE) {
         $Split = explode(':', $Filename, 2);
         
-        if(count($Split) > 1 && (stristr('|http|https|file|', '|'.$Split[0].'|') !== FALSE)) {
+        if(count($Split) > 1 && (stristr('|magnet|http|https|file|', '|'.$Split[0].'|') !== FALSE)) {
             $this->makeRequest('?action=add-url&s='.urlencode($Filename), FALSE);
+            
+            return TRUE;
         }
         else if(file_exists($Filename)) {
             $JSON = $this->makeRequest('?action=add-file', TRUE, array(CURLOPT_POSTFIELDS => array('torrent_file' => '@'.realpath($Filename))));

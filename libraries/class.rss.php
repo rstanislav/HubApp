@@ -425,7 +425,7 @@ class RSS extends Hub {
 	}
 	
 	function SearchTitle($Search) {
-		$SearchPrep = $this->PDO->prepare('SELECT Torrents.*, RSS.RSSTitle FROM Torrents, RSS WHERE TorrentTitle LIKE :Search AND TorrentTitle NOT LIKE :ExcludeSearch AND RSS.RSSID = Torrents.RSSKey ORDER BY TorrentDate DESC');
+		$SearchPrep = $this->PDO->prepare('SELECT Torrents.*, RSS.RSSTitle FROM Torrents, RSS WHERE TorrentTitle LIKE :Search AND TorrentTitle NOT LIKE :ExcludeSearch AND RSS.RSSID = Torrents.RSSKey AND Torrents.IsBroken != 1 ORDER BY TorrentDate DESC');
 		$SearchPrep->execute(array(':Search'        => urldecode($Search).'%',
 		                           ':ExcludeSearch' => '%hebsub%'));
 		
@@ -461,8 +461,13 @@ class RSS extends Hub {
 		}
 	}
 	
+	function SetTorrentAsBroken($ID) {
+		$TorrentPrep = $this->PDO->prepare('UPDATE Torrents SET IsBroken = 1 WHERE TorrentID = :ID');
+		$TorrentPrep->execute(array(':ID' => $ID));
+	}
+	
 	function TorrentDownload($ID) {
-		$Torrent = $this->PDO->query('SELECT TorrentURI, TorrentTitle FROM Torrents WHERE TorrentID = '.$ID)->fetch();
+		$Torrent = $this->PDO->query('SELECT TorrentID, TorrentURI, TorrentTitle FROM Torrents WHERE TorrentID = '.$ID.' AND IsBroken != 1')->fetch();
 		
 		if($Torrent['TorrentURI']) {
 			UTorrent::Connect();
@@ -472,6 +477,8 @@ class RSS extends Hub {
 			if(is_array($http_response_header)) {
 				if(array_key_exists(0, $http_response_header) && $http_response_header[0] != 'HTTP/1.1 200 OK') {
 					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to download "'.$File.'" but server returned "'.$http_response_header[0].'"');
+					
+					self::SetTorrentAsBroken($Torrent['TorrentID']);
 					
 					return FALSE;
 				}
@@ -487,6 +494,8 @@ class RSS extends Hub {
 				}
 				else {
 					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to add "'.urldecode($Torrent['TorrentTitle']).'", but it is not a valid torrent file');
+					
+					self::SetTorrentAsBroken($Torrent['TorrentID']);
 					
 					return FALSE;
 				}
@@ -509,6 +518,8 @@ class RSS extends Hub {
 				}
 				else {
 					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to add "'.urldecode($Torrent['TorrentTitle']).'", but it is not a valid torrent file');
+					
+					self::SetTorrentAsBroken($Torrent['TorrentID']);
 					
 					return FALSE;
 				}

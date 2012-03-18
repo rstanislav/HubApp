@@ -42,18 +42,18 @@ class UTorrent extends Hub {
 	
 	function DownloadTorrents($DownloadArr) {
 		foreach($DownloadArr AS $Serie => $TorrentURI) {
-			$TorrentData       = @file_get_contents($TorrentURI);
-			$TorrentDownloadOK = FALSE;
+			$TorrentTitle      = substr($TorrentURI[0], (strrpos($TorrentURI[0], '/') + 1));
+			$TorrentData       = @file_get_contents($TorrentURI[0]);
 			
 			if(is_array($http_response_header)) {
-				if(array_key_exists(0, $http_response_header) && $http_response_header[0] == 'HTTP/1.1 200 OK') {
-					$TorrentDownloadOK = TRUE;
+				if(array_key_exists(0, $http_response_header) && $http_response_header[0] != 'HTTP/1.1 200 OK') {
+					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to download "'.$TorrentTitle.'" but server returned "'.$http_response_header[0].'"');
+					
+					return FALSE;
 				}
 			}
 			
-			if($TorrentDownloadOK && RSS::BDecode($TorrentData)) {
-				$TorrentTitle = substr($TorrentURI[0], (strrpos($TorrentURI[0], '/') + 1));
-				
+			if(RSS::BDecode($TorrentData)) {
 				$Parsed = RSS::ParseRelease($TorrentTitle);
 				$Torrents = self::GetTorrents();
 					
@@ -103,7 +103,9 @@ class UTorrent extends Hub {
 				}
 			}
 			else {
-				Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to download "'.$TorrentTitle.'" but it\'s not a valid torrent file');
+				Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to download "'.$TorrentTitle.'" but it is not a valid torrent file');
+				
+				return FALSE;
 			}
 		}
 	}

@@ -466,17 +466,19 @@ class RSS extends Hub {
 		
 		if($Torrent['TorrentURI']) {
 			UTorrent::Connect();
-			$TorrentData       = @file_get_contents($Torrent['TorrentURI']);
-			$TorrentDownloadOK = FALSE;
+			$TorrentData = @file_get_contents($Torrent['TorrentURI']);
+			$File        = urlencode(substr($Torrent['TorrentURI'], (strrpos($Torrent['TorrentURI'], '/') + 1)));
 			
 			if(is_array($http_response_header)) {
-				if(array_key_exists(0, $http_response_header) && $http_response_header[0] == 'HTTP/1.1 200 OK') {
-					$TorrentDownloadOK = TRUE;
+				if(array_key_exists(0, $http_response_header) && $http_response_header[0] != 'HTTP/1.1 200 OK') {
+					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to download "'.$File.'" but server returned "'.$http_response_header[0].'"');
+					
+					return FALSE;
 				}
 			}
 			
 			if(is_object($this->UTorrentAPI)) {
-				if($TorrentDownloadOK && RSS::BDecode($TorrentData)) {
+				if(RSS::BDecode($TorrentData)) {
 					UTorrent::TorrentAdd(urldecode($Torrent['TorrentURI']));
 				
 					Hub::AddLog(EVENT.'uTorrent', 'Success', 'Downloaded "'.urldecode($Torrent['TorrentTitle']).'"');
@@ -484,15 +486,13 @@ class RSS extends Hub {
 					return TRUE;
 				}
 				else {
-					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to add "'.urldecode($Torrent['TorrentTitle']).'", but it\'s not a valid torrent file');
+					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to add "'.urldecode($Torrent['TorrentTitle']).'", but it is not a valid torrent file');
 					
 					return FALSE;
 				}
 			}
 			else {
-				$File = urlencode(substr($Torrent['TorrentURI'], (strrpos($Torrent['TorrentURI'], '/') + 1)));
-				
-				if($TorrentDownloadOK) {
+				if(RSS::BDecode($TorrentData)) {
 					if(!is_file(Hub::GetSetting('UTorrentWatchFolder').'/'.$File)) {
 						if(file_put_contents(Hub::GetSetting('UTorrentWatchFolder').'/'.$File, $TorrentData)) {
 							Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
@@ -506,6 +506,11 @@ class RSS extends Hub {
 							return FALSE;
 						}
 					}
+				}
+				else {
+					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to add "'.urldecode($Torrent['TorrentTitle']).'", but it is not a valid torrent file');
+					
+					return FALSE;
 				}
 			}
 		}

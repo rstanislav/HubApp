@@ -16,6 +16,19 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'TorrentMagnetAdd':
+			$UTorrentObj->Connect();
+			
+			if(is_object($UTorrentObj->UTorrentAPI)) {
+				if(!$UTorrentObj->TorrentAdd(urldecode($_GET['Magnet']))) {
+					echo 'Unable to add "'.urldecode($_GET['Magnet']).'"';
+				}
+			}
+			else {
+				echo 'Unable to connect to uTorrent';
+			}
+		break;
+		
 		case 'SharedWishlistUpdate':
 			$ShareObj->UpdateWishlist();
 		break;

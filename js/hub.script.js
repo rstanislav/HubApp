@@ -58,15 +58,6 @@ $(document).ready(function() {
 			
 			loadURL('FileManager' + Crumbs);
 		}
-		else if(event.pathNames[0] == 'Password') {
-			$.ajax({
-				method: 'get',
-				url:    'pages/ForgotPassword.php',
-				success: function(html) {
-					$('#login').html(html);
-				}
-			});
-		}
 		else if(event.pathNames[0] == 'Logout') {
 			$.ajax({
 				method: 'get',

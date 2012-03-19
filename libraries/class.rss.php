@@ -531,8 +531,8 @@ class RSS extends Hub {
 	}
 	
 	function ParseRelease($Release) {
-		$Search  = array(' ', '_', '(', ')');
-		$Replace = array('.', '.', '',  '');
+		$Search  = array(' - ', ' ', '_', '(', ')');
+		$Replace = array('.',   '.', '.', '',  '');
 		
 		$Release = str_replace($Search, $Replace, $Release);
 		
@@ -551,15 +551,23 @@ class RSS extends Hub {
 	  		$ReleaseSeason = 'NA';
 	  		foreach($Matches as $Match) {
 	    		if(isset($Match[1]) && strlen($Match[1]) > 0) {
-	      			$ReleaseSeason = $Match[1];
+	      			$ReleaseSeason = (int) $Match[1];
 	    		}
 	    	
 	    		if($ReleaseSeason != 72) {
-	    			$ReleaseEpisode    = $Match[2];
-	    			$ReleaseEpisodes[] = array((int) $ReleaseSeason, (int) $ReleaseEpisode);
+	    			$Episodes[] = (int) $Match[2];
 	    		}
 	  		}
 	  		
+	  		if(sizeof($Episodes) > 1) {
+	  			for($i = min($Episodes); $i <= max($Episodes); $i++) {
+	  				$ReleaseEpisodes[] = array($ReleaseSeason, $i);
+	  			}
+	  		}
+	  		else {
+	  			$ReleaseEpisodes[] = array($ReleaseSeason, $Episodes[0]);
+	  		}
+	  			  		
 	  		if(!empty($ReleaseTitle)) {
 	  			return array('Type'     => 'TV',
 	  		             	 'Title'    => $ReleaseTitle,

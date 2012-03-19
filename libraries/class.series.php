@@ -40,7 +40,7 @@ class Series extends Hub {
 	function GetPastSchedule($Days) {
 		$SchedulePrep = $this->PDO->prepare('SELECT Series.*, Episodes.* FROM Series, Episodes WHERE Episodes.SeriesKey = Series.SerieID AND EpisodeAirDate <= :CurrentTime AND EpisodeAirDate >= :DayOffset AND EpisodeSeason != 0 AND EpisodeEpisode != 0 ORDER BY EpisodeAirDate DESC');
 		$SchedulePrep->execute(array(':CurrentTime' => time(),
-		                          ':DayOffset'   => strtotime('-'.$Days.' days')));
+								  ':DayOffset'   => strtotime('-'.$Days.' days')));
 		
 		if($SchedulePrep->rowCount()) {
 			return $SchedulePrep->fetchAll();
@@ -53,8 +53,8 @@ class Series extends Hub {
 	function GetFutureSchedule() {
 		$SchedulePrep = $this->PDO->prepare('SELECT S.*,E.* FROM Series S
 		JOIN (SELECT SeriesKey, MIN(EpisodeAirDate) MinDate FROM Episodes
-		    WHERE EpisodeAirDate > :CurrentTime AND EpisodeSeason != 0 AND EpisodeEpisode != 0 GROUP BY SeriesKey) M
-		    ON M.SeriesKey = S.SerieID
+			WHERE EpisodeAirDate > :CurrentTime AND EpisodeSeason != 0 AND EpisodeEpisode != 0 GROUP BY SeriesKey) M
+			ON M.SeriesKey = S.SerieID
 		JOIN Episodes E ON E.SeriesKey = S.SerieID AND E.EpisodeAirDate = M.MinDate ORDER BY E.EpisodeAirDate');
 		$SchedulePrep->execute(array(':CurrentTime' => time()));
 		
@@ -137,8 +137,8 @@ class Series extends Hub {
 		if($Serie['SerieTitle']) {
 			$SpellingPrep = $this->PDO->prepare('UPDATE Series SET SerieTitleAlt = :Spelling WHERE SerieID = :ID');
 			$SpellingPrep->execute(array(':Spelling' => $Spelling,
-		                                 ':ID'       => $SerieID));
-		                             
+										 ':ID'       => $SerieID));
+									 
 			Hub::AddLog(EVENT.'Series', 'Success', 'Added "'.$Spelling.'" as an alternate title for "'.$Serie['SerieTitle'].'"');
 		}
 	}
@@ -174,23 +174,23 @@ class Series extends Hub {
 					
 					$SerieAddPrep = $this->PDO->prepare('INSERT INTO Series (SerieID, SerieDate, SerieTitle, SeriePlot, SerieContentRating, SerieIMDBID, SerieRating, SerieRatingCount, SerieBanner, SerieFanArt, SeriePoster, SerieFirstAired, SerieAirDay, SerieAirTime, SerieRuntime, SerieNetwork, SerieStatus, SerieGenre, SerieTheTVDBID) VALUES (NULL, :Date, :Title, :Plot, :ContentRating, :IMDBID, :Rating, :RatingCount, :Banner, :FanArt, :Poster, :FirstAired, :AirDay, :AirTime, :Runtime, :Network, :Status, :Genre, :TheTVDBID)');
 					$SerieAddPrep->execute(array(':Date'          => time(),
-					                             ':Title'         => $Serie->SeriesName,
-					                             ':Plot'          => $Serie->Overview,
-					                             ':ContentRating' => $Serie->ContentRating,
-					                             ':IMDBID'        => $Serie->IMDB_ID,
-					                             ':Rating'        => $Serie->Rating,
-					                             ':RatingCount'   => $Serie->RatingCount,
-					                             ':Banner'        => $Serie->banner,
-					                             ':FanArt'        => $Serie->fanart,
-					                             ':Poster'        => $Serie->poster,
-					                             ':FirstAired'    => strtotime($Serie->FirstAired),
-					                             ':AirDay'        => $Serie->Airs_DayOfWeek,
-					                             ':AirTime'       => $Serie->Airs_Time,
-					                             ':Runtime'       => $Serie->Runtime.' minutes',
-					                             ':Network'       => $Serie->Network,
-					                             ':Status'        => $Serie->Status,
-					                             ':Genre'         => $Serie->Genre,
-					                             ':TheTVDBID'     => $Serie->id));
+												 ':Title'         => $Serie->SeriesName,
+												 ':Plot'          => $Serie->Overview,
+												 ':ContentRating' => $Serie->ContentRating,
+												 ':IMDBID'        => $Serie->IMDB_ID,
+												 ':Rating'        => $Serie->Rating,
+												 ':RatingCount'   => $Serie->RatingCount,
+												 ':Banner'        => $Serie->banner,
+												 ':FanArt'        => $Serie->fanart,
+												 ':Poster'        => $Serie->poster,
+												 ':FirstAired'    => strtotime($Serie->FirstAired),
+												 ':AirDay'        => $Serie->Airs_DayOfWeek,
+												 ':AirTime'       => $Serie->Airs_Time,
+												 ':Runtime'       => $Serie->Runtime.' minutes',
+												 ':Network'       => $Serie->Network,
+												 ':Status'        => $Serie->Status,
+												 ':Genre'         => $Serie->Genre,
+												 ':TheTVDBID'     => $Serie->id));
 					
 					$EpisodeAirTime = $Serie->Airs_Time;
 					$TimeZoneOffset = ($Serie->Network == 'BBC Two') ? '+1 hour' : '+6 hours';
@@ -208,16 +208,16 @@ class Series extends Hub {
 					$EpisodeAddPrep = $this->PDO->prepare('INSERT INTO Episodes (EpisodeID, EpisodeDate, EpisodeSeason, EpisodeEpisode, EpisodeTitle, EpisodePlot, EpisodeRating, EpisodeRatingCount, EpisodeBanner, EpisodeAirDate, SeriesKey, EpisodeTheTVDBID) VALUES (NULL, :Date, :Season, :Episode, :Title, :Plot, :Rating, :RatingCount, :Banner, :AirDate, :SeriesKey, :EpisodeTheTVDBID)');
 				
 					$EpisodeAddPrep->execute(array(':Date'             => time(),
-				                                   ':Season'           => $Serie->SeasonNumber,
-				                                   ':Episode'          => $Serie->EpisodeNumber,
-				                                   ':Title'            => $Serie->EpisodeName,
-				                                   ':Plot'             => $Serie->Overview,
-				                                   ':Rating'           => $Serie->Rating,
-				                                   ':RatingCount'      => $Serie->RatingCount,
-				                                   ':Banner'           => $Serie->filename,
-				                                   ':AirDate'          => $EpisodeAirDate,
-				                                   ':SeriesKey'        => $SerieID,
-				                                   ':EpisodeTheTVDBID' => $Serie->id));
+												   ':Season'           => $Serie->SeasonNumber,
+												   ':Episode'          => $Serie->EpisodeNumber,
+												   ':Title'            => $Serie->EpisodeName,
+												   ':Plot'             => $Serie->Overview,
+												   ':Rating'           => $Serie->Rating,
+												   ':RatingCount'      => $Serie->RatingCount,
+												   ':Banner'           => $Serie->filename,
+												   ':AirDate'          => $EpisodeAirDate,
+												   ':SeriesKey'        => $SerieID,
+												   ':EpisodeTheTVDBID' => $Serie->id));
 	
 					$EpisodesAdded++;
 				}
@@ -418,22 +418,22 @@ class Series extends Hub {
 						$SerieUpdatePrep = $this->PDO->prepare('UPDATE Series SET SerieTitle = :Title, SeriePlot = :Plot, SerieContentRating = :ContentRating, SerieIMDBID = :IMDBID, SerieRating = :Rating, SerieRatingCount = :RatingCount, SerieBanner = :Banner, SerieFanArt = :FanArt, SeriePoster = :Poster, SerieFirstAired = :FirstAired, SerieAirDay = :AirDay, SerieAirTime = :AirTime, SerieRuntime = :Runtime, SerieNetwork = :Network, SerieStatus = :Status, SerieGenre = :Genre WHERE SerieTheTVDBID = :TheTVDBID');
 					
 						$SerieUpdatePrep->execute(array(':Title'         => $Serie->SeriesName,
-					                                    ':Plot'          => $Serie->Overview,
-					                                    ':ContentRating' => $Serie->ContentRating,
-					                                    ':IMDBID'        => $Serie->IMDB_ID,
-					                                    ':Rating'        => $Serie->Rating,
-					                                    ':RatingCount'   => $Serie->RatingCount,
-					                                    ':Banner'        => $Serie->banner,
-					                                    ':FanArt'        => $Serie->fanart,
-					                                    ':Poster'        => $Serie->poster,
-					                                    ':FirstAired'    => strtotime($Serie->FirstAired),
-					                                    ':AirDay'        => $Serie->Airs_DayOfWeek,
-					                                    ':AirTime'       => $Serie->Airs_Time,
-					                                    ':Runtime'       => $Serie->Runtime,
-					                                    ':Network'       => $Serie->Network,
-					                                    ':Status'        => $Serie->Status,
-					                                    ':Genre'         => $Serie->Genre,
-					                                    ':TheTVDBID'     => $SerieTheTVDBID));
+														':Plot'          => $Serie->Overview,
+														':ContentRating' => $Serie->ContentRating,
+														':IMDBID'        => $Serie->IMDB_ID,
+														':Rating'        => $Serie->Rating,
+														':RatingCount'   => $Serie->RatingCount,
+														':Banner'        => $Serie->banner,
+														':FanArt'        => $Serie->fanart,
+														':Poster'        => $Serie->poster,
+														':FirstAired'    => strtotime($Serie->FirstAired),
+														':AirDay'        => $Serie->Airs_DayOfWeek,
+														':AirTime'       => $Serie->Airs_Time,
+														':Runtime'       => $Serie->Runtime,
+														':Network'       => $Serie->Network,
+														':Status'        => $Serie->Status,
+														':Genre'         => $Serie->Genre,
+														':TheTVDBID'     => $SerieTheTVDBID));
 		
 						$EpisodeAirTime = $Serie->Airs_Time;
 						$TimeZoneOffset = ($Serie->Network == 'BBC Two') ? '+1 hour' : '+6 hours';
@@ -449,16 +449,16 @@ class Series extends Hub {
 			
 							$EpisodeUpdatePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeSeason = :Season, EpisodeEpisode = :Episode, EpisodeTitle = :Title, EpisodePlot = :Plot, EpisodeRating = :Rating, EpisodeRatingCount = :RatingCount, EpisodeBanner = :Banner, EpisodeAirDate = :AirDate WHERE EpisodeTheTVDBID = :TheTVDBID');
 							$EpisodeUpdatePrep->execute(array(':Season'      => $Serie->SeasonNumber,
-						                                      ':Episode'     => $Serie->EpisodeNumber,
-						                                      ':Title'       => $Serie->EpisodeName,
-						                                      ':Plot'        => $Serie->Overview,
-						                                      ':Rating'      => $Serie->Rating,
-						                                      ':RatingCount' => $Serie->RatingCount,
-						                                      ':Banner'      => $Serie->filename,
-						                                      ':AirDate'     => $EpisodeAirDate,
-						                                      ':TheTVDBID'   => $Serie->id));
+															  ':Episode'     => $Serie->EpisodeNumber,
+															  ':Title'       => $Serie->EpisodeName,
+															  ':Plot'        => $Serie->Overview,
+															  ':Rating'      => $Serie->Rating,
+															  ':RatingCount' => $Serie->RatingCount,
+															  ':Banner'      => $Serie->filename,
+															  ':AirDate'     => $EpisodeAirDate,
+															  ':TheTVDBID'   => $Serie->id));
 			
-						    $EpisodesUpdated++;
+							$EpisodesUpdated++;
 						}
 						else {
 							$Date = date('d.m.Y', strtotime($Serie->FirstAired));
@@ -468,16 +468,16 @@ class Series extends Hub {
 							$EpisodeAddPrep = $this->PDO->prepare('INSERT INTO Episodes (EpisodeID, EpisodeDate, EpisodeSeason, EpisodeEpisode, EpisodeTitle, EpisodePlot, EpisodeRating, EpisodeRatingCount, EpisodeBanner, EpisodeAirDate, SeriesKey, EpisodeTheTVDBID) VALUES (NULL, :Date, :Season, :Episode, :Title, :Plot, :Rating, :RatingCount, :Banner, :AirDate, :SeriesKey, :EpisodeTheTVDBID)');
 						
 							$EpisodeAddPrep->execute(array(':Date'             => time(),
-						                                   ':Season'           => $Serie->SeasonNumber,
-						                                   ':Episode'          => $Serie->EpisodeNumber,
-						                                   ':Title'            => $Serie->EpisodeName,
-						                                   ':Plot'             => $Serie->Overview,
-						                                   ':Rating'           => $Serie->Rating,
-						                                   ':RatingCount'      => $Serie->RatingCount,
-						                                   ':Banner'           => $Serie->filename,
-						                                   ':AirDate'          => $EpisodeAirDate,
-						                                   ':SeriesKey'        => $SerieID,
-						                                   ':EpisodeTheTVDBID' => $Serie->id));
+														   ':Season'           => $Serie->SeasonNumber,
+														   ':Episode'          => $Serie->EpisodeNumber,
+														   ':Title'            => $Serie->EpisodeName,
+														   ':Plot'             => $Serie->Overview,
+														   ':Rating'           => $Serie->Rating,
+														   ':RatingCount'      => $Serie->RatingCount,
+														   ':Banner'           => $Serie->filename,
+														   ':AirDate'          => $EpisodeAirDate,
+														   ':SeriesKey'        => $SerieID,
+														   ':EpisodeTheTVDBID' => $Serie->id));
 			
 							$EpisodesAdded++;
 						}
@@ -573,13 +573,13 @@ class Series extends Hub {
 			foreach($SeriesDirectoriesArr AS $SerieDirectory) {
 				if($Serie == substr($SerieDirectory, (strrpos($SerieDirectory, '/') + 1))) {
 					$SerieEpisodes = Hub::RecursiveDirSearch($SerieDirectory);
-				    @$SeriesInfoArr[$Serie]['TotalEpisodes'] += sizeof($SerieEpisodes);
-				    
-				    if($EpisodeLocations) {
-				    	$SeriesInfoArr[$Serie]['Episodes'] = (@is_array($SeriesInfoArr[$Serie]['Episodes'])) ? $SeriesInfoArr[$Serie]['Episodes'] : array();
-				    	$SeriesInfoArr[$Serie]['Episodes'] = array_merge($SeriesInfoArr[$Serie]['Episodes'], $SerieEpisodes);
-				    }
-				    
+					@$SeriesInfoArr[$Serie]['TotalEpisodes'] += sizeof($SerieEpisodes);
+					
+					if($EpisodeLocations) {
+						$SeriesInfoArr[$Serie]['Episodes'] = (@is_array($SeriesInfoArr[$Serie]['Episodes'])) ? $SeriesInfoArr[$Serie]['Episodes'] : array();
+						$SeriesInfoArr[$Serie]['Episodes'] = array_merge($SeriesInfoArr[$Serie]['Episodes'], $SerieEpisodes);
+					}
+					
 					$SeriesInfoArr[$Serie][] = $SerieDirectory;
 				}
 			}
@@ -627,9 +627,9 @@ class Series extends Hub {
 										foreach($ParsedInfo['Episodes'] AS $Episodes) {
 											$EpisodeUpdatePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = :EpisodeFile WHERE SeriesKey = :SeriesKey AND EpisodeSeason = :Season AND EpisodeEpisode = :Episode');
 											$EpisodeUpdatePrep->execute(array(':EpisodeFile' => $Location.$File,
-										                                  	  ':SeriesKey'   => $Serie['SerieID'],
-										                                      ':Season'      => $Episodes[0],
-										                                      ':Episode'     => $Episodes[1]));
+																		  	  ':SeriesKey'   => $Serie['SerieID'],
+																			  ':Season'      => $Episodes[0],
+																			  ':Episode'     => $Episodes[1]));
 										
 											$EpisodesRebuilt++;
 										}
@@ -659,7 +659,7 @@ class Series extends Hub {
 		if($Episode['EpisodeFile']) {
 			$EpisodePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = "" AND TorrentKey = "" WHERE EpisodeID = :ID');
 			$EpisodePrep->execute(array(':ID' => $ID));
-		                             
+									 
 			Hub::AddLog(EVENT.'Series', 'Success', 'Deleted "'.$Episode['EpisodeFile'].'"');
 		}
 	}	

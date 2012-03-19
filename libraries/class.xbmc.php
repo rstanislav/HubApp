@@ -16,7 +16,7 @@ class XBMC extends Hub {
 				$this->XBMCRPC = new XBMC_RPC_HTTPClient($Zone['ZoneXBMCUsername'].':'.$Zone['ZoneXBMCPassword'].'@'.$Zone['ZoneXBMCHost'].':'.$Zone['ZoneXBMCPort']);
 			}
 			catch(XBMC_RPC_ConnectionException $e) {
-			    $this->Error[] = $e->getMessage();
+				$this->Error[] = $e->getMessage();
 			}
 		}
 		else {
@@ -36,7 +36,7 @@ class XBMC extends Hub {
 			}
 		}
 		catch(XBMC_RPC_ConnectionException $e) {
-		    die($e->getMessage());
+			die($e->getMessage());
 		}
 	}
 	
@@ -107,21 +107,21 @@ class XBMC extends Hub {
 	
 	function GetRecentlyAddedEpisodes() {
 		try {
-		    return $this->XBMCRPC->VideoLibrary->GetRecentlyAddedEpisodes();
+			return $this->XBMCRPC->VideoLibrary->GetRecentlyAddedEpisodes();
 		}
 		catch(XBMC_RPC_Exception $e) {
-		    die($e->getMessage());
+			die($e->getMessage());
 		}
 	}
 	
 	function GetRecentlyAddedMovies() {
 		try {
-		    return $this->XBMCRPC->VideoLibrary->GetRecentlyAddedMovies(array(
-                'limits' => array('start' => 0, 'end' => 33),
-                'properties' => array(
-		            'genre', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
-		            'originaltitle', 'file', 'runtime', 'year', 'rating', 'playcount', 'thumbnail'
-		        )));
+			return $this->XBMCRPC->VideoLibrary->GetRecentlyAddedMovies(array(
+				'limits' => array('start' => 0, 'end' => 33),
+				'properties' => array(
+					'genre', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
+					'originaltitle', 'file', 'runtime', 'year', 'rating', 'playcount', 'thumbnail'
+				)));
 		}
 		catch(XBMC_RPC_Exception $e) {
 			die($e->getMessage());
@@ -130,26 +130,26 @@ class XBMC extends Hub {
 	
 	function GetMovies() {
 		try {
-		    return $this->XBMCRPC->VideoLibrary->GetMovies(array(
-		        'properties' => array(
-		            'genre', 'director', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
-		            'originaltitle', 'lastplayed', 'file', 'runtime', 'year', 'playcount', 'rating', 'thumbnail'
-		        )));
+			return $this->XBMCRPC->VideoLibrary->GetMovies(array(
+				'properties' => array(
+					'genre', 'director', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
+					'originaltitle', 'lastplayed', 'file', 'runtime', 'year', 'playcount', 'rating', 'thumbnail'
+				)));
 		}
 		catch(XBMC_RPC_Exception $e) {
-		    die($e->getMessage());
+			die($e->getMessage());
 		}
 	}
 	
 	function GetImage($Image) {
 		try {
-		    $Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
-		    $Image = $this->XBMCRPC->Files->PrepareDownload(array('path' => $Image));
-		    
-		    return 'http://'.$Zone['ZoneXBMCUsername'].':'.$Zone['ZoneXBMCPassword'].'@'.$Zone['ZoneXBMCHost'].':'.$Zone['ZoneXBMCPort'].'/'.$Image['details']['path'];
+			$Zone = Zones::GetZoneByName(Zones::GetCurrentZone());
+			$Image = $this->XBMCRPC->Files->PrepareDownload(array('path' => $Image));
+			
+			return 'http://'.$Zone['ZoneXBMCUsername'].':'.$Zone['ZoneXBMCPassword'].'@'.$Zone['ZoneXBMCHost'].':'.$Zone['ZoneXBMCPort'].'/'.$Image['details']['path'];
 		}
 		catch(XBMC_RPC_Exception $e) {
-		    die($e->getMessage());
+			die($e->getMessage());
 		}
 	}
 	
@@ -201,41 +201,41 @@ class XBMC extends Hub {
 	
 	function GetCommands() {
 		try {
-		    $response = $this->XBMCRPC->JSONRPC->Introspect();
+			$response = $this->XBMCRPC->JSONRPC->Introspect();
 		}
 		catch(XBMC_RPC_Exception $e) {
-		    die($e->getMessage());
+			die($e->getMessage());
 		}
 		
 		print '<p>The following commands are available according to XBMC:</p>';
 		if($this->XBMCRPC->isLegacy()) {
-		    foreach($response['commands'] as $command) {
-		        printf('<p><strong>%s</strong><br />%s</p>', $command['command'], $command['description']);
-		    }
+			foreach($response['commands'] as $command) {
+				printf('<p><strong>%s</strong><br />%s</p>', $command['command'], $command['description']);
+			}
 		}
 		else {
 			$i = 0;
-		    foreach ($response['methods'] as $command => $commandData) {
-                $description = isset($commandData['description']) ? $commandData['description'] : '';
-                
-                $color = sizeof($commandData['params']) ? 'red' : 'black';
-                echo '
-                <div id="command-'.$i.'" style="color: '.$color.'">
-                 <strong>'.$command.'</strong><br />
-                 '.$description.'<br />
-                </div>'."\n";
-                
-                if(sizeof($commandData['params'])) {
-                    echo '<div style="display:none" id="data-'.$i.'">'."\n";
-                    Hub::d($commandData['params']);
-                    echo '</div><br />';
-                }
-                else {
-                    echo '<br />';
-                }
-                
-                $i++;
-		    }
+			foreach ($response['methods'] as $command => $commandData) {
+				$description = isset($commandData['description']) ? $commandData['description'] : '';
+				
+				$color = sizeof($commandData['params']) ? 'red' : 'black';
+				echo '
+				<div id="command-'.$i.'" style="color: '.$color.'">
+				 <strong>'.$command.'</strong><br />
+				 '.$description.'<br />
+				</div>'."\n";
+				
+				if(sizeof($commandData['params'])) {
+					echo '<div style="display:none" id="data-'.$i.'">'."\n";
+					Hub::d($commandData['params']);
+					echo '</div><br />';
+				}
+				else {
+					echo '<br />';
+				}
+				
+				$i++;
+			}
 		}
 	}
 	
@@ -263,7 +263,7 @@ class XBMC extends Hub {
 								}
 							}
 						}
-				    }
+					}
 				}
 			}
 		}

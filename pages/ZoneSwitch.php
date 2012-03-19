@@ -16,10 +16,10 @@ if($UserObj->CheckPermission($UserObj->UserGroupID, 'ZoneSwitch')) {
 		</select>'."\n";
 	}
 	else {
-    	echo '<span style="color: white">No zones available</span>';
+		echo '<span style="color: white">No zones available</span>';
 	}
 }
 else {
-    echo '<span style="padding-right:10px; color: white; font-weight: bold">'.$HubObj->CurrentZone.'</span>';
+	echo '<span style="padding-right:10px; color: white; font-weight: bold">'.$HubObj->CurrentZone.'</span>';
 }
 ?>

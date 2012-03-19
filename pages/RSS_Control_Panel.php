@@ -5,17 +5,17 @@ $('#AddRSSFeed').click(function(event) {
 	
 	RSSID = randomString();
 	$('#tbl-rss tbody tr:first').before(
-	    '<tr id="' + RSSID + '">' +
-	     '<form name="' + RSSID + '" method="post" action="load.php?page=RSSFeedAdd" style="display:none">' +
-	      '<td style="text-align:center"><input name="RSSDate" type="hidden" value="" />Now</td>' +
-	      '<td><input name="RSSTitle" style="width:180px" type="text" /></td>' +
-	      '<td><input name="RSSFeed" style="width:350px" type="text" /></td>' +
-	      '<td style="text-align:center">' +
-	       '<a onclick="javascript:ajaxSubmit(\'' + RSSID + '\');"><img src="images/icons/add.png" /></a>' +
-	       '<a onclick="javascript:$(\'#' + RSSID + '\').remove();"><img src="images/icons/delete.png" /></a>' +
-	      '</td>' +
-	     '</form>' +
-	    '</tr>');
+		'<tr id="' + RSSID + '">' +
+		 '<form name="' + RSSID + '" method="post" action="load.php?page=RSSFeedAdd" style="display:none">' +
+		  '<td style="text-align:center"><input name="RSSDate" type="hidden" value="" />Now</td>' +
+		  '<td><input name="RSSTitle" style="width:180px" type="text" /></td>' +
+		  '<td><input name="RSSFeed" style="width:350px" type="text" /></td>' +
+		  '<td style="text-align:center">' +
+		   '<a onclick="javascript:ajaxSubmit(\'' + RSSID + '\');"><img src="images/icons/add.png" /></a>' +
+		   '<a onclick="javascript:$(\'#' + RSSID + '\').remove();"><img src="images/icons/delete.png" /></a>' +
+		  '</td>' +
+		 '</form>' +
+		'</tr>');
 });
 </script>
 

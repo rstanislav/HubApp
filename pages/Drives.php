@@ -6,7 +6,7 @@ $('#NewDrive').click(function(event) {
 	
 	DriveID = randomString();
 	$('#tbl-drives tr:first').after(
-	    '<tr id="' + DriveID + '">' +
+		'<tr id="' + DriveID + '">' +
 		 '<form name="' + DriveID + '" method="post" action="load.php?page=DriveAdd">' +
 		  '<td style="text-align: center">Now</td>' +
 		  '<td>' +

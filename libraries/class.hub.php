@@ -33,11 +33,11 @@ class Hub {
 		if($ExtError) { die('Modify your php.ini to include the required extensions'); }
 		
 		try {
-		    $this->PDO = new PDO(DB_TYPE.':host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS, array(PDO::MYSQL_ATTR_FOUND_ROWS => TRUE));
-		    $this->PDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-		    $this->PDO->setAttribute(PDO::ATTR_CASE,               PDO::CASE_NATURAL);
-		    $this->PDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
-		    $this->PDO->setAttribute(PDO::ATTR_ORACLE_NULLS,       PDO::NULL_EMPTY_STRING);
+			$this->PDO = new PDO(DB_TYPE.':host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS, array(PDO::MYSQL_ATTR_FOUND_ROWS => TRUE));
+			$this->PDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+			$this->PDO->setAttribute(PDO::ATTR_CASE,               PDO::CASE_NATURAL);
+			$this->PDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+			$this->PDO->setAttribute(PDO::ATTR_ORACLE_NULLS,       PDO::NULL_EMPTY_STRING);
 		}
 		catch(PDOException $e) {
 			die('Could not connect to database: '.$e->getMessage());
@@ -63,34 +63,34 @@ class Hub {
 				
 				if(str_replace('.', '', $NewDBVersion) > str_replace('.', '', $DB['CurrentDBVersion'])) {
 					$sql = '';
-			    	include_once $File;
-			    	
-			    	$IsUpgraded = FALSE;
-			    	if(is_array($sql)) {
-			    		foreach($sql AS $SQLUpgrade) {
-			    			$UpgradePrep = $this->PDO->prepare($SQLUpgrade);
-			    			$UpgradePrep->execute();
-			    			
-			    			$IsUpgraded = TRUE;
-			    		}
-			    	}
-			    	else if(is_string($sql)) {
-			    		$UpgradePrep = $this->PDO->prepare($sql);
-			    		$UpgradePrep->execute();
-			    		
-			    		$IsUpgraded = TRUE;
-			    	}
-			    	
-			    	if($IsUpgraded) {
-			    		$DBUpgradePrep = $this->PDO->prepare('UPDATE Hub SET Value = :NewVersion WHERE Setting = "CurrentDBVersion"');
-			    		$DBUpgradePrep->execute(array(':NewVersion' => $NewDBVersion));
-			    		
-			    		Hub::AddLog(EVENT.'Database', 'Success', 'Upgraded database to "'.$NewDBVersion.'"');
-			    	}
-			    }
-			    else {
-			    	unlink($File);
-			    }
+					include_once $File;
+					
+					$IsUpgraded = FALSE;
+					if(is_array($sql)) {
+						foreach($sql AS $SQLUpgrade) {
+							$UpgradePrep = $this->PDO->prepare($SQLUpgrade);
+							$UpgradePrep->execute();
+							
+							$IsUpgraded = TRUE;
+						}
+					}
+					else if(is_string($sql)) {
+						$UpgradePrep = $this->PDO->prepare($sql);
+						$UpgradePrep->execute();
+						
+						$IsUpgraded = TRUE;
+					}
+					
+					if($IsUpgraded) {
+						$DBUpgradePrep = $this->PDO->prepare('UPDATE Hub SET Value = :NewVersion WHERE Setting = "CurrentDBVersion"');
+						$DBUpgradePrep->execute(array(':NewVersion' => $NewDBVersion));
+						
+						Hub::AddLog(EVENT.'Database', 'Success', 'Upgraded database to "'.$NewDBVersion.'"');
+					}
+				}
+				else {
+					unlink($File);
+				}
 			}
 		}
 	}
@@ -158,11 +158,11 @@ class Hub {
 		
 		$LogPrep = $this->PDO->prepare('INSERT INTO Log (LogID, LogDate, LogEvent, LogType, LogError, LogText, LogAction) VALUES (NULL, :LogDate, :LogEvent, :LogType, :LogError, :LogText, :LogAction)');
 		$LogPrep->execute(array(':LogDate'   => time(),
-		                        ':LogEvent'  => $LogEvent,
-		                        ':LogType'   => $LogType,
-		                        ':LogError'  => $LogError,
-		                        ':LogText'   => $LogText,
-		                        ':LogAction' => $LogAction));
+								':LogEvent'  => $LogEvent,
+								':LogType'   => $LogType,
+								':LogError'  => $LogError,
+								':LogText'   => $LogText,
+								':LogAction' => $LogAction));
 	}
 	
 	function BytesToHuman($Bytes) {
@@ -179,15 +179,15 @@ class Hub {
 		if($this->GetActivity($Page)) {
 			$ActivityPrep = $this->PDO->prepare('UPDATE Activity SET ActivityDate = :ActivityDate WHERE ActivityUser = :ActivityUser AND ActivityURL = :ActivityURL');
 			$ActivityPrep->execute(array(':ActivityDate' => time(),
-			                             ':ActivityUser' => $this->User,
-			                             ':ActivityURL'  => $Page));
+										 ':ActivityUser' => $this->User,
+										 ':ActivityURL'  => $Page));
 		}
 		else {
 			$ActivityPrep = $this->PDO->prepare('INSERT INTO Activity (ActivityID, ActivityDate, ActivityUser, ActivityURL) VALUES (:ActivityID, :ActivityDate, :ActivityUser, :ActivityURL)');
 			$ActivityPrep->execute(array(':ActivityID'   => NULL,
-		                             	 ':ActivityDate' => time(),
-		                             	 ':ActivityUser' => $this->User,
-		                             	 ':ActivityURL'  => $Page));
+									 	 ':ActivityDate' => time(),
+									 	 ':ActivityUser' => $this->User,
+									 	 ':ActivityURL'  => $Page));
 		}
 	}
 	
@@ -196,8 +196,8 @@ class Hub {
 		
 		$ActivityPrep = $this->PDO->prepare('SELECT ActivityDate FROM Activity WHERE ActivityUser = :ActivityUser AND ActivityURL = :ActivityURL');
 		$ActivityPrep->execute(array(':ActivityUser' => $this->User,
-		                             ':ActivityURL'  => $Page));
-		                             
+									 ':ActivityURL'  => $Page));
+									 
 		if($ActivityPrep->rowCount()) {
 			$Activity = $ActivityPrep->fetch();
 			
@@ -263,12 +263,12 @@ class Hub {
 					if($Setting != 'SettingSection') {
 						$EditSettingsPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Value WHERE Setting = :Setting');
 						$EditSettingsPrep->execute(array(':Value'   => $Value,
-						                                 ':Setting' => $Setting));
+														 ':Setting' => $Setting));
 						
 						if(!$EditSettingsPrep->rowCount()) {
 							$AddSettingsPrep = $this->PDO->prepare('INSERT INTO Hub (Setting, Value) VALUES (:Setting, :Value)');
 							$AddSettingsPrep->execute(array(':Value'   => $Value,
-							                                ':Setting' => $Setting));
+															':Setting' => $Setting));
 						}
 					}
 				}
@@ -285,12 +285,12 @@ class Hub {
 					if($Setting != 'SettingSection') {
 						$EditSettingsPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Value WHERE Setting = :Setting');
 						$EditSettingsPrep->execute(array(':Value'   => $Value,
-						                                 ':Setting' => $Setting));
+														 ':Setting' => $Setting));
 						
 						if(!$EditSettingsPrep->rowCount()) {
 							$AddSettingsPrep = $this->PDO->prepare('INSERT INTO Hub (Setting, Value) VALUES (:Setting, :Value)');
 							$AddSettingsPrep->execute(array(':Value'   => $Value,
-							                                ':Setting' => $Setting));
+															':Setting' => $Setting));
 						}
 					}
 				}
@@ -306,7 +306,7 @@ class Hub {
 					foreach($_POST['Notification'] AS $NotificationID => $Notification) {
 						$AddNotificationPrep = $this->PDO->prepare('INSERT INTO UserNotifications (UserKey, NotificationKey) VALUES (:UserID, :NotificationID)');
 						$AddNotificationPrep->execute(array(':UserID'         => $UserInfo['UserID'],
-						                                    ':NotificationID' => $NotificationID));
+															':NotificationID' => $NotificationID));
 					}
 				}
 			break;
@@ -318,12 +318,12 @@ class Hub {
 					if($Setting != 'SettingSection') {
 						$EditSettingsPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Value WHERE Setting = :Setting');
 						$EditSettingsPrep->execute(array(':Value'   => $Value,
-						                                 ':Setting' => $Setting));
+														 ':Setting' => $Setting));
 						
 						if(!$EditSettingsPrep->rowCount()) {
 							$AddSettingsPrep = $this->PDO->prepare('INSERT INTO Hub (Setting, Value) VALUES (:Setting, :Value)');
 							$AddSettingsPrep->execute(array(':Value'   => $Value,
-							                                ':Setting' => $Setting));
+															':Setting' => $Setting));
 						}
 					}
 				}
@@ -337,12 +337,12 @@ class Hub {
 					if($Setting != 'SettingSection') {
 						$EditSettingsPrep = $this->PDO->prepare('UPDATE Hub SET Value = :Value WHERE Setting = :Setting');
 						$EditSettingsPrep->execute(array(':Value'   => $Value,
-						                                 ':Setting' => $Setting));
+														 ':Setting' => $Setting));
 						
 						if(!$EditSettingsPrep->rowCount()) {
 							$AddSettingsPrep = $this->PDO->prepare('INSERT INTO Hub (Setting, Value) VALUES (:Setting, :Value)');
 							$AddSettingsPrep->execute(array(':Value'   => $Value,
-							                                ':Setting' => $Setting));
+															':Setting' => $Setting));
 						}
 					}
 				}
@@ -514,43 +514,43 @@ class Hub {
 	}
 	
 	function ZipDirectory($Directory, $ZipFile) {
-	    if(!extension_loaded('zip') || !file_exists($Directory)) {
-	        return FALSE;
-	    }
+		if(!extension_loaded('zip') || !file_exists($Directory)) {
+			return FALSE;
+		}
 	
-	    $ZipObj = new ZipArchive();
-	    if(!$ZipObj->open($ZipFile, ZIPARCHIVE::CREATE)) {
-	        return FALSE;
-	    }
+		$ZipObj = new ZipArchive();
+		if(!$ZipObj->open($ZipFile, ZIPARCHIVE::CREATE)) {
+			return FALSE;
+		}
 	
-	    $Directory = str_replace('\\', '/', realpath($Directory));
+		$Directory = str_replace('\\', '/', realpath($Directory));
 		if(is_dir($Directory)) {
-	        $Files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($Directory), RecursiveIteratorIterator::SELF_FIRST);
+			$Files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($Directory), RecursiveIteratorIterator::SELF_FIRST);
 			$FileCount = 0;
 			foreach($Files AS $File) {
-	            $File = str_replace('\\', '/', realpath($File));
+				$File = str_replace('\\', '/', realpath($File));
 	
-	            if(is_dir($File)) {
-	                $ZipObj->addEmptyDir(str_replace($Directory.'/', '', $File.'/'));
-	            }
-	            else if(is_file($File)) {
-	            	$ZipObj->addFile($File, str_replace($Directory.'/', '', $File));
-	            }
-	            
-	            if($FileCount++ == 500) { 
-	            	$ZipObj->close(); 
-	                if($ZipObj = new ZipArchive()) { 
-	                	$ZipObj->open($ZipFile); 
-	                    $FileCount = 0; 
-	                } 
-	        	}
-	        }
-	    }
-	    else if(is_file($Directory)) {
-	        $ZipObj->addFile($Directory, str_replace($Directory.'/', '', $File));
-	    }
+				if(is_dir($File)) {
+					$ZipObj->addEmptyDir(str_replace($Directory.'/', '', $File.'/'));
+				}
+				else if(is_file($File)) {
+					$ZipObj->addFile($File, str_replace($Directory.'/', '', $File));
+				}
+				
+				if($FileCount++ == 500) { 
+					$ZipObj->close(); 
+					if($ZipObj = new ZipArchive()) { 
+						$ZipObj->open($ZipFile); 
+						$FileCount = 0; 
+					} 
+				}
+			}
+		}
+		else if(is_file($Directory)) {
+			$ZipObj->addFile($Directory, str_replace($Directory.'/', '', $File));
+		}
 	
-	    return $ZipObj->close();
+		return $ZipObj->close();
 	}
 	
 	function CleanBackupFolder() {
@@ -611,14 +611,14 @@ class Hub {
 }
 
 class IgnorantRecursiveDirectoryIterator extends RecursiveDirectoryIterator {
-    function getChildren() {
-        try {
-            return parent::getChildren();
-        }
-        catch(UnexpectedValueException $e) {
-            return new RecursiveArrayIterator(array());
-        }
-    }
+	function getChildren() {
+		try {
+			return parent::getChildren();
+		}
+		catch(UnexpectedValueException $e) {
+			return new RecursiveArrayIterator(array());
+		}
+	}
 }
 
 class HubDirectoryIterator extends DirectoryIterator {

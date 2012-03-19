@@ -114,34 +114,34 @@ class TheTVDBAPI {
 				$ZipArchive = new ZipArchive;
 				
 				if(@$ZipArchive->open($this->TemporaryFolder.'/'.$SerieID.'.zip') === TRUE) {
-			    	if(@$ZipArchive->extractTo($this->TemporaryFolder.'/'.$SerieID.'/')) {
-			    		$ZipArchive->close();
-			    	
-			    		if(!$SeriesInfo = @simplexml_load_file($this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml')) {
-			    			return FALSE;
-			    			
-			    			// throw new Exception('Unable to load '.$this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml');
-			    		}
-			    	
-			    		if(is_dir($this->TemporaryFolder.'/'.$SerieID.'/')) {
-			    			if(!$this->RecursiveRmDir($this->TemporaryFolder.'/'.$SerieID.'/')) {
-			    				return FALSE;
-			    				
-			    				// throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
-			    			}
-			    		}
-			    		
-			    	}
-			    	else {
-			    		return FALSE;
-			    		
-			    		// throw new Exception('Unable to extract '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
-			    	}
+					if(@$ZipArchive->extractTo($this->TemporaryFolder.'/'.$SerieID.'/')) {
+						$ZipArchive->close();
+					
+						if(!$SeriesInfo = @simplexml_load_file($this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml')) {
+							return FALSE;
+							
+							// throw new Exception('Unable to load '.$this->TemporaryFolder.'/'.$SerieID.'/'.$Language.'.xml');
+						}
+					
+						if(is_dir($this->TemporaryFolder.'/'.$SerieID.'/')) {
+							if(!$this->RecursiveRmDir($this->TemporaryFolder.'/'.$SerieID.'/')) {
+								return FALSE;
+								
+								// throw new Exception('Unable to delete '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+							}
+						}
+						
+					}
+					else {
+						return FALSE;
+						
+						// throw new Exception('Unable to extract '.$this->TemporaryFolder.'/'.$SerieID.'.zip');
+					}
 				}
 				else {
-			    	return FALSE;
-			    	
-			    	// throw new Exception($this->TemporaryFolder.'/'.$SerieID.'.zip is an invalid zip file');
+					return FALSE;
+					
+					// throw new Exception($this->TemporaryFolder.'/'.$SerieID.'.zip is an invalid zip file');
 				}
 				
 				if(is_file($this->TemporaryFolder.'/'.$SerieID.'.zip')) {
@@ -175,12 +175,12 @@ class TheTVDBAPI {
 			
 			foreach($objects as $object) { 
 				if($object != '.' && $object != '..') { 
-		    		if(filetype($dir.'/'.$object) == 'dir') {
-		    			rrmdir($dir.'/'.$object); 
-		    		}
-		    		else {
-		    			@unlink($dir.'/'.$object);
-		    		}
+					if(filetype($dir.'/'.$object) == 'dir') {
+						rrmdir($dir.'/'.$object); 
+					}
+					else {
+						@unlink($dir.'/'.$object);
+					}
 		   		} 
 		 	} 
 		 
@@ -389,44 +389,44 @@ try {
 			// serie
 		
 			// [id] => 73739
-	    	// [Airs_DayOfWeek] => Tuesday
-	    	// [Airs_Time] => 9:00 PM
-	    	// [ContentRating] => TV-14
-	    	// [FirstAired] => 2004-09-22
-	    	// [Genre] => |Action and Adventure|Drama|Science-Fiction|
-	    	// [IMDB_ID] => tt0411008
-	    	// [Language] => en
-	    	// [Network] => ABC
-	    	// [Overview] => After their plane, Oceanic Air flight 815, tore apart whilst thousands of miles off course, the survivors find themselves on a mysterious deserted island where they soon find out they are not alone.
-	    	// [Rating] => 9.1
-	    	// [RatingCount] => 532
-	    	// [Runtime] => 60
-	    	// [SeriesID] => 24313
-	    	// [SeriesName] => Lost
-	    	// [Status] => Ended
-	    	// [banner] => graphical/73739-g4.jpg
-	    	// [fanart] => fanart/original/73739-34.jpg
-	    	// [lastupdated] => 1298784452
-	    	// [poster] => posters/73739-7.jpg
+			// [Airs_DayOfWeek] => Tuesday
+			// [Airs_Time] => 9:00 PM
+			// [ContentRating] => TV-14
+			// [FirstAired] => 2004-09-22
+			// [Genre] => |Action and Adventure|Drama|Science-Fiction|
+			// [IMDB_ID] => tt0411008
+			// [Language] => en
+			// [Network] => ABC
+			// [Overview] => After their plane, Oceanic Air flight 815, tore apart whilst thousands of miles off course, the survivors find themselves on a mysterious deserted island where they soon find out they are not alone.
+			// [Rating] => 9.1
+			// [RatingCount] => 532
+			// [Runtime] => 60
+			// [SeriesID] => 24313
+			// [SeriesName] => Lost
+			// [Status] => Ended
+			// [banner] => graphical/73739-g4.jpg
+			// [fanart] => fanart/original/73739-34.jpg
+			// [lastupdated] => 1298784452
+			// [poster] => posters/73739-7.jpg
 		}
 		else {
 			// episode
 			
 			// [id] => 323552 // Make sure you record <id> from each episode, since it's returned in updates as <Episode>.
-	    	// [Combined_episodenumber] => 20
-	    	// [Combined_season] => 2
-	    	// [EpisodeName] => Two for the Road
-	    	// [EpisodeNumber] => 20
-	    	// [FirstAired] => 2006-05-03
-	    	// [Language] => en
-	    	// [Overview] => After finding an exhausted Michael in the forest, Jack and Kate bring him back to the main camp. When he finally wakes up, Michael has some new details about "The Others." Also, a lovestruck Hurley plans a date for Libby.
-	    	// [Rating] => 7.9
-	    	// [RatingCount] => 28
-	    	// [SeasonNumber] => 2
-	    	// [filename] => episodes/73739/323552.jpg // <mirrorpath_banners>/banners/<filename>
-	    	// [lastupdated] => 1273646666
-	    	// [seasonid] => 6346
-	    	// [seriesid] => 73739
+			// [Combined_episodenumber] => 20
+			// [Combined_season] => 2
+			// [EpisodeName] => Two for the Road
+			// [EpisodeNumber] => 20
+			// [FirstAired] => 2006-05-03
+			// [Language] => en
+			// [Overview] => After finding an exhausted Michael in the forest, Jack and Kate bring him back to the main camp. When he finally wakes up, Michael has some new details about "The Others." Also, a lovestruck Hurley plans a date for Libby.
+			// [Rating] => 7.9
+			// [RatingCount] => 28
+			// [SeasonNumber] => 2
+			// [filename] => episodes/73739/323552.jpg // <mirrorpath_banners>/banners/<filename>
+			// [lastupdated] => 1273646666
+			// [seasonid] => 6346
+			// [seriesid] => 73739
 		}
 	}
 	
@@ -453,42 +453,42 @@ try {
 		// update series in database
 				
 		// [id] => 71326
-	    // [Actors] => |Craig Charles|Chris Barrie|Danny John-Jules|Norman Lovett|Robert Llewellyn|Hattie Hayridge|Chloe Annett|Claire Patricia Grogan|
-	    // [Airs_DayOfWeek] => SimpleXMLElement Object
-	    //             (
-	    //             )
+		// [Actors] => |Craig Charles|Chris Barrie|Danny John-Jules|Norman Lovett|Robert Llewellyn|Hattie Hayridge|Chloe Annett|Claire Patricia Grogan|
+		// [Airs_DayOfWeek] => SimpleXMLElement Object
+		//             (
+		//             )
 	
-	    // [Airs_Time] => SimpleXMLElement Object
-	    //             (
-	    //             )
+		// [Airs_Time] => SimpleXMLElement Object
+		//             (
+		//             )
 	
-	    // [ContentRating] => TV-PG
-	    // [FirstAired] => 1988-02-15
-	    // [Genre] => |Comedy|Science-Fiction|
-	    // [IMDB_ID] => tt0094535
-	    // [Language] => en
-	    // [Network] => BBC Two
-	    // [NetworkID] => SimpleXMLElement Object
-	    //             (
-	    //             )
+		// [ContentRating] => TV-PG
+		// [FirstAired] => 1988-02-15
+		// [Genre] => |Comedy|Science-Fiction|
+		// [IMDB_ID] => tt0094535
+		// [Language] => en
+		// [Network] => BBC Two
+		// [NetworkID] => SimpleXMLElement Object
+		//             (
+		//             )
 	
-	    // [Overview] => Three million years after the demise of humanity, third technician Dave Lister awakes aboard the mining ship Red Dwarf. Sentenced to a period of suspended animation for smuggling his pet cat on board, he is joined by just four fellow survivors: second technician Arnold J Rimmer, a sneering-yet-inept hologram based on his one-time superior; Holly, a ship's computer reduced to near-senility by eons adrift in space; a humanoid descendant of the cat obsessed with fashion and fish; and Kryten, a salvaged android programmed to serve his useless companions. Together, this bickering band must come to terms with an existence which, in terms of productivity and purpose, isn't that far removed from its old one.
-	    // [Rating] => 9.0
-	    // [RatingCount] => 78
-	    // [Runtime] => 30
-	    // [SeriesID] => 132
-	    // [SeriesName] => Red Dwarf
-	    // [Status] => Continuing
-	    // [added] => SimpleXMLElement Object
-	    //             (
-	    //             )
+		// [Overview] => Three million years after the demise of humanity, third technician Dave Lister awakes aboard the mining ship Red Dwarf. Sentenced to a period of suspended animation for smuggling his pet cat on board, he is joined by just four fellow survivors: second technician Arnold J Rimmer, a sneering-yet-inept hologram based on his one-time superior; Holly, a ship's computer reduced to near-senility by eons adrift in space; a humanoid descendant of the cat obsessed with fashion and fish; and Kryten, a salvaged android programmed to serve his useless companions. Together, this bickering band must come to terms with an existence which, in terms of productivity and purpose, isn't that far removed from its old one.
+		// [Rating] => 9.0
+		// [RatingCount] => 78
+		// [Runtime] => 30
+		// [SeriesID] => 132
+		// [SeriesName] => Red Dwarf
+		// [Status] => Continuing
+		// [added] => SimpleXMLElement Object
+		//             (
+		//             )
 	
-	    // [addedBy] => SimpleXMLElement Object
-	    //             (
-	    //             )
+		// [addedBy] => SimpleXMLElement Object
+		//             (
+		//             )
 	
-	    // [banner] => graphical/71326-g11.jpg
-	    // [fanart] => fanart/original/71326-28.jpg
+		// [banner] => graphical/71326-g11.jpg
+		// [fanart] => fanart/original/71326-28.jpg
 		// [lastupdated] => 1298795456
 		// [poster] => posters/71326-3.jpg
 		// [zap2it_id] => SH003584
@@ -498,25 +498,25 @@ try {
 	echo '<strong>$EpisodeUpdates</strong><pre>'; print_r($EpisodeUpdates); echo '</pre>';
 	foreach($EpisodeUpdates->Episode AS $Episode) {
 		// update episodes in database
-		    		
+					
 		// [id] => 301420
-	    // [Combined_episodenumber] => 1
-	    // [Combined_season] => 0
-	    // [EpisodeName] => Unaired Pilot
-	    // [EpisodeNumber] => 1
-	    // [FirstAired] => SimpleXMLElement Object
-	    //                     (
-	    //                     )
-	    // [Language] => en
-	    // [Overview] => The Unaired Pilot takes place in the past. It tells the story of Karen and Dan and how she got pregnant. Then, after Dan marries Deb it goes into the future further where Lucas has his first day at Tree Hill High. He meets mouth and others and realizes that maybe basketball is for him. That is until him and Nathan get into a fight about Dan. This is where it all begins.
-	    // [ProductionCode] => 100
-	    // [Rating] => 10.0
-	    // [RatingCount] => 1
-	    // [SeasonNumber] => 0
+		// [Combined_episodenumber] => 1
+		// [Combined_season] => 0
+		// [EpisodeName] => Unaired Pilot
+		// [EpisodeNumber] => 1
+		// [FirstAired] => SimpleXMLElement Object
+		//                     (
+		//                     )
+		// [Language] => en
+		// [Overview] => The Unaired Pilot takes place in the past. It tells the story of Karen and Dan and how she got pregnant. Then, after Dan marries Deb it goes into the future further where Lucas has his first day at Tree Hill High. He meets mouth and others and realizes that maybe basketball is for him. That is until him and Nathan get into a fight about Dan. This is where it all begins.
+		// [ProductionCode] => 100
+		// [Rating] => 10.0
+		// [RatingCount] => 1
+		// [SeasonNumber] => 0
 		// [filename] => SimpleXMLElement Object
-	    //                     (
-	    //                     )
-	    // [lastupdated] => 1179686128
+		//                     (
+		//                     )
+		// [lastupdated] => 1179686128
 		// [seasonid] => 19625
 		// [seriesid] => 72158
 	}

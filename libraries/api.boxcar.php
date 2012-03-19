@@ -12,12 +12,12 @@ class BoxcarAPI {
 	
 	public function Notify($EMail, $Name, $Message, $ID = '') {
 		$Notification = array('token'                                => $this->APIKey,
-			                  'secret'                               => $this->APISecret,
-			                  'email'                                => md5($EMail),
-			                  'notification[from_screen_name]'       => $Name,
-			                  'notification[message]'                => $Message,
-			                  'notification[from_remote_service_id]' => ($ID) ? $ID : rand(),
-			                  'notification[icon_url]'               => $this->Icon);
+							  'secret'                               => $this->APISecret,
+							  'email'                                => md5($EMail),
+							  'notification[from_screen_name]'       => $Name,
+							  'notification[message]'                => $Message,
+							  'notification[from_remote_service_id]' => ($ID) ? $ID : rand(),
+							  'notification[icon_url]'               => $this->Icon);
 		
 		return $this->ResponseHandler($this->Send('notifications', $Notification));
 	}

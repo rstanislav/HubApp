@@ -6,18 +6,18 @@ class UTorrent extends Hub {
 		require_once APP_PATH.'/libraries/api.utorrent.php';
 		
 		$UTorrent = array('Host' => Hub::GetSetting('UTorrentIP'),
-		                  'Port' => Hub::GetSetting('UTorrentPort'),
-		                  'User' => Hub::GetSetting('UTorrentUsername'),
-		                  'Pass' => Hub::GetSetting('UTorrentPassword'));
+						  'Port' => Hub::GetSetting('UTorrentPort'),
+						  'User' => Hub::GetSetting('UTorrentUsername'),
+						  'Pass' => Hub::GetSetting('UTorrentPassword'));
 
 		if(!empty($UTorrent['Host'])) {
 			if(!empty($UTorrent['Port'])) {
 				if(!empty($UTorrent['User'])) {
 					if(!empty($UTorrent['Pass'])) {
 						$this->UTorrentAPI = new UTorrentAPI($UTorrent['Host'], 
-						                                     $UTorrent['User'],
-						                                     $UTorrent['Pass'],
-						                                     $UTorrent['Port']);
+															 $UTorrent['User'],
+															 $UTorrent['Pass'],
+															 $UTorrent['Port']);
 						
 						if(!$this->UTorrentAPI->Token) {
 							$this->Error[] = 'Unable to connect to uTorrent';
@@ -85,7 +85,7 @@ class UTorrent extends Hub {
 						if(!empty($TorrentURI[2]) && !empty($TorrentURI[1])) {
 							$EpisodePrep = $this->PDO->prepare('UPDATE Episodes SET TorrentKey = :TorrentKey WHERE EpisodeID = :EpisodeID');
 							$EpisodePrep->execute(array(':TorrentKey' => $TorrentURI[2],
-							                            ':EpisodeID'  => $TorrentURI[1]));
+														':EpisodeID'  => $TorrentURI[1]));
 							
 							Hub::AddLog(EVENT.'Series', 'Success', 'Downloaded "'.$TorrentTitle.'"');
 							Hub::NotifyUsers('NewUTorrentEpisode', 'uTorrent/Series', 'Downloaded "'.$TorrentTitle.'"');
@@ -94,8 +94,8 @@ class UTorrent extends Hub {
 					else {
 						$WishlistPrep = $this->PDO->prepare('UPDATE Wishlist Set WishlistDownloadDate = :Date, TorrentKey = :TorrentKey WHERE WishlistTitle = :WishlistTitle');
 						$WishlistPrep->execute(array(':Date'          => time(),
-						                             ':TorrentKey'    => $TorrentURI[2],
-						                             ':WishlistTitle' => $TorrentURI[3]));
+													 ':TorrentKey'    => $TorrentURI[2],
+													 ':WishlistTitle' => $TorrentURI[3]));
 						
 						Hub::AddLog(EVENT.'Wishlist', 'Success', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
 						Hub::NotifyUsers('NewUTorrentWish', 'uTorrent/Wishlist', 'Downloaded "'.$TorrentTitle.'" from Wishlist');

@@ -156,18 +156,18 @@ class Drives extends Hub {
 			
 			foreach($Objects AS $Object) { 
 				if($Object != '.' && $Object != '..') { 
-	        		if(filetype($Directory.'/'.$Object) == 'dir') {
-	        			self::RecursiveDirRemove($Directory.'/'.$Object); 
-	        		}
-	        		else {
-	        			unlink($Directory.'/'.$Object);
-	        		}
-	       		} 
-	     	} 
-	     
-	     	reset($Objects);
-	     	
-	     	return rmdir($Directory); 
+					if(filetype($Directory.'/'.$Object) == 'dir') {
+						self::RecursiveDirRemove($Directory.'/'.$Object); 
+					}
+					else {
+						unlink($Directory.'/'.$Object);
+					}
+		   		} 
+		 	} 
+		 
+		 	reset($Objects);
+		 	
+		 	return rmdir($Directory); 
 	   	}
 	}
 	
@@ -178,13 +178,13 @@ class Drives extends Hub {
 			
 			foreach($Objects AS $Object) { 
 				if($Object != '.' && $Object != '..') { 
-	        		if(filetype($Directory.'/'.$Object) == 'dir') {
-	        			self::RecursiveDirFileAdd($Directory.'/'.$Object, $FileToAdd); 
-	        		}
-	       		} 
-	     	} 
-	     
-	     	reset($Objects);
+					if(filetype($Directory.'/'.$Object) == 'dir') {
+						self::RecursiveDirFileAdd($Directory.'/'.$Object, $FileToAdd); 
+					}
+		   		} 
+		 	} 
+		 
+		 	reset($Objects);
 	   	}
 	}
 	
@@ -325,12 +325,12 @@ class Drives extends Hub {
 		$DriveRoot = ($DriveNetwork) ? $DriveShare : $DriveMount;
 		
 		$RequiredFolders = array('Completed', 
-		                         'Downloads', 
-		                         'Media', 
-		                         'Media/Misc', 
-		                         'Media/Movies', 
-		                         'Media/TV', 
-		                         'Unsorted');
+								 'Downloads', 
+								 'Media', 
+								 'Media/Misc', 
+								 'Media/Movies', 
+								 'Media/TV', 
+								 'Unsorted');
 		
 		if(!empty($DriveRoot) && is_dir($DriveRoot)) {
 			$LogFolders = array();
@@ -349,12 +349,12 @@ class Drives extends Hub {
 		
 		$DriveAddPrep = $this->PDO->prepare('INSERT INTO Drives (DriveID, DriveDate, DriveShare, DriveUser, DrivePass, DriveMount, DriveActive, DriveNetwork) VALUES (NULL, :Date, :Share, :User, :Pass, :Mount, :Active, :Network)');
 		$DriveAddPrep->execute(array(':Date'    => time(),
-		                             ':Share'   => $DriveShare,
-		                             ':User'    => $DriveUser,
-		                             ':Pass'    => $DrivePass,
-		                             ':Mount'   => $DriveMount,
-		                             ':Active'  => 0,
-		                             ':Network' => $DriveNetwork));
+									 ':Share'   => $DriveShare,
+									 ':User'    => $DriveUser,
+									 ':Pass'    => $DrivePass,
+									 ':Mount'   => $DriveMount,
+									 ':Active'  => 0,
+									 ':Network' => $DriveNetwork));
 		
 		Hub::AddLog(EVENT.'Drives', 'Success', 'Added "'.$DriveShare.' ('.$DriveMount.')" to the database');
 		$DriveShareCred = self::DriveShareCredentials($DriveShare, $DriveUser, $DrivePass);

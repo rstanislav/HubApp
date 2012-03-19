@@ -58,8 +58,8 @@ class Wishlist extends Hub {
 			if(!is_array($Wishlist)) {
 				$WishlistAddPrep = $this->PDO->prepare('INSERT INTO Wishlist (WishlistID, WishlistDate, WishlistTitle, WishlistYear) VALUES (NULL, :Date, :Title, :Year)');
 				$WishlistAddPrep->execute(array(':Date'  => time(),
-			                            		':Title' => self::ConvertCase(self::StripIllegalChars($_POST['WishlistTitle'])),
-			                            		':Year'  => $_POST['WishlistYear']));
+												':Title' => self::ConvertCase(self::StripIllegalChars($_POST['WishlistTitle'])),
+												':Year'  => $_POST['WishlistYear']));
 			}
 			else {
 				echo 'Duplicate entry!';
@@ -73,15 +73,15 @@ class Wishlist extends Hub {
 	function ConvertCase($String) {
 		$Delimiters = array(' ', '-', '.', '\'', 'O\'', 'Mc');
 		$Exceptions = array('út', 'u', 's', 'és', 'utca', 'tér', 'krt', 'körút', 'sétány', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX', 'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXIX', 'XXX');
-	    
-	    $String = mb_convert_case($String, MB_CASE_TITLE, 'UTF-8');
+		
+		$String = mb_convert_case($String, MB_CASE_TITLE, 'UTF-8');
 	
 		foreach($Delimiters AS $DelKey => $Delimiter) {
 			$Words    = explode($Delimiter, $String);
 			$NewWords = array();
 			
 			foreach($Words AS $WordKey => $Word){
-	            if(in_array(mb_strtoupper($Word, 'UTF-8'), $Exceptions)) {
+				if(in_array(mb_strtoupper($Word, 'UTF-8'), $Exceptions)) {
 					// check exceptions list for any words that should be in upper case
 					$Word = mb_strtoupper($Word, 'UTF-8');
 				}
@@ -122,7 +122,7 @@ class Wishlist extends Hub {
 					
 					$WishItemEditPrep = $this->PDO->prepare('UPDATE Wishlist SET '.$EditField.' = :EditValue WHERE WishlistID = :EditID');
 					$WishItemEditPrep->execute(array(':EditValue' => $_POST['value'],
-					                                 ':EditID'    => $EditID));
+													 ':EditID'    => $EditID));
 						
 					echo $_POST['value'];
 				}
@@ -153,10 +153,10 @@ class Wishlist extends Hub {
 						
 						$WishlistRefreshPrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = :File, WishlistFileGone = 0, WishlistDownloadDate = :Date WHERE WishlistTitle = :Title AND WishlistYear = :Year');
 						$WishlistRefreshPrep->execute(array('File'  => $Movie,
-						                                    'Date'  => $WishlistDownloadDate,
-							                                'Title' => $ParsedFile['Title'],
-							                                'Year'  => $ParsedFile['Year']));
-							                                
+															'Date'  => $WishlistDownloadDate,
+															'Title' => $ParsedFile['Title'],
+															'Year'  => $ParsedFile['Year']));
+															
 						$WishlistItems++;
 					}
 				}
@@ -203,7 +203,7 @@ class Wishlist extends Hub {
 	function GetWishlistItemByTitleYear($WishlistTitle, $WishlistYear) {
 		$WishItemPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistTitle = :Title AND WishlistYear = :Year');
 		$WishItemPrep->execute(array(':Title' => $WishlistTitle,
-		                             ':Year'  => $WishlistYear));
+									 ':Year'  => $WishlistYear));
 		
 		if($WishItemPrep->rowCount()) {
 			return $WishItemPrep->fetch();

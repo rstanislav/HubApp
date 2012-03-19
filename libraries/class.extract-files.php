@@ -22,12 +22,12 @@ class ExtractFiles extends Hub {
 	}
 	
 	function GetDirectorySize($Directory) { 
-	    $DirSize = 0; 
-	    foreach(new RecursiveIteratorIterator(new IgnorantRecursiveDirectoryIterator($Directory)) AS $File) { 
-	        $DirSize += self::GetFileSize($File); 
-	    }
-	    
-	    return $DirSize; 
+		$DirSize = 0; 
+		foreach(new RecursiveIteratorIterator(new IgnorantRecursiveDirectoryIterator($Directory)) AS $File) { 
+			$DirSize += self::GetFileSize($File); 
+		}
+		
+		return $DirSize; 
 	} 
 	
 	function GetFiles() {
@@ -88,8 +88,8 @@ class ExtractFiles extends Hub {
 	function SeedingFileCopied($File) {
 		$SeedingFilePrep = $this->PDO->prepare('SELECT SeedingID FROM Seeding WHERE SeedingFile = :FileBase OR SeedingFile = :File');
 		$SeedingFilePrep->execute(array(':FileBase' => pathinfo($File, PATHINFO_BASENAME),
-		                                ':File'     => $File));
-		                             
+										':File'     => $File));
+									 
 		if($SeedingFilePrep->rowCount()) {
 			return TRUE;
 		}
@@ -101,7 +101,7 @@ class ExtractFiles extends Hub {
 	function SeedingFileCopyToDB($File) {
 		$SeedingFilePrep = $this->PDO->prepare('INSERT INTO Seeding (SeedingID, SeedingDate, SeedingFile) VALUES (null, :Date, :File)');
 		$SeedingFilePrep->execute(array(':Date' => time(),
-		                                ':File' => $File));
+										':File' => $File));
 	}
 	
 	function ExtractFile($File, $DriveID) {
@@ -263,10 +263,10 @@ class ExtractFiles extends Hub {
 						foreach($ParsedFile['Episodes'] AS $ParsedEpisode) {
 							$EpisodeUpdatePrep = $this->PDO->prepare('UPDATE Episodes SET EpisodeFile = :File WHERE SeriesKey = :SerieID AND EpisodeSeason = :Season AND EpisodeEpisode = :Episode');
 							$EpisodeUpdatePrep->execute(array(':File'    => $NewFolder.'/'.$NewFileName,
-							                                  ':SerieID' => $Serie['SerieID'],
-							                                  ':Season'  => $ParsedEpisode[0],
-							                                  ':Episode' => $ParsedEpisode[1]));
-							                                  
+															  ':SerieID' => $Serie['SerieID'],
+															  ':Season'  => $ParsedEpisode[0],
+															  ':Episode' => $ParsedEpisode[1]));
+															  
 							Hub::NotifyUsers('NewLibraryEpisode', 'XBMC/Series', '"'.$SerieTitle.' '.$ParsedEpisode[0].'x'.$ParsedEpisode[1].'" is now available on "'.$DriveRoot.'"');
 						}
 					}
@@ -275,10 +275,10 @@ class ExtractFiles extends Hub {
 			else if($ParsedFile['Type'] == 'Movie') {
 				$WishlistUpdatePrep = $this->PDO->prepare('UPDATE Wishlist SET WishlistFile = :File, WishlistDownloadDate = :Date, WishlistFileGone = 0 WHERE WishlistTitle = :Title AND WishlistYear = :Year');
 				$WishlistUpdatePrep->execute(array(':File'  => $NewFolder.'/'.$NewFileName,
-				                                   ':Date'  => time(),
-				                                   ':Title' => $ParsedFile['Title'],
-				                                   ':Year'  => $ParsedFile['Year']));
-				                                   
+												   ':Date'  => time(),
+												   ':Title' => $ParsedFile['Title'],
+												   ':Year'  => $ParsedFile['Year']));
+												   
 				Hub::NotifyUsers('NewLibraryMovie', 'XBMC/Movies', '"'.$ParsedFile['Title'].' ('.$ParsedFile['Year'].')" is now available on "'.$DriveRoot.'"');
 			}
 			
@@ -348,21 +348,21 @@ class ExtractFiles extends Hub {
 				$CompletedContents = new RecursiveIteratorIterator(new IgnorantRecursiveDirectoryIterator($DriveRoot.'/Completed'), RecursiveIteratorIterator::SELF_FIRST);
 				
 				foreach($CompletedContents AS $Name => $Object){
-				    if(is_dir($Name)) {
-				    	try {
-				    		$DirSize = self::GetDirectorySize($Name);
-				    	}
-				    	catch(UnexpectedValueException $e) {
-				    		break;
-				    	}
-				    	
-				    	if($DirSize <= (1024 * 1024 * 100)) {
-				    		@Drives::RecursiveDirRemove($Name);
-				    		
-				    		$FoldersDeleted++;
-				    		$FoldersSizeDeleted += $DirSize;
-				    	}
-				    }
+					if(is_dir($Name)) {
+						try {
+							$DirSize = self::GetDirectorySize($Name);
+						}
+						catch(UnexpectedValueException $e) {
+							break;
+						}
+						
+						if($DirSize <= (1024 * 1024 * 100)) {
+							@Drives::RecursiveDirRemove($Name);
+							
+							$FoldersDeleted++;
+							$FoldersSizeDeleted += $DirSize;
+						}
+					}
 				}
 			}
 		}

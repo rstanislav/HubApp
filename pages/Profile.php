@@ -30,47 +30,47 @@ $('#ProfileSave').click(function() {
   <dt>E-mail</dt>
   <dd>
    <div class="field">
-    <label>
-     <input name="UserEMail" type="text" value="<?php echo $UserObj->UserEMail; ?>" />
-     <span>Your current e-mail address</span>
-    </label>
+	<label>
+	 <input name="UserEMail" type="text" value="<?php echo $UserObj->UserEMail; ?>" />
+	 <span>Your current e-mail address</span>
+	</label>
    </div>
   </dd>
   
   <div style="float: right">
    <a id="ProfileSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
   </div>
-            
+			
   <dd class="clear"></dd>
  
   <dt>Password Reset</dt>
   <dd>
    <div class="field">
-    <label>
-     <input name="UserCurrentPass" type="password" />
-     <span>Your current password</span>
-    </label>
+	<label>
+	 <input name="UserCurrentPass" type="password" />
+	 <span>Your current password</span>
+	</label>
    </div>
    
    <div class="field">
-    <label>
-     <input name="UserNewPass1" type="password" />
-     <span>New password</span>
-    </label>
+	<label>
+	 <input name="UserNewPass1" type="password" />
+	 <span>New password</span>
+	</label>
    </div>
    
    <div class="field">
-    <label>
-     <input name="UserNewPass2" type="password" />
-     <span>New password (repeat)</span>
-    </label>
+	<label>
+	 <input name="UserNewPass2" type="password" />
+	 <span>New password (repeat)</span>
+	</label>
    </div>
   </dd>
   
   <div style="float: right">
    <a id="ProfileSave" class="button positive"><span class="inner"><span class="label" nowrap="">Save</span></span></a>
   </div>
-            
+			
   <dd class="clear"></dd>
  </dl>
  <div class="clear"></div>

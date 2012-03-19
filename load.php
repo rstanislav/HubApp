@@ -443,7 +443,7 @@ else {
 			foreach($_POST['Permission'] AS $PermissionID => $CheckedValue) {
 				$AddGroupPermissionPrep = $HubObj->PDO->prepare('INSERT INTO UserGroupPermissions (UserGroupKey, PermissionKey) VALUES (:UserGroupID, :PermissionID)');
 				$AddGroupPermissionPrep->execute(array(':UserGroupID' => $_POST['GroupID'],
-					                                   ':PermissionID' => $PermissionID));
+													   ':PermissionID' => $PermissionID));
 			}
 			
 			header('Location: '.$_SERVER['HTTP_REFERER'].'#!/Users/Groups/');
@@ -780,7 +780,7 @@ else {
 						if(filter_has_var(INPUT_GET, 'EpisodeID')) {
 							$TorrentEpisodePrep = $HubObj->PDO->prepare('UPDATE Episodes SET TorrentKey = :TorrentKey WHERE EpisodeID = :EpisodeID');
 							$TorrentEpisodePrep->execute(array(':TorrentKey' => $_GET['TorrentID'],
-							                                   ':EpisodeID'  => $_GET['EpisodeID']));
+															   ':EpisodeID'  => $_GET['EpisodeID']));
 						}
 					}
 					else {

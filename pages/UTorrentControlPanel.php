@@ -38,32 +38,32 @@ $(document).ready(function() {
 	
 	$('#TorrentMagnet').keypress(function(event) {
 		if(event.which == '13') {
-	    	event.preventDefault();
-	    	
-	    	$.ajax({
-	    		method: 'get',
-	    		url:    'load.php',
-	    		data:   'page=TorrentMagnetAdd&Magnet=' + encodeURIComponent($('#TorrentMagnet').attr('value')),
-	    		beforeSend: function() {
-	    			$('#TorrentMagnetLoad').html('<img src="images/spinners/ajax-light.gif" />');
-	    		},
-	    		success: function(Return) {
-	    			if(Return != '') {
-	    				$('#TorrentMagnetLoad').html('<img src="images/icons/error.png" />');
-	    				$('#TorrentMagnet').attr('value', '');
-	    				
-	    				noty({
-	    					text: Return,
-	    					type: 'error',
-	    					timeout: false,
-	    				});
-	    			}
-	    			else {
-	    				$('#TorrentMagnetLoad').html('Enter magnet URI and press enter');
-	    				$('#TorrentMagnet').attr('value', '');
-	    			}
-	    		}
-	    	});
+			event.preventDefault();
+			
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=TorrentMagnetAdd&Magnet=' + encodeURIComponent($('#TorrentMagnet').attr('value')),
+				beforeSend: function() {
+					$('#TorrentMagnetLoad').html('<img src="images/spinners/ajax-light.gif" />');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						$('#TorrentMagnetLoad').html('<img src="images/icons/error.png" />');
+						$('#TorrentMagnet').attr('value', '');
+						
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
+					}
+					else {
+						$('#TorrentMagnetLoad').html('Enter magnet URI and press enter');
+						$('#TorrentMagnet').attr('value', '');
+					}
+				}
+			});
 	   	}
 	});
 });

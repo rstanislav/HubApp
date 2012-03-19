@@ -4,9 +4,9 @@ class RSS extends Hub {
 	}
 	
 	function StripCData($Str) { 
-	    preg_match_all('/<!\[cdata\[(.*?)\]\]>/is', $Str, $Matches);
-	    
-	    return str_replace($Matches[0], $Matches[1], $Str); 
+		preg_match_all('/<!\[cdata\[(.*?)\]\]>/is', $Str, $Matches);
+		
+		return str_replace($Matches[0], $Matches[1], $Str); 
 	}
 	
 	function GetQualityRank($Str) {
@@ -70,8 +70,8 @@ class RSS extends Hub {
 						
 						$EpisodePrep = $this->PDO->prepare('SELECT Series.*, Episodes.* FROM Series, Episodes WHERE Episodes.SeriesKey = Series.SerieID AND (Series.SerieTitle = :Title OR Series.SerieTitleAlt = :Title) AND Episodes.EpisodeSeason = :Season AND Episodes.EpisodeEpisode = :Episode GROUP BY Series.SerieTitle');
 						$EpisodePrep->execute(array(':Title'   => $Parsed['Title'],
-						                            ':Season'  => $Parsed['Episodes'][0][0],
-						                            ':Episode' => $Parsed['Episodes'][0][1]));
+													':Season'  => $Parsed['Episodes'][0][0],
+													':Episode' => $Parsed['Episodes'][0][1]));
 						
 						$Episodes = $EpisodePrep->fetchAll();
 						foreach($Episodes AS $Episode) {
@@ -145,8 +145,8 @@ class RSS extends Hub {
 					if(!stristr($Torrent['TorrentTitle'], 'hebrew') && !stristr($Torrent['TorrentTitle'], 'hebsub')) {
 						$WishlistPrep = $this->PDO->prepare('SELECT * FROM Wishlist WHERE WishlistTitle = :Title AND WishlistYear = :Year');
 						$WishlistPrep->execute(array(':Title' => $Parsed['Title'],
-					                             	 ':Year'  => $Parsed['Year']));
-					                             
+												 	 ':Year'  => $Parsed['Year']));
+												 
 						if($WishlistPrep->rowCount()) {
 							$Wishlists = $WishlistPrep->fetchAll();
 						
@@ -248,16 +248,16 @@ class RSS extends Hub {
 						$Item->pubDate = strtotime($Item->pubDate);
 							
 						if($Item->pubDate > $Update['Last']) {
-					    	$RSSPrep = $this->PDO->prepare('INSERT INTO Torrents (TorrentID, TorrentDate, TorrentPubDate, TorrentURI, TorrentTitle, TorrentCategory, RSSKey) VALUES (:TorrentID, :TorrentDate, :TorrentPubDate, :TorrentURI, :TorrentTitle, :TorrentCategory, :RSSID)');
-					    	$RSSPrep->execute(array(':TorrentID'       => NULL,
-					    	                        ':TorrentDate'     => time(),
-					    	                        ':TorrentPubDate'  => $Item->pubDate,
-					    	                        ':TorrentURI'      => $this->StripCData($Item->link),
-					    	                        ':TorrentTitle'    => $this->StripCData($Item->title),
-					    	                        ':TorrentCategory' => $Item->category,
-					    	                        ':RSSID'           => $RSSFeed['RSSID']));
-					    	$NewItems++;
-					    }
+							$RSSPrep = $this->PDO->prepare('INSERT INTO Torrents (TorrentID, TorrentDate, TorrentPubDate, TorrentURI, TorrentTitle, TorrentCategory, RSSKey) VALUES (:TorrentID, :TorrentDate, :TorrentPubDate, :TorrentURI, :TorrentTitle, :TorrentCategory, :RSSID)');
+							$RSSPrep->execute(array(':TorrentID'       => NULL,
+													':TorrentDate'     => time(),
+													':TorrentPubDate'  => $Item->pubDate,
+													':TorrentURI'      => $this->StripCData($Item->link),
+													':TorrentTitle'    => $this->StripCData($Item->title),
+													':TorrentCategory' => $Item->category,
+													':RSSID'           => $RSSFeed['RSSID']));
+							$NewItems++;
+						}
 					}
 				}
 			}
@@ -340,8 +340,8 @@ class RSS extends Hub {
 		if(!$AddError) {
 			$RSSFeedAddPrep = $this->PDO->prepare('INSERT INTO RSS (RSSID, RSSDate, RSSTitle, RSSFeed) VALUES (NULL, :Date, :Title, :Feed)');
 			$RSSFeedAddPrep->execute(array(':Date'  => time(),
-			                               ':Title' => $_POST['RSSTitle'],
-			                               ':Feed'  => $_POST['RSSFeed']));
+										   ':Title' => $_POST['RSSTitle'],
+										   ':Feed'  => $_POST['RSSFeed']));
 		}
 		else {
 			echo 'You have to fill in all the fields';
@@ -360,7 +360,7 @@ class RSS extends Hub {
 					
 					$RSSFeedEditPrep = $this->PDO->prepare('UPDATE RSS SET '.$EditField.' = :EditValue WHERE RSSID = :EditID');
 					$RSSFeedEditPrep->execute(array(':EditValue' => $_POST['value'],
-					                                ':EditID'    => $EditID));
+													':EditID'    => $EditID));
 						
 					echo $_POST['value'];
 				}
@@ -413,7 +413,7 @@ class RSS extends Hub {
 		else {
 			$TorrentPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE RSSKey = :RSSKey AND TorrentCategory = :Category ORDER BY TorrentPubDate DESC LIMIT 100');
 			$TorrentPrep->execute(array(':Category' => urldecode($Category),
-			                            ':RSSKey'   => $RSSKey));
+										':RSSKey'   => $RSSKey));
 		}
 		
 		if($TorrentPrep->rowCount()) {
@@ -427,7 +427,7 @@ class RSS extends Hub {
 	function SearchTitle($Search) {
 		$SearchPrep = $this->PDO->prepare('SELECT Torrents.*, RSS.RSSTitle FROM Torrents, RSS WHERE TorrentTitle LIKE :Search AND TorrentTitle NOT LIKE :ExcludeSearch AND RSS.RSSID = Torrents.RSSKey AND Torrents.IsBroken != 1 ORDER BY TorrentDate DESC');
 		$SearchPrep->execute(array(':Search'        => urldecode($Search).'%',
-		                           ':ExcludeSearch' => '%hebsub%'));
+								   ':ExcludeSearch' => '%hebsub%'));
 		
 		if($SearchPrep->rowCount()) {
 			return $SearchPrep->fetchAll();
@@ -550,13 +550,13 @@ class RSS extends Hub {
 	  	
 	  		$ReleaseSeason = 'NA';
 	  		foreach($Matches as $Match) {
-	    		if(isset($Match[1]) && strlen($Match[1]) > 0) {
-	      			$ReleaseSeason = (int) $Match[1];
-	    		}
-	    	
-	    		if($ReleaseSeason != 72) {
-	    			$Episodes[] = (int) $Match[2];
-	    		}
+				if(isset($Match[1]) && strlen($Match[1]) > 0) {
+		  			$ReleaseSeason = (int) $Match[1];
+				}
+			
+				if($ReleaseSeason != 72) {
+					$Episodes[] = (int) $Match[2];
+				}
 	  		}
 	  		
 	  		if(sizeof($Episodes) > 1) {
@@ -570,23 +570,23 @@ class RSS extends Hub {
 	  			  		
 	  		if(!empty($ReleaseTitle)) {
 	  			return array('Type'     => 'TV',
-	  		             	 'Title'    => $ReleaseTitle,
-	    				 	 'Episodes' => $ReleaseEpisodes,
-	    				 	 'Quality'  => $ReleaseQuality);
-	    	}
-	    	else {
-	    		return FALSE;
-	    	}
+	  					 	 'Title'    => $ReleaseTitle,
+						 	 'Episodes' => $ReleaseEpisodes,
+						 	 'Quality'  => $ReleaseQuality);
+			}
+			else {
+				return FALSE;
+			}
 		}
 		else if(preg_match($TalkShowRegEx, $Release, $Match)) {
 			return array('Type'  => 'Talk Show',
-			             'Title' => trim(str_replace($Replace, $Search, $Match[1])),
-			             'Year'  => $Match[2]);
+						 'Title' => trim(str_replace($Replace, $Search, $Match[1])),
+						 'Year'  => $Match[2]);
 		}
 		else if(preg_match($MovieRegEx, $Release, $Match)) {
 			return array('Type'  => 'Movie',
-			             'Title' => trim(str_replace($Replace, $Search, $Match[1])),
-			             'Year'  => trim($Match[2]));
+						 'Title' => trim(str_replace($Replace, $Search, $Match[1])),
+						 'Year'  => trim($Match[2]));
 		}
 		else {
 			return FALSE;
@@ -594,102 +594,102 @@ class RSS extends Hub {
 	}
 	
 	function BDecode($Str) {
-	    $Pos = 0;
-	    
-	    return RSS::BDecodeRecursive($Str, $Pos);
+		$Pos = 0;
+		
+		return RSS::BDecodeRecursive($Str, $Pos);
 	}
 	
 	function BDecodeRecursive($Str, &$Pos) {
-	    $StrLength = strlen($Str);
-	    if(($Pos < 0) || ($Pos >= $StrLength)) {
-	    	return NULL;
-	    }
-	    else if($Str{$Pos} == 'i') {
-	    	$Pos++;
-	    	$NumLength = strspn($Str, '-0123456789', $Pos);
-	    	$StrPos    = $Pos;
-	    	$Pos      += $NumLength;
-	    	
-	    	if(($Pos >= $StrLength) || ($Str{$Pos} != 'e')) {
-	    		return NULL;
-	    	}
-	    	else {
-	    		$Pos++;
-	    		
-	    		return intval(substr($Str, $StrPos, $NumLength));
-	    	}
-	    }
-	    else if($Str{$Pos} == 'd') {
-	    	$Pos++;
-	    	$ReturnValue = array();
-	    	while($Pos < $StrLength) {
-	    		if($Str{$Pos} == 'e') {
-	    			$Pos++;
-	    			
-	    			return $ReturnValue;
-	    		}
-	    		else {
-	    			$Key = RSS::BDecodeRecursive($Str, $Pos);
-	    			if($Key == NULL) {
-	    				return NULL;
-	    			}
-	    			else {
-	    				$Val = RSS::BDecodeRecursive($Str, $Pos);
-	    				if($Val == NULL) {
-	    					return NULL;
-	    				}
-	    				else if(!is_array($Key)) {
-	    					$ReturnValue[$Key] = $Val;
-	    				}
-	    			}
-	    		}
-	    	}
-	    
-	    	return NULL;
+		$StrLength = strlen($Str);
+		if(($Pos < 0) || ($Pos >= $StrLength)) {
+			return NULL;
 		}
-	    else if($Str{$Pos} == 'l') {
-	    	$Pos++;
-	    	$ReturnValue = array();
-	    	while($Pos < $StrLength) {
-	    		if($Str{$Pos} == 'e') {
-	    			$Pos++;
-	    			
-	    			return $ReturnValue;
-	    		}
-	    		else {
-	    			$Val = RSS::BDecodeRecursive($Str, $Pos);
-	    			if($Val == NULL) {
-		    			return NULL;
-	    			}
-	    			else {
-	    				$ReturnValue[] = $Val;
-	    			}
-	    		}
-	    	}
-	    	
-	    	return NULL;
-	    }
-	    else {
-	    	$NumLength = strspn($Str, '0123456789', $Pos);
-	    	$StrPos    = $Pos;
-	    	$Pos      += $NumLength;
-	    	if(($Pos >= $StrLength) || ($Str{$Pos} != ':')) {
-	    		return NULL;
-	    	}
-	    	else {
-	    		$ValLength = intval(substr($Str, $StrPos, $NumLength));
-	    		$Pos++;
-	    		$Val = substr($Str, $Pos, $ValLength);
-	    		if(strlen($Val) != $ValLength) {
-		    		return NULL;
-	    		}
-	    		else {
-	    			$Pos += $ValLength;
-	    			
-	    			return $Val;
-	    		}
-	    	}
-	    }
+		else if($Str{$Pos} == 'i') {
+			$Pos++;
+			$NumLength = strspn($Str, '-0123456789', $Pos);
+			$StrPos    = $Pos;
+			$Pos      += $NumLength;
+			
+			if(($Pos >= $StrLength) || ($Str{$Pos} != 'e')) {
+				return NULL;
+			}
+			else {
+				$Pos++;
+				
+				return intval(substr($Str, $StrPos, $NumLength));
+			}
+		}
+		else if($Str{$Pos} == 'd') {
+			$Pos++;
+			$ReturnValue = array();
+			while($Pos < $StrLength) {
+				if($Str{$Pos} == 'e') {
+					$Pos++;
+					
+					return $ReturnValue;
+				}
+				else {
+					$Key = RSS::BDecodeRecursive($Str, $Pos);
+					if($Key == NULL) {
+						return NULL;
+					}
+					else {
+						$Val = RSS::BDecodeRecursive($Str, $Pos);
+						if($Val == NULL) {
+							return NULL;
+						}
+						else if(!is_array($Key)) {
+							$ReturnValue[$Key] = $Val;
+						}
+					}
+				}
+			}
+		
+			return NULL;
+		}
+		else if($Str{$Pos} == 'l') {
+			$Pos++;
+			$ReturnValue = array();
+			while($Pos < $StrLength) {
+				if($Str{$Pos} == 'e') {
+					$Pos++;
+					
+					return $ReturnValue;
+				}
+				else {
+					$Val = RSS::BDecodeRecursive($Str, $Pos);
+					if($Val == NULL) {
+						return NULL;
+					}
+					else {
+						$ReturnValue[] = $Val;
+					}
+				}
+			}
+			
+			return NULL;
+		}
+		else {
+			$NumLength = strspn($Str, '0123456789', $Pos);
+			$StrPos    = $Pos;
+			$Pos      += $NumLength;
+			if(($Pos >= $StrLength) || ($Str{$Pos} != ':')) {
+				return NULL;
+			}
+			else {
+				$ValLength = intval(substr($Str, $StrPos, $NumLength));
+				$Pos++;
+				$Val = substr($Str, $Pos, $ValLength);
+				if(strlen($Val) != $ValLength) {
+					return NULL;
+				}
+				else {
+					$Pos += $ValLength;
+					
+					return $Val;
+				}
+			}
+		}
 	}
 	
 	function GetBadge($RSSID) {
@@ -698,7 +698,7 @@ class RSS extends Hub {
 		$LastActivity = Hub::GetActivity('page=RSS&Feed='.$Feed['RSSTitle'].'&Category=undefined');
 		$TorrentPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE TorrentDate > :LastActivity AND RSSKey = :RSSID');
 		$TorrentPrep->execute(array(':LastActivity' => $LastActivity,
-		                            ':RSSID'        => $RSSID));
+									':RSSID'        => $RSSID));
 		
 		$TorrentNewSize = $TorrentPrep->rowCount();
 		

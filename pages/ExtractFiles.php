@@ -26,13 +26,13 @@ if(!strlen(EVENT)) {
 					<script type="text/javascript">
 					$(document).queue("ajaxRequests", function() {
 						$("#ExtractFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Extracting \"'.$File.'\" ...");
-					    
+						
 						$.ajax({ url:  "load.php",
 								 data: "page=ExtractFile&File='.urlencode($File).'&ID='.$FileNo.'&DriveID='.$DriveID.'",
 								 success: function(data) {
-								     $("#ExtractFile-'.$FileNo.'").html(data);
-					       	 	     $(document).dequeue("ajaxRequests");
-					             }
+									 $("#ExtractFile-'.$FileNo.'").html(data);
+						   	 		 $(document).dequeue("ajaxRequests");
+								 }
 						});
 					});
 					</script>'."\n";
@@ -50,13 +50,13 @@ if(!strlen(EVENT)) {
 					<script type="text/javascript">
 					$(document).queue("ajaxRequests", function() {
 						$("#ExtractFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Moving \"'.$File.'\" ...");
-					    
+						
 						$.ajax({ url:  "load.php",
 								 data: "page=MoveFile&File='.urlencode($File).'&ID='.$FileNo.'&DriveID='.$DriveID.'",
 								 success: function(data) {
-								     $("#MoveFile-'.$FileNo.'").html(data);
-					       	 	     $(document).dequeue("ajaxRequests");
-					             }
+									 $("#MoveFile-'.$FileNo.'").html(data);
+						   	 		 $(document).dequeue("ajaxRequests");
+								 }
 						});
 					});
 					</script>'."\n";

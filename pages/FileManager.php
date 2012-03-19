@@ -3,31 +3,31 @@ $('a[id|=FileManagerMove]').each(function() {
 	$(this).qtip({
 		content: {
 			text: '<img src="images/spinners/ajax-light.gif" alt="Loading..." />',
-            ajax: {
+			ajax: {
 				url: $(this).attr('rel')
 			},
-         },
-         position: {
-            at: 'left top', // Position the tooltip above the link
-            my: 'right center',
-            viewport: $(window), // Keep the tooltip on-screen at all times
-            effect: false, // Disable positioning animation
-            container: $('#maincontent')
-         },
-         show: {
-            event: 'click',
-            solo: true // Only show one tooltip at a time
-         },
-         hide: 'click',
-         style: {
-            classes: 'ui-tooltip-shadow', 
-            tip: {
-            	size: {
-            		x: 10,
-                	y: 5
-            	}
-            }
-         }
+		 },
+		 position: {
+			at: 'left top', // Position the tooltip above the link
+			my: 'right center',
+			viewport: $(window), // Keep the tooltip on-screen at all times
+			effect: false, // Disable positioning animation
+			container: $('#maincontent')
+		 },
+		 show: {
+			event: 'click',
+			solo: true // Only show one tooltip at a time
+		 },
+		 hide: 'click',
+		 style: {
+			classes: 'ui-tooltip-shadow', 
+			tip: {
+				size: {
+					x: 10,
+					y: 5
+				}
+			}
+		 }
 	})
 }).click(function(event) { event.preventDefault(); });
 </script>

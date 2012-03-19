@@ -245,7 +245,7 @@ else {
 
 <script type="text/javascript">
 $('div[id|="command"]').click(function(event) {
-    Action = $(this).attr('id').split('-');
+	Action = $(this).attr('id').split('-');
 	ID = Action[1];
 	Action = Action[0];
 	
@@ -257,6 +257,6 @@ $('div[id|="command"]').click(function(event) {
 $XBMCObj->Connect();
 
 if(is_object($XBMCObj->XBMCRPC)) {
-    //$HubObj->d($XBMCObj->GetCommands());
+	//$HubObj->d($XBMCObj->GetCommands());
 }
 ?>

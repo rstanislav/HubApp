@@ -47,7 +47,7 @@ function AllowedDirectories($Directory) {
 	 $AllowedDirectories = array('Completed', 'Downloads', 'Media', 'Unsorted');
 	 foreach($AllowedDirectories AS $AllowedDirectory) {
 	 	if(strstr($Directory, $AllowedDirectory)) { 
-	     	return $Directory;
+		 	return $Directory;
 	 	}
 	 	else {
 	 		continue;

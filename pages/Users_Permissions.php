@@ -5,7 +5,7 @@ $('#newPermission').click(function(event) {
 	
 	PermissionID = randomString();
 	$('#tbl-permissions tr:first').after(
-	    '<tr id="' + PermissionID + '">' +
+		'<tr id="' + PermissionID + '">' +
 		 '<form name="' + PermissionID + '" method="post" action="load.php?page=PermissionAdd" style="display:none">' +
 		  '<td>Now</td>' +
 		  '<td><input name="PermissionText" style="width:250px" placeholder="text" type="text" /></td>' +

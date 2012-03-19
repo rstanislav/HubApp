@@ -37,7 +37,7 @@ class User extends Hub {
 	function Login($User, $Pass) {
 		$UserPrep = $this->PDO->prepare('SELECT * FROM User, UserGroups WHERE UserName = :UserName AND UserPassword = :UserPassword AND UserGroupKey = UserGroupID');
 		$UserPrep->execute(array(':UserName'     => $User,
-		                         ':UserPassword' => md5($Pass)));
+								 ':UserPassword' => md5($Pass)));
 		
 		if($UserPrep->rowCount()) {
 			$UserInfo = $UserPrep->fetch();
@@ -77,7 +77,7 @@ class User extends Hub {
 	function ResetPassword($UserName, $UserEMail) {
 		$UserPrep = $this->PDO->prepare('SELECT * FROM User WHERE UserName = :User OR UserEMail = :EMail');
 		$UserPrep->execute(array(':User'  => $UserName,
-		                         ':EMail' => $UserEMail));
+								 ':EMail' => $UserEMail));
 		
 		$IP = User::GetUserIP();
 		if($UserPrep->rowCount()) {
@@ -85,10 +85,10 @@ class User extends Hub {
 				$NewPassword = Hub::GetRandomID();
 				$UserPrep = $this->PDO->prepare('UPDATE User SET UserPassword = :NewPass WHERE UserName = :User OR UserEMail = :EMail');
 				$UserPrep->execute(array(':NewPass' => md5($NewPassword),
-			                             ':User'    => $UserName,
-			                             ':EMail'   => $UserEMail));
-			    
-			    if($UserName && $UserEMail) {
+										 ':User'    => $UserName,
+										 ':EMail'   => $UserEMail));
+				
+				if($UserName && $UserEMail) {
 			   		$LogEntry = ' for user "'.$UserName.'" with the e-mail "'.$UserEMail.'"';
 			   	}
 			   	else if($UserName) {
@@ -97,9 +97,9 @@ class User extends Hub {
 			   	else if($UserEMail) {
 			   		$LogEntry = ' for a user with the e-mail "'.$UserEMail.'"';
 			   	}
-			    	
-			    $Message = 'A request to reset the password for '.$LogEntry.' has been taken care of. Your new password is: '.$NewPassword;
-			    mail($User['UserEMail'], 'Hub Password Reset', $Message);
+					
+				$Message = 'A request to reset the password for '.$LogEntry.' has been taken care of. Your new password is: '.$NewPassword;
+				mail($User['UserEMail'], 'Hub Password Reset', $Message);
 			
 				Hub::AddLog(EVENT.'Password', 'Success', $IP.' successfully reset the password '.$LogEntry.'. An e-mail has been sent to "'.$User['UserEMail'].'"');
 				
@@ -143,9 +143,9 @@ class User extends Hub {
 					else {
 						$UserEditPrep = $this->PDO->prepare('UPDATE User SET UserEMail = :EMail, UserPassword = :Password WHERE UserID = :UserID');
 						$UserEditPrep->execute(array(':EMail'    => $_POST['UserEMail'],
-						                    		 ':Password' => md5($_POST['UserNewPass1']),
-						                    		 ':UserID'   => $this->UserID));
-						                    		 
+													 ':Password' => md5($_POST['UserNewPass1']),
+													 ':UserID'   => $this->UserID));
+													 
 						Hub::AddLog(EVENT.'Users', 'Success', 'User "'.$this->User.'" updated their profile');
 					}
 				}
@@ -159,8 +159,8 @@ class User extends Hub {
 			else {
 				$UserEditPrep = $this->PDO->prepare('UPDATE User SET UserEMail = :EMail WHERE UserID = :UserID');
 				$UserEditPrep->execute(array(':EMail'  => $_POST['UserEMail'],
-				                    		 ':UserID' => $this->UserID));
-				                    		 
+											 ':UserID' => $this->UserID));
+											 
 				Hub::AddLog(EVENT.'Users', 'Success', 'User "'.$this->User.'" updated their profile');
 			}
 		}		
@@ -184,12 +184,12 @@ class User extends Hub {
 				else {
 					$UserAddPrep = $this->PDO->prepare('INSERT INTO User (UserID, UserDate, UserName, UserPassword, UserEMail, UserGroupKey) VALUES (NULL, :Date, :UserName, :Password, :EMail, :GroupID)');
 					$UserAddPrep->execute(array(':Date'     => time(),
-			                            		':UserName' => $_POST['UserName'],
-			                            		':Password' => md5(strtolower($_POST['UserName'])),
-			                            		':EMail'    => $_POST['UserEMail'],
-			                            		':GroupID'  => $_POST['UserGroup']));
-			                            		
-			    	Hub::AddLog(EVENT.'Users', 'Success', 'Added "'.$_POST['UserName'].'" with e-mail address "'.$_POST['UserEMail'].'"');
+												':UserName' => $_POST['UserName'],
+												':Password' => md5(strtolower($_POST['UserName'])),
+												':EMail'    => $_POST['UserEMail'],
+												':GroupID'  => $_POST['UserGroup']));
+												
+					Hub::AddLog(EVENT.'Users', 'Success', 'Added "'.$_POST['UserName'].'" with e-mail address "'.$_POST['UserEMail'].'"');
 				}
 			}
 			else {
@@ -216,7 +216,7 @@ class User extends Hub {
 	function GetGroupPermission($PermissionID, $UserGroupID) {
 		$CheckPermissionPrep = $this->PDO->prepare('SELECT * FROM UserGroupPermissions WHERE PermissionKey = :PermissionID AND UserGroupKey = :UserGroupID');
 		$CheckPermissionPrep->execute(array(':PermissionID' => $PermissionID,
-		                                    ':UserGroupID'  => $UserGroupID));
+											':UserGroupID'  => $UserGroupID));
 		
 		if($CheckPermissionPrep->rowCount()) {
 			return $CheckPermissionPrep->fetchAll();
@@ -258,9 +258,9 @@ class User extends Hub {
 			
 			$PermissionAddPrep = $this->PDO->prepare('INSERT INTO Permissions (PermissionID, PermissionDate, PermissionAction, PermissionText, PermissionValue) VALUES (NULL, :Date, :Action, :Text, :Value)');
 			$PermissionAddPrep->execute(array(':Date'   => time(),
-			                            	  ':Action' => $_POST['PermissionAction'],
-			                            	  ':Text'   => $_POST['PermissionText'],
-			                            	  ':Value'  => pow(($Permission['Total'] + 1), 2)));
+											  ':Action' => $_POST['PermissionAction'],
+											  ':Text'   => $_POST['PermissionText'],
+											  ':Value'  => pow(($Permission['Total'] + 1), 2)));
 		}
 		else {
 			echo 'You have to fill in all the fields';
@@ -309,7 +309,7 @@ class User extends Hub {
 		if($Permission['PermissionID']) {
 			$PermissionPrep = $this->PDO->prepare('SELECT * FROM UserGroupPermissions WHERE UserGroupKey = :GroupID AND PermissionKey = :PermissionID');
 			$PermissionPrep->execute(array(':GroupID'      => $UserGroupID,
-		                                   ':PermissionID' => $Permission['PermissionID']));
+										   ':PermissionID' => $Permission['PermissionID']));
 		
 			if($PermissionPrep->rowCount()) {
 				return TRUE;
@@ -338,7 +338,7 @@ class User extends Hub {
 	function GetUserNotification($NotificationID, $UserID) {
 		$UserNotificationPrep = $this->PDO->prepare('SELECT * FROM UserNotifications WHERE NotificationKey = :NotificationID AND UserKey = :UserID');
 		$UserNotificationPrep->execute(array(':NotificationID' => $NotificationID,
-		                                     ':UserID'         => $UserID));
+											 ':UserID'         => $UserID));
 		
 		if($UserNotificationPrep->rowCount()) {
 			return $UserNotificationPrep->fetchAll();

@@ -15,7 +15,7 @@ $('#newUser').click(function(event) {
 	
 	UserID = randomString();
 	$('#tbl-users tr:first').after(
-	    '<tr id="' + UserID + '">' +
+		'<tr id="' + UserID + '">' +
 		 '<form name="' + UserID + '" method="post" action="load.php?page=UserAdd" style="display:none">' +
 		  '<td>Now</td>' +
 		  '<td><input name="UserName" style="width:250px" placeholder="username" type="text" /></td>' +

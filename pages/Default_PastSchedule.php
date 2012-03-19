@@ -58,20 +58,20 @@ if($Series) {
 		
 		if(date('d.m.y', $Serie['EpisodeAirDate']) == date('d.m.y', time())) {
 			$Heading = 'Today';
-        }
-        else if(date('d.m.y', $Serie['EpisodeAirDate']) == date('d.m.y', (time() - (60 * 60 * 24)))) {
+		}
+		else if(date('d.m.y', $Serie['EpisodeAirDate']) == date('d.m.y', (time() - (60 * 60 * 24)))) {
 			$Heading = 'Yesterday';
-        }
-        else {
-        	$Heading = date('l', $Serie['EpisodeAirDate']);
-        }
+		}
+		else {
+			$Heading = date('l', $Serie['EpisodeAirDate']);
+		}
 		
 		if($Heading != @$PrevHeading) {
 			echo '
-        	<tr class="heading">
-        	 <td style="color: white" colspan="5">'.$Heading.'</td>
-        	</tr>'."\n";
-        }
+			<tr class="heading">
+			 <td style="color: white" colspan="5">'.$Heading.'</td>
+			</tr>'."\n";
+		}
 		
 		echo '
 		<tr>

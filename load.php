@@ -374,7 +374,7 @@ else {
 		case 'ExtractFile':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'ExtractFiles')) {
 				if(filter_has_var(INPUT_GET, 'File') && filter_has_var(INPUT_GET, 'DriveID')) {
-					$ExtractFileReturn = $ExtractFilesObj->ExtractFile(urldecode($_GET['File']), $_GET['DriveID']);
+					$ExtractFileReturn = $ExtractFilesObj->ExtractFile($_GET['File'], $_GET['DriveID']);
 					echo $ExtractFileReturn;
 				}
 			}
@@ -386,7 +386,7 @@ else {
 		case 'MoveFile':
 			if($UserObj->CheckPermission($UserObj->UserGroupID, 'ExtractFiles')) {
 				if(filter_has_var(INPUT_GET, 'File') && filter_has_var(INPUT_GET, 'DriveID')) {
-					$MoveFileReturn = $ExtractFilesObj->MoveFile(urldecode($_GET['File']), $_GET['DriveID']);
+					$MoveFileReturn = $ExtractFilesObj->MoveFile($_GET['File'], $_GET['DriveID']);
 					echo $MoveFileReturn;
 				}
 			}

@@ -18,7 +18,7 @@ if(!strlen(EVENT)) {
 				foreach($Files['Extract'] AS $File) {
 					$FileNo++;
 					$AjaxQueue = TRUE;
-					list($File, $DriveID) = explode(',', $File);
+					list($File, $DriveID) = explode('--||--', $File);
 					
 					echo '
 					<div id="ExtractFile-'.$FileNo.'">Waiting to extract "'.$File.'" ...</div>
@@ -43,8 +43,7 @@ if(!strlen(EVENT)) {
 				foreach($Files['Move'] AS $File) {
 					$FileNo++;
 					$AjaxQueue = TRUE;
-					list($File, $DriveID) = explode(',', $File);
-					
+					list($File, $DriveID) = explode('--||--', $File);
 					echo '
 					<div id="MoveFile-'.$FileNo.'">Waiting to move '.$File.' ...</div>
 					

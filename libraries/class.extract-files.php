@@ -65,7 +65,7 @@ class ExtractFiles extends Hub {
 							
 							if($UniqueRarFile && !$this->SeedingFileCopied($File)) {
 								if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b/i", $File)) {
-									$CompletedFiles['Extract'][] = $File.','.$Drive['DriveID'];
+									$CompletedFiles['Extract'][] = $File.'--||--'.$Drive['DriveID'];
 								}
 							}
 						break;
@@ -74,7 +74,7 @@ class ExtractFiles extends Hub {
 						case 'mkv':
 						case 'avi':
 							if($this->GetFileSize($File) >= (1024 * 1024 * 150) && !$this->SeedingFileCopied($File)) {
-								$CompletedFiles['Move'][] = $File.','.$Drive['DriveID'];
+								$CompletedFiles['Move'][] = $File.'--||--'.$Drive['DriveID'];
 							}
 						break;
 					}
@@ -316,7 +316,7 @@ class ExtractFiles extends Hub {
 		if(is_array($Files) && sizeof($Files)) {
 			if(array_key_exists('Extract', $Files)) {
 				foreach($Files['Extract'] AS $File) {
-					list($File, $DriveID) = explode(',', $File);
+					list($File, $DriveID) = explode('--||--', $File);
 					
 					self::ExtractFile($File, $DriveID);
 				}
@@ -324,7 +324,7 @@ class ExtractFiles extends Hub {
 			
 			if(array_key_exists('Move', $Files)) {
 				foreach($Files['Move'] AS $File) {
-					list($File, $DriveID) = explode(',', $File);
+					list($File, $DriveID) = explode('--||--', $File);
 					
 					self::MoveFile($File, $DriveID);
 				}

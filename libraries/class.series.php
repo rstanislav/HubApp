@@ -597,7 +597,7 @@ class Series extends Hub {
 				Hub::Lock();
 			}
 		}
-			
+		
 		$RebuildTimeStart = time();
 		$EpisodesRebuilt = 0;
 		$Drives = Drives::GetDrives();

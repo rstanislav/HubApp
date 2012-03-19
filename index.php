@@ -85,6 +85,11 @@ else {
  </div>
 </div>
 
+<div id="TorrentMagnetPanel">
+ <div><input type="text" class="dark" placeholder="magnet:" id="TorrentMagnet" /> <span id="TorrentMagnetLoad">Enter magnet URI and press enter</span></div>
+</div>
+<a id="PanelTrigger" href="#"></a>
+
 <table class="main">
  <tr>
   <td class="header left">

@@ -237,6 +237,50 @@ $(document).ready(function() {
 			}
 		});
 	});
+	
+	$('#PanelTrigger').click(function(){
+		$('#TorrentMagnetPanel').slideToggle();
+		
+		if($(this).css('top') != '43px') {
+			$(this).animate({
+				'top': '43px'
+			});
+		}
+		else {
+			$(this).animate({
+				'top': '0px'
+			});
+		}
+		
+		return false;
+	});
+	
+	$('#TorrentMagnet').keypress(function(event) {
+		if(event.which == '13') {
+			event.preventDefault();
+			
+			$.ajax({
+				method: 'get',
+				url:    'load.php',
+				data:   'page=TorrentMagnetAdd&Magnet=' + encodeURIComponent($('#TorrentMagnet').attr('value')),
+				beforeSend: function() {
+					$('#TorrentMagnetLoad').html('<img src="images/spinners/ajax-dark.gif" />');
+				},
+				success: function(Return) {
+					if(Return != '') {
+						noty({
+							text: Return,
+							type: 'error',
+							timeout: false,
+						});
+					}
+					
+					$('#TorrentMagnetLoad').html('Enter magnet URI and press enter');
+					$('#TorrentMagnet').attr('value', '');
+				}
+			});
+	   	}
+	});
 });
 
 function loadURL(url) {

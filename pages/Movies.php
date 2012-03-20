@@ -3,6 +3,10 @@ $(document).ready(function() {
 	$('a[rel=trailer]').fancybox({
 		type: 'iframe'
 	});
+	
+	$('a[rel=MovieInfo]').fancybox({
+		type: 'ajax'
+	});
 });
 </script>
 
@@ -63,7 +67,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
 			}
 			
-			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
+			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a href="load.php?page=MovieInformation&MovieID='.$Movie['movieid'].'" rel="movieinfo" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
 			
 			$Watched = ($Movie['playcount']) ? '<div class="cover-watched">watched</div>' : '';
 			
@@ -128,7 +132,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 		
 		foreach($Movies AS $Movie) {
 			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="FilePlay-'.urlencode($DrivesObj->GetNetworkLocation($Movie[0]['file'])).'"><img src="images/icons/control_play.png" /></a>' : '';
-			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie[0]['movieid'].'"><img src="images/icons/information.png" /></a>'  : '';
+			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a href="load.php?page=MovieInformation&MovieID='.$Movie[0]['movieid'].'" rel="movieinfo"><img src="images/icons/information.png" /></a>' : '';
 			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie[0]['movieid'].'"><img src="images/icons/delete.png" /></a>'    : '';
 			
 			$WatchedIcon = ($Movie[0]['playcount']) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';

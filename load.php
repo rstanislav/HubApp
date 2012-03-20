@@ -16,6 +16,19 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'MovieInformation':
+			if(filter_has_var(INPUT_GET, 'MovieID')) {
+				$XBMCObj->Connect('default');
+				
+				if(is_object($XBMCObj->XBMCRPC)) {
+					include_once './pages/MovieInformation.php';
+				}
+				else {
+					echo 'Unable to connect to XBMC';
+				}
+			}
+		break;
+		
 		case 'TorrentMagnetAdd':
 			$UTorrentObj->Connect();
 			

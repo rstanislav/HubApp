@@ -141,6 +141,18 @@ class XBMC extends Hub {
 		}
 	}
 	
+	function GetMovieDetails($ID) {
+		try {
+			return $this->XBMCRPC->VideoLibrary->GetMovieDetails(array(
+				'movieid' => (int) $ID,
+				'properties' => array('title', 'genre', 'year', 'rating', 'director', 'trailer', 'tagline', 'plot', 'plotoutline', 'originaltitle', 'lastplayed', 'playcount', 'writer', 'studio', 'mpaa', 'cast', 'country', 'imdbnumber', 'premiered', 'productioncode', 'runtime', 'set', 'showlink', 'streamdetails', 'top250', 'votes', 'fanart', 'thumbnail', 'file', 'sorttitle', 'resume', 'setid')
+			));
+		}
+		catch(XBMC_RPC_Exception $e) {
+			die($e->getMessage());
+		}
+	}
+	
 	function GetImage($Image) {
 		try {
 			$Zone = Zones::GetZoneByName(Zones::GetCurrentZone());

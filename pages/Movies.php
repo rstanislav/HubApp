@@ -1,3 +1,11 @@
+<script type="text/javascript">
+$(document).ready(function() {
+	$('a[rel=trailer]').fancybox({
+		type: 'iframe'
+	});
+});
+</script>
+
 <div class="head-control">
 <?php 
 if($HubObj->GetSetting('ShareMovies')) {
@@ -42,14 +50,17 @@ if(is_object($XBMCObj->XBMCRPC)) {
 
 			if(!empty($Movie['trailer'])) {
 				if(strstr($Movie['trailer'], 'plugin.video.youtube')) {
-					$MovieTrailerLink = '<a href="http://youtube.com/watch?v='.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie['trailer']).'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/youtube.png" /></a>';
+					$MovieTrailerLink = '<a href="http://www.youtube.com/embed/'.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie['trailer']).'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/youtube.png" /></a>';
 				}
 				else if(strstr($Movie['trailer'], 'http://playlist.yahoo.com')) {
 					$MovieTrailerLink = '<a href="'.$Movie['trailer'].'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/yahoo.png" /></a>';
 				}
+				else {
+					$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
+				}
 			}
 			else {
-				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
+				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
 			}
 			
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
@@ -147,17 +158,17 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			
 			if(array_key_exists('trailer', $Movie[0])) {
 				if(strstr($Movie[0]['trailer'], 'plugin.video.youtube')) {
-					$MovieTrailerLink = '<a href="http://youtube.com/watch?v='.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie[0]['trailer']).'" rel="trailer" title="'.$MovieLabel.' ('.$MovieYear.') Trailer"><img  src="images/icons/youtube.png" /></a>';
+					$MovieTrailerLink = '<a href="http://www.youtube.com/embed/'.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie[0]['trailer']).'" rel="trailer" title="'.$MovieLabel.' ('.$MovieYear.') Trailer"><img  src="images/icons/youtube.png" /></a>';
 				}
 				else if(strstr($Movie[0]['trailer'], 'http://playlist.yahoo.com')) {
 					$MovieTrailerLink = '<a href="'.$Movie[0]['trailer'].'" rel="trailer" title="'.$MovieLabel.' ('.$MovieYear.') Trailer"><img  src="images/icons/yahoo.png" /></a>';
 				}
 				else {
-					$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$MovieYear.' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
+					$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$MovieYear.' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
 				}
 			}
 			else {
-				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$MovieYear.' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
+				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$MovieYear.' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
 			}
 			
 			if(strlen($MovieLabel)) {

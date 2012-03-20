@@ -121,7 +121,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 					$Title = $ItemInfo['item']['label'].' ('.$ItemInfo['item']['originaltitle'].')';
 				}
 				else {
-					$Title = $Title = $ItemInfo['item']['label'];
+					$Title = $ItemInfo['item']['label'];
 				}
 			}
 			

@@ -98,27 +98,6 @@ $(document).ready(function() {
 		}
 	});
 	
-	$("a[rel=trailer]").click(function() {
-		$.fancybox({
-			'padding':        0,
-			'autoScale':      false,
-			'transitionIn':   'none',
-			'transitionOut':  'none',
-			'width':           680,
-			'height':          455,
-			'overlayOpacity':  0.6,
-			'overlayColor':    '#000',
-			'centerOnScroll':  true,
-			'showCloseButton': false,
-			'showNavArrows':   false,
-			'titleShow':       false,	
-			'href':            this.href.replace(new RegExp("watch\\?v=", "i"), 'v/'),
-			'type':            'iframe'
-		});
-	
-		return false;
-	});
-	
 	$('a[id|="DriveActive"]').click(function(event) {
 		DriveID = $(this).attr('id').replace('DriveActive-', '');
 		Link = this;

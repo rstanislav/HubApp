@@ -52,9 +52,6 @@ $(document).ready(function() {
 	'a[id|="FoldersRebuild"],' +
 	'a[id|="EpisodesRebuild"],' +
 	'a[id|="DriveRemove"],' +
-	'a[id|="MovieInfo"],' +
-	'a[id|="MoviePlay"],' +
-	'a[id|="MovieDelete"],' +
 	'a[id|="FilePlay"],' +
 	'a[id|="RSSUpdate"],' +
 	'a[id|="RSSFeedDelete"],' +
@@ -66,7 +63,6 @@ $(document).ready(function() {
 	'a[id|="TorrentStartAll"],' +
 	'a[id|="TorrentPauseAll"],' +
 	'a[id|="TorrentStopAll"],' +
-	'a[id|="DownloadTorrent"],' +
 	'a[id|="TorrentDownload"],' +
 	'a[id|="UserGroupEdit"],' +
 	'a[id|="UserDelete"],' + 
@@ -729,18 +725,6 @@ function AjaxButton(Button, Extra) {
 					}
 				}
 			});
-		break;
-		
-		case 'MovieInfo':
-			console.log('MovieInfo ID: ' + ID);
-		break;
-		
-		case 'MoviePlay':
-			console.log('MoviePlay ID: ' + ID);
-		break;
-		
-		case 'MovieDelete':
-			console.log('MovieDelete ID: ' + ID);
 		break;
 		
 		case 'RSSUpdate':

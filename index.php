@@ -25,7 +25,7 @@ $HubObj->CheckForDBUpgrade();
  	<link type="text/css" rel="stylesheet" href="css/hub.form.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.qtip.css" />
  	<link type="text/css" rel="stylesheet" href="css/jquery.selectBox.css" />
- 	<link type="text/css" rel="stylesheet" href="css/jquery.fancybox-1.3.4.css" media="screen" />
+ 	<link type="text/css" rel="stylesheet" href="css/jquery.fancybox.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="css/jquery.noty.css"/>
  	
  	<noscript>
@@ -57,7 +57,7 @@ $HubObj->CheckForDBUpgrade();
  <script type="text/javascript" src="js/jquery.selectBox.js"></script>
  <script type="text/javascript" src="js/jquery.noty.js"></script>
  <script type="text/javascript" src="js/valums.file-uploader.js"></script>
- <script type="text/javascript" src="js/jquery.fancybox-1.3.4.pack.js"></script>
+ <script type="text/javascript" src="js/jquery.fancybox-2.0.5.js"></script>
  <script type="text/javascript" src="js/hub.script.js"></script>
 </head>
 

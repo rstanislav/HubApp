@@ -136,7 +136,7 @@ class Hub {
 	
 	function RecursiveDirSearch($Directory, $Extensions = null) {
 		$Iterator = new IgnorantRecursiveDirectoryIterator($Directory);
-		$Extensions = (!is_array($Extensions)) ? array('mp4','mkv','avi','rar') : $Extensions;
+		$Extensions = (!is_array($Extensions)) ? array('mpeg', 'mpg', 'mp4', 'mkv', 'avi', 'rar') : $Extensions;
 		
 		$Files = array();
 		foreach(new RecursiveIteratorIterator($Iterator, RecursiveIteratorIterator::SELF_FIRST) AS $Object) {

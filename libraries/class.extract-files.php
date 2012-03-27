@@ -71,6 +71,8 @@ class ExtractFiles extends Hub {
 						break;
 						
 						case 'mp4':
+						case 'mpg':
+						case 'mpeg':
 						case 'mkv':
 						case 'avi':
 							if($this->GetFileSize($File) >= (1024 * 1024 * 150) && !$this->SeedingFileCopied($File)) {

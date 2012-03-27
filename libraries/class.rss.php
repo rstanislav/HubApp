@@ -531,9 +531,8 @@ class RSS extends Hub {
 	}
 	
 	function ParseRelease($Release) {
-		$Search  = array(' - ', ' ', '_', '(', ')');
-		$Replace = array('.',   '.', '.', '',  '');
-		
+		$Search  = array(' ', '_', '(', ')', '.-.', '[', ']', '{', '}');
+		$Replace = array('.', '.', '',  '',  '.',   '',  '',  '',  '');
 		$Release = str_replace($Search, $Replace, $Release);
 		
 		$SerieRegEx    = '/(.*?)\.?((?:(?:s[0-9]{1,2})?[.-]?e[0-9]{1,2}|[0-9]{1,2}x[0-9]{1,2})(?:[.-]?(?:s?[0-9]{1,2})?[xe]?[0-9]{1,2})*)\.(.*)/i';

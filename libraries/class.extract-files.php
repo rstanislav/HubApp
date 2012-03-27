@@ -245,12 +245,6 @@ class ExtractFiles extends Hub {
 							$AddLogEntry = ' but failed to delete "'.$FileInfo['dirname'].'"';
 						}
 					}
-					else {
-						$NewLocation = $DriveRoot.'/Unsorted/'.str_replace($DriveRoot.'/Completed/', '', $FileInfo['dirname']);
-						if(rename($FileInfo['dirname'], $NewLocation)) {
-							$AddLogEntry = ' and moved "'.$FileInfo['dirname'].'" to "'.$DriveRoot.'/Unsorted/" because it has files worth keeping';
-						}
-					}
 				}
 			}
 			else {
@@ -363,6 +357,14 @@ class ExtractFiles extends Hub {
 							
 							$FoldersDeleted++;
 							$FoldersSizeDeleted += $DirSize;
+						}
+						else {
+							$Name = str_replace('\\', '/', $Name);
+							
+							$NewLocation = $DriveRoot.'/Unsorted/'.str_replace($DriveRoot.'/Completed/', '', $Name);
+							if(rename($Name, $NewLocation)) {
+								Hub::AddLog(EVENT.'Clean', 'Success', 'Moved "'.$Name.'" to "'.$DriveRoot.'/Unsorted/" because it has files worth keeping');
+							}
 						}
 					}
 				}

@@ -33,8 +33,8 @@ class RSS extends Hub {
 				case 'hdtvrip':  $QualityRank += 5000;  break;
 				case 'dvdscr':   $QualityRank += 3000;  break;
 				case 'ts':
-				case 'telesync': $QualityRank += 2000;  break;
-				case 'cam':      $QualityRank += 1000;  break;
+				case 'telesync':
+				case 'cam':      $QualityRank -= 100000; break;
 				
 				case 'proper':
 				case 'repack':   $QualityRank += 100;   break;

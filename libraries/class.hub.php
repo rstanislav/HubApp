@@ -454,7 +454,14 @@ class Hub {
 		$BackupLocation = str_replace('\\', '/', $BackupLocation);
 		
 		if(!is_dir($BackupLocation)) {
-			return FALSE;
+			Hub::AddLog(EVENT.'Backup', 'Failure', 'Backup folder "'.$BackupLocation.'" does not exist. Using default "'.APP_PATH.'/backup/"');
+			
+			if(is_dir(APP_PATH.'/backup')) {
+				$BackupLocation = APP_PATH.'/backup';
+			}
+			else {
+				return FALSE;
+			}
 		}
 		
 		$BackupFile  = $Database.'-database-'.date('d-m-Y').'.sql';

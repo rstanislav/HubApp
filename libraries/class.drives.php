@@ -10,8 +10,8 @@ class Drives extends Hub {
 			if(is_array($Drive)) {
 				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
 				
-				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
-				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
+				$FreeSpace  = self::GetFreeSpace($Drive['DriveID'],  TRUE);
+				$TotalSpace = self::GetTotalSpace($Drive['DriveID'], TRUE);
 				if(($FreeSpace / 1024 / 1024 / 1024) <= Hub::GetSetting('MinimumDiskSpaceRequired')) {
 					self::DetermineNewActiveDrive();
 				}
@@ -114,10 +114,9 @@ class Drives extends Hub {
 		
 		if(is_array($Drives)) {
 			foreach($Drives AS $Drive) {
-				$DriveRoot = ($Drive['DriveNetwork']) ? $Drive['DriveShare'] : $Drive['DriveMount'];
+				$FreeSpace  = self::GetFreeSpace($Drive['DriveID'],  TRUE);
+				$TotalSpace = self::GetTotalSpace($Drive['DriveID'], TRUE);
 				
-				$FreeSpace  = self::GetFreeSpace($DriveRoot,  TRUE);
-				$TotalSpace = self::GetTotalSpace($DriveRoot, TRUE);
 				if(($FreeSpace / 1024 / 1024 / 1024) > Hub::GetSetting('MinimumDiskSpaceRequired')) {
 					self::SetActiveDrive($Drive['DriveID']);
 					

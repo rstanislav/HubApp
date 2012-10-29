@@ -16,6 +16,22 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'SeasonEpisodesDelete':
+			if(filter_has_var(INPUT_GET, 'SerieID')) {
+				if(filter_has_var(INPUT_GET, 'SeasonNo')) {
+					$SeriesObj->DeleteEpisodesFromSeason($_GET['SerieID'], $_GET['SeasonNo']);
+				}
+			}
+		break;
+		
+		case 'DeleteEpisodes':
+			if(filter_has_var(INPUT_GET, 'SerieID')) {
+				if(filter_has_var(INPUT_GET, 'FromDate')) {
+					$SeriesObj->DeleteEpisodes($_GET['SerieID'], $_GET['FromDate']);
+				}
+			}
+		break;
+		
 		case 'MovieInformation':
 			if(filter_has_var(INPUT_GET, 'MovieID')) {
 				$XBMCObj->Connect('default');

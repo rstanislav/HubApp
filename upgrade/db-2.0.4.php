@@ -6,7 +6,6 @@ $SettingsPrep->execute();
 if($SettingsPrep->rowCount()) {
 	$Settings = $SettingsPrep->fetchAll();
 	
-	$this->d($Settings);
 	$this->PDO->query('INSERT INTO Hub (Setting, Value) VALUES
 	("LocalHostname",            "'.$Settings[0]['SettingHubLocalHostname'].'"),
 	("LocalIP",                  "'.$Settings[0]['SettingHubLocalIP'].'"),

@@ -54,7 +54,7 @@ class RSS extends Hub {
 	}
 	
 	function DownloadWantedTorrents() {
-		$TorrentsPrep = $this->PDO->prepare('SELECT Torrents.*, RSS.RSSTitle FROM Torrents, RSS WHERE TorrentDate > :Date AND RSSID = RSSKey ORDER BY TorrentDate');
+		$TorrentsPrep = $this->PDO->prepare('SELECT Torrents.*, RSS.RSSTitle FROM Torrents, RSS WHERE TorrentDate > :Date AND RSSID = RSSKey AND Torrents.IsBroken != 1 ORDER BY TorrentDate');
 		$TorrentsPrep->execute(array(':Date' => strtotime('-10 days')));
 				
 		$DownloadArr = array();
@@ -396,12 +396,12 @@ class RSS extends Hub {
 	
 	function GetTorrents($Category = '', $RSSKey) {
 		if($Category == 'undefined' || empty($Category)) {
-			$TorrentPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE RSSKey = :RSSKey ORDER BY TorrentPubDate DESC LIMIT 100');
+			$TorrentPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE RSSKey = :RSSKey AND IsBroken != 1 ORDER BY TorrentPubDate DESC LIMIT 100');
 			$TorrentPrep->execute(array(':RSSKey' => $RSSKey));
 		}
 		else if(is_array($Category)) {
 			$Categories = '"'.join('","', $Category).'"';
-			$TorrentPrep = $this->PDO->query('SELECT * FROM Torrents WHERE RSSKey = "'.$RSSKey.'" AND TorrentCategory IN ('.$Categories.') ORDER BY TorrentPubDate DESC LIMIT 100')->fetchAll();
+			$TorrentPrep = $this->PDO->query('SELECT * FROM Torrents WHERE RSSKey = "'.$RSSKey.'" AND TorrentCategory IN ('.$Categories.') AND IsBroken != 1 ORDER BY TorrentPubDate DESC LIMIT 100')->fetchAll();
 			
 			if(sizeof($TorrentPrep)) {
 				return $TorrentPrep;
@@ -411,7 +411,7 @@ class RSS extends Hub {
 			}
 		}
 		else {
-			$TorrentPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE RSSKey = :RSSKey AND TorrentCategory = :Category ORDER BY TorrentPubDate DESC LIMIT 100');
+			$TorrentPrep = $this->PDO->prepare('SELECT * FROM Torrents WHERE RSSKey = :RSSKey AND TorrentCategory = :Category AND IsBroken != 1 ORDER BY TorrentPubDate DESC LIMIT 100');
 			$TorrentPrep->execute(array(':Category' => urldecode($Category),
 										':RSSKey'   => $RSSKey));
 		}
@@ -474,6 +474,7 @@ class RSS extends Hub {
 			$TorrentData = @file_get_contents($Torrent['TorrentURI']);
 			$File        = urlencode(substr($Torrent['TorrentURI'], (strrpos($Torrent['TorrentURI'], '/') + 1)));
 			
+			/*
 			if(is_array($http_response_header)) {
 				if(array_key_exists(0, $http_response_header) && $http_response_header[0] != 'HTTP/1.1 200 OK') {
 					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to download "'.$File.'" but server returned "'.$http_response_header[0].'"');
@@ -483,45 +484,27 @@ class RSS extends Hub {
 					return FALSE;
 				}
 			}
-			
+			*/
 			if(is_object($this->UTorrentAPI)) {
-				if(RSS::BDecode($TorrentData)) {
-					UTorrent::TorrentAdd(urldecode($Torrent['TorrentURI']));
+				UTorrent::TorrentAdd(urldecode($Torrent['TorrentURI']));
 				
-					Hub::AddLog(EVENT.'uTorrent', 'Success', 'Downloaded "'.urldecode($Torrent['TorrentTitle']).'"');
+				Hub::AddLog(EVENT.'uTorrent', 'Success', 'Downloaded "'.urldecode($Torrent['TorrentTitle']).'"');
 					
-					return TRUE;
-				}
-				else {
-					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to add "'.urldecode($Torrent['TorrentTitle']).'", but it is not a valid torrent file');
-					
-					self::SetTorrentAsBroken($Torrent['TorrentID']);
-					
-					return FALSE;
-				}
+				return TRUE;
 			}
 			else {
-				if(RSS::BDecode($TorrentData)) {
-					if(!is_file(Hub::GetSetting('UTorrentWatchFolder').'/'.$File)) {
-						if(file_put_contents(Hub::GetSetting('UTorrentWatchFolder').'/'.$File, $TorrentData)) {
-							Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
-							Hub::NotifyUsers('TorrentDownloadManual', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
-						
-							return TRUE;
-						}
-						else {
-							Hub::AddLog(EVENT.'Watch Folder', 'Failure', 'Failed to download "'.urldecode($File).'"');
-						
-							return FALSE;
-						}
+				if(!is_file(Hub::GetSetting('UTorrentWatchFolder').'/'.$File)) {
+					if(file_put_contents(Hub::GetSetting('UTorrentWatchFolder').'/'.$File, $TorrentData)) {
+						Hub::AddLog(EVENT.'Watch Folder', 'Success', 'Downloaded "'.urldecode($File).'"');
+						Hub::NotifyUsers('TorrentDownloadManual', 'Watch Folder', 'Downloaded "'.urldecode($File).'"');
+					
+						return TRUE;
 					}
-				}
-				else {
-					Hub::AddLog(EVENT.'uTorrent', 'Failure', 'Tried to add "'.urldecode($Torrent['TorrentTitle']).'", but it is not a valid torrent file');
+					else {
+						Hub::AddLog(EVENT.'Watch Folder', 'Failure', 'Failed to download "'.urldecode($File).'"');
 					
-					self::SetTorrentAsBroken($Torrent['TorrentID']);
-					
-					return FALSE;
+						return FALSE;
+					}
 				}
 			}
 		}
@@ -589,105 +572,6 @@ class RSS extends Hub {
 		}
 		else {
 			return FALSE;
-		}
-	}
-	
-	function BDecode($Str) {
-		$Pos = 0;
-		
-		return RSS::BDecodeRecursive($Str, $Pos);
-	}
-	
-	function BDecodeRecursive($Str, &$Pos) {
-		$StrLength = strlen($Str);
-		if(($Pos < 0) || ($Pos >= $StrLength)) {
-			return NULL;
-		}
-		else if($Str{$Pos} == 'i') {
-			$Pos++;
-			$NumLength = strspn($Str, '-0123456789', $Pos);
-			$StrPos    = $Pos;
-			$Pos      += $NumLength;
-			
-			if(($Pos >= $StrLength) || ($Str{$Pos} != 'e')) {
-				return NULL;
-			}
-			else {
-				$Pos++;
-				
-				return intval(substr($Str, $StrPos, $NumLength));
-			}
-		}
-		else if($Str{$Pos} == 'd') {
-			$Pos++;
-			$ReturnValue = array();
-			while($Pos < $StrLength) {
-				if($Str{$Pos} == 'e') {
-					$Pos++;
-					
-					return $ReturnValue;
-				}
-				else {
-					$Key = RSS::BDecodeRecursive($Str, $Pos);
-					if($Key == NULL) {
-						return NULL;
-					}
-					else {
-						$Val = RSS::BDecodeRecursive($Str, $Pos);
-						if($Val == NULL) {
-							return NULL;
-						}
-						else if(!is_array($Key)) {
-							$ReturnValue[$Key] = $Val;
-						}
-					}
-				}
-			}
-		
-			return NULL;
-		}
-		else if($Str{$Pos} == 'l') {
-			$Pos++;
-			$ReturnValue = array();
-			while($Pos < $StrLength) {
-				if($Str{$Pos} == 'e') {
-					$Pos++;
-					
-					return $ReturnValue;
-				}
-				else {
-					$Val = RSS::BDecodeRecursive($Str, $Pos);
-					if($Val == NULL) {
-						return NULL;
-					}
-					else {
-						$ReturnValue[] = $Val;
-					}
-				}
-			}
-			
-			return NULL;
-		}
-		else {
-			$NumLength = strspn($Str, '0123456789', $Pos);
-			$StrPos    = $Pos;
-			$Pos      += $NumLength;
-			if(($Pos >= $StrLength) || ($Str{$Pos} != ':')) {
-				return NULL;
-			}
-			else {
-				$ValLength = intval(substr($Str, $StrPos, $NumLength));
-				$Pos++;
-				$Val = substr($Str, $Pos, $ValLength);
-				if(strlen($Val) != $ValLength) {
-					return NULL;
-				}
-				else {
-					$Pos += $ValLength;
-					
-					return $Val;
-				}
-			}
 		}
 	}
 	

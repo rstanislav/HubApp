@@ -100,4 +100,16 @@ $sql[] = "ALTER TABLE `zones` CHANGE `ZoneID` `ZoneID` TINYINT(4)  UNSIGNED  NOT
 $sql[] = "ALTER TABLE `zones` CHANGE `ZoneDate` `ZoneDate` INT(10)  UNSIGNED  NOT NULL;";
 $sql[] = "ALTER TABLE `zones` CHANGE `ZoneDefault` `ZoneDefault` TINYINT(1)  UNSIGNED  NOT NULL;";
 $sql[] = "ALTER TABLE `zones` CHANGE `ZoneXBMCPort` `ZoneXBMCPort` SMALLINT(6)  UNSIGNED  NOT NULL;";
+$sql[] = "ALTER TABLE  `episodes` CHANGE  `SeriesKey`  `SeriesKey` INT( 10 ) UNSIGNED NOT NULL;";
+$sql[] = "ALTER TABLE  `episodes` CHANGE  `EpisodeID`  `EpisodeID` INT( 10 ) UNSIGNED NOT NULL;";
+$sql[] = "ALTER TABLE  `user` ENGINE = MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `zones` ENGINE = MYISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `activity` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `notifications` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `permissions` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `rss` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `seeding` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `usergrouppermissions` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `usergroups` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+$sql[] = "ALTER TABLE  `usernotifications` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
 ?>

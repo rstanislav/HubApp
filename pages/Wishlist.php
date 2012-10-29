@@ -25,7 +25,7 @@ if($HubObj->GetSetting('ShareWishlist')) {
 	echo '<a id="SharedWishlistUpdate-0" class="button positive"><span class="inner"><span class="label" nowrap="">Update Shared Wishlist</span></span></a>';
 }
 ?>
- <a id="AddWishlistItem" class="button positive"><span class="inner"><span class="label" nowrap="">Add Wish</span></span></a>
+ <a id="AddWishlistItem" href="javascript:(function(){_hub_wishlist=document.createElement('SCRIPT');_hub_wishlist.type='text/javascript';_hub_wishlist.src='http://ip/js/hub.bookmarklet.js?x='+(Math.random());document.getElementsByTagName('head')[0].appendChild(_hub_wishlist);})();" class="button positive"><span class="inner"><span class="label" nowrap="">Add Wish</span></span></a>
  <a id="WishlistRefresh-0" class="button positive"><span class="inner"><span class="label" nowrap="">Refresh Wishlist</span></span></a>
 </div>
  

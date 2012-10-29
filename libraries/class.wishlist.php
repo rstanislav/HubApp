@@ -70,6 +70,22 @@ class Wishlist extends Hub {
 		}
 	}
 	
+	function BookmarkletWishlistAdd($MovieTitle, $MovieYear) {
+		$Wishlist = $this->PDO->query('SELECT * FROM Wishlist WHERE WishlistTitle = "'.$MovieTitle.'" AND WishlistYear = "'.$MovieYear.'"')->fetch();
+		
+		if(!is_array($Wishlist)) {
+			$WishlistAddPrep = $this->PDO->prepare('INSERT INTO Wishlist (WishlistID, WishlistDate, WishlistTitle, WishlistYear) VALUES (NULL, :Date, :Title, :Year)');
+			$WishlistAddPrep->execute(array(':Date'  => time(),
+											':Title' => self::ConvertCase(self::StripIllegalChars($MovieTitle)),
+											':Year'  => $MovieYear));
+			
+			echo 'Added "'.$MovieTitle.' ('.$MovieYear.')" to your Wishlist';
+		}
+		else {
+			echo 'A wishlist item titled "'.$MovieTitle.' ('.$MovieYear.')" already exists';
+		}
+	}
+	
 	function ConvertCase($String) {
 		$Delimiters = array(' ', '-', '.', '\'', 'O\'', 'Mc');
 		$Exceptions = array('út', 'u', 's', 'és', 'utca', 'tér', 'krt', 'körút', 'sétány', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX', 'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXIX', 'XXX');

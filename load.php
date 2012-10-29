@@ -16,6 +16,31 @@ if($HubObj->Error && !in_array($Page, $ErrorFreePages)) {
 }
 else {
 	switch($Page) {
+		case 'BookmarkletWishlistAdd':
+			echo '
+			<div style="text-align: center; font-weight: bold; padding-top: 10px;font-family: \'Helvetica Neue\', Helvetica, Verdana, sans-seif;font-size: 14px;color:white">';
+			if($UserObj->CheckPermission($UserObj->UserGroupID, 'WishlistAdd')) {
+				if(filter_has_var(INPUT_GET, 'title') && !empty($_GET['title'])) {
+					$_GET['title'] = str_ireplace(' - imdb', '', $WishlistObj->ConvertCase($WishlistObj->StripIllegalChars($_GET['title'])));
+					
+					@preg_match('/([A-z0-9 \&._\-:\\pL]+)\(([0-9]{4})\)/i', $_GET['title'], $TitleMatches);
+					
+					if(sizeof($TitleMatches)) {
+						if(strlen(trim($TitleMatches[1])) > 0 && strlen(trim($TitleMatches[2])) > 0) {
+							$WishlistObj->BookmarkletWishlistAdd(trim($TitleMatches[1]), trim($TitleMatches[2]));
+						}
+					}
+					else {
+						echo 'Unable to find a movie title on this site';
+					}
+				}
+			}
+			else {
+				echo 'You are not allowed to add movies to the wishlist';
+			}
+			echo '</div>';
+		break;
+		
 		case 'SeasonEpisodesDelete':
 			if(filter_has_var(INPUT_GET, 'SerieID')) {
 				if(filter_has_var(INPUT_GET, 'SeasonNo')) {

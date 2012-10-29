@@ -51,20 +51,21 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			
 			$FilePath = preg_replace('/[A-z0-9-]+\:[A-z0-9-]+@/', '', $FilePath);
 			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.urlencode($Movie['file']).'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
-
+			$MovieLabel     = (trim($Movie['originaltitle'])) ? trim($Movie['originaltitle']) : trim($Movie['label']);
+			
 			if(!empty($Movie['trailer'])) {
 				if(strstr($Movie['trailer'], 'plugin.video.youtube')) {
-					$MovieTrailerLink = '<a href="http://www.youtube.com/embed/'.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie['trailer']).'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/youtube.png" /></a>';
+					$MovieTrailerLink = '<a href="http://www.youtube.com/embed/'.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie['trailer']).'" rel="trailer" class="cover-link" title="'.$MovieLabel.' ('.$Movie['year'].') Trailer"><img  src="images/icons/youtube.png" /></a>';
 				}
 				else if(strstr($Movie['trailer'], 'http://playlist.yahoo.com')) {
-					$MovieTrailerLink = '<a href="'.$Movie['trailer'].'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/yahoo.png" /></a>';
+					$MovieTrailerLink = '<a href="'.$Movie['trailer'].'" rel="trailer" class="cover-link" title="'.$MovieLabel.' ('.$Movie['year'].') Trailer"><img  src="images/icons/yahoo.png" /></a>';
 				}
 				else {
-					$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
+					$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
 				}
 			}
 			else {
-				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
+				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
 			}
 			
 			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a href="load.php?page=MovieInformation&MovieID='.$Movie['movieid'].'" rel="movieinfo" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
@@ -86,7 +87,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			echo '
 			<td style="text-align: center; width:33%;">
 			 <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
-			 <a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
+			 <a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> <strong>'.$MovieLabel.' ('.$Movie['year'].')</strong>
 			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span><br /><br />
 			</td>'."\n";
 			
@@ -138,7 +139,7 @@ if(is_object($XBMCObj->XBMCRPC)) {
 			$WatchedIcon = ($Movie[0]['playcount']) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';
 			
 			$MovieID        = trim($Movie[0]['movieid']);
-			$MovieLabel     = (trim($Movie[0]['label'])) ? trim($Movie[0]['label']) : trim($Movie[0]['originaltitle']);
+			$MovieLabel     = (trim($Movie[0]['originaltitle'])) ? trim($Movie[0]['originaltitle']) : trim($Movie[0]['title']);
 			$MovieFile      = trim($Movie[0]['file']);
 			$MovieYear      = (array_key_exists('year', $Movie[0]))      ? trim($Movie[0]['year'])      : '';
 			$MovieThumbnail = (array_key_exists('thumbnail', $Movie[0])) ? trim($Movie[0]['thumbnail']) : '';

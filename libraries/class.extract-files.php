@@ -232,7 +232,8 @@ class ExtractFiles extends Hub {
 					$Files = Hub::RecursiveDirSearch($FileInfo['dirname']);
 					$FilesNo = 0;
 					foreach($Files AS $File) {
-						if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b|\bsample\b/i", $File) && self::GetFileSize($File) > (1024 * 1024 * 100)) {
+						$AcceptedExtensions = array('mpeg', 'mpg', 'avi', 'mkv', 'mp4');
+						if(!preg_match("/\bsubs\b|\bsubpack\b|\bsubfix\b|\bsubtitles\b|\bsub\b|\bsubtitle\b|\btrailer\b|\btrailers\b|\bsample\b/i", $File) && self::GetFileSize($File) > (1024 * 1024 * 100) && in_array(pathinfo($File, PATHINFO_EXTENSION), $AcceptedExtensions)) {
 							$FilesNo++;
 						}
 					}

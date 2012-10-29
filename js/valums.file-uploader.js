@@ -587,7 +587,7 @@ qq.extend(qq.FileUploader.prototype, {
             if ( ! relatedTarget || !$(relatedTarget).hasClass('qq-upload-drop-area')){               
                 dropArea.style.display = 'none';                                            
             }
-        });                
+        });
     },
     _onSubmit: function(id, fileName){
         qq.FileUploaderBasic.prototype._onSubmit.apply(this, arguments);

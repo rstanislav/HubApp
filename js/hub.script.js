@@ -189,7 +189,7 @@ $(document).ready(function() {
 	}).mouseout(function() {
 		$(this).attr('src', 'images/icons/users_dark.png');
 	});
-	
+	/*
 	$('#search').focus(function() {
 		$('#search').animate({ width:'400px' }, { queue: false, duration: 200 });
 		
@@ -201,6 +201,7 @@ $(document).ready(function() {
 			}
 		});
 	});
+	*/
 	
 	$('#search').keypress(function(event) {
 		if(event.which == '13') {

@@ -109,7 +109,7 @@ class Hub {
 	}
 	
 	function GetLogs() {
-		$LogPrep = $this->PDO->prepare('SELECT * FROM Log ORDER BY LogID DESC LIMIT 75');
+		$LogPrep = $this->PDO->prepare('SELECT * FROM Log ORDER BY LogID DESC LIMIT 300');
 		$LogPrep->execute();
 		
 		if($LogPrep->rowCount()) {

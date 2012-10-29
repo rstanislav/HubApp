@@ -1308,7 +1308,7 @@ a {
 	-moz-border-radius-bottomleft: 10px;
 	-webkit-border-bottom-left-radius: 10px;
 	display: block;
-	z-index: 9999;
+	z-index: 2;
 }
 
 #PanelTrigger:hover {

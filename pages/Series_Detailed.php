@@ -92,7 +92,59 @@ if(is_array($Series)) {
 	}
 	?>
 
-	<div class="head">Episodes</div>
+	<script type="text/javascript">
+	$('select[name="episodeDeleteSelect"]').selectBox().change(function() {
+		$('#loading-wrapper').show();
+		
+		$.ajax({
+			method: 'get',
+			url:    'load.php',
+			data:   'page=DeleteEpisodes&SerieID=<?php echo $SerieID; ?>&FromDate=' + $(this).val(),
+			success: function(Return) {
+				if(Return != '') {
+					$('#loading-wrapper').hide();
+					
+					noty({
+						text: Return,
+						type: 'error',
+						timeout: false,
+					});
+				}
+				else {
+					location.reload(true);
+				}
+				
+				
+			}
+		});
+	});
+	</script>
+	
+	<div class="head">
+	 Episodes
+	 <select name="episodeDeleteSelect" class="dark">
+	  <option>Delete episodes older than</option>
+	  <option value="<?php echo strtotime('-1 week'); ?>">1 week</option>
+	  <option value="<?php echo strtotime('-2 weeks'); ?>">2 weeks</option>
+	  <option value="<?php echo strtotime('-3 weeks'); ?>">3 weeks</option>
+	  <option value="<?php echo strtotime('-1 month'); ?>">1 month</option>
+	  <option value="<?php echo strtotime('-2 months'); ?>">2 months</option>
+	  <option value="<?php echo strtotime('-3 months'); ?>">3 months</option>
+	  <option value="<?php echo strtotime('-4 months'); ?>">4 months</option>
+	  <option value="<?php echo strtotime('-5 months'); ?>">5 months</option>
+	  <option value="<?php echo strtotime('-6 months'); ?>">6 months</option>
+	  <option value="<?php echo strtotime('-7 months'); ?>">7 months</option>
+	  <option value="<?php echo strtotime('-8 months'); ?>">8 months</option>
+	  <option value="<?php echo strtotime('-9 months'); ?>">9 months</option>
+	  <option value="<?php echo strtotime('-10 months'); ?>">10 months</option>
+	  <option value="<?php echo strtotime('-11 months'); ?>">11 months</option>
+	  <option value="<?php echo strtotime('-1 year'); ?>">1 year</option>
+	  <option value="<?php echo strtotime('-2 years'); ?>">2 years</option>
+	  <option value="<?php echo strtotime('-3 years'); ?>">3 years</option>
+	  <option value="<?php echo strtotime('-4 years'); ?>">4 years</option>
+	  <option value="<?php echo strtotime('-5 years'); ?>">5 years</option>
+	 </select>
+	</div>
 	<?php
 	$Seasons = $SeriesObj->GetSeasons($SerieID);
 	if(is_array($Seasons)) {
@@ -175,7 +227,7 @@ if(is_array($Series)) {
 				echo '
 				<thead>
 				 <tr>
-				  <th colspan="5" style="text-align:center">Season '.$SeasonNo.'</th>
+				  <th colspan="5" style="text-align:center">Season '.$SeasonNo.' (<a id="SeasonEpisodeDelete-'.$SerieID.'-'.$SeasonNo.'">delete all episodes in this season</a>)</th>
 				 </tr>
 				</thead>
 				<thead>

@@ -37,6 +37,48 @@ class Series extends Hub {
 		}
 	}
 	
+	function DeleteEpisodes($SerieID, $FromDate) {
+		$EpisodesPrep = $this->PDO->prepare('SELECT Series.SerieID, Episodes.* FROM Series, Episodes WHERE Series.SerieID = :SerieID AND Episodes.SeriesKey = :SerieID AND Episodes.EpisodeAirDate < :FromDate AND Episodes.EpisodeFile != ""');
+		$EpisodesPrep->execute(array(':SerieID' => $SerieID,
+		                            ':FromDate' => $FromDate));
+		                            
+		if($EpisodesPrep->rowCount()) {
+			$Episodes = $EpisodesPrep->fetchAll();
+			
+			foreach($Episodes AS $Episode) {
+				if(is_file($Episode['EpisodeFile'])) {
+					if(unlink($Episode['EpisodeFile'])) {
+						Series::DeleteEpisode($Episode['EpisodeID']);
+					}
+				}
+			}
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
+	function DeleteEpisodesFromSeason($SerieID, $SeasonNo) {
+		$EpisodesPrep = $this->PDO->prepare('SELECT Series.SerieID, Episodes.* FROM Series, Episodes WHERE Series.SerieID = :SerieID AND Episodes.SeriesKey = :SerieID AND Episodes.EpisodeSeason = :SeasonNo AND (Episodes.EpisodeFile != "" OR Episodes.EpisodeFile != 0)');
+		$EpisodesPrep->execute(array(':SerieID' => $SerieID,
+		                            ':SeasonNo' => $SeasonNo));
+		                            
+		if($EpisodesPrep->rowCount()) {
+			$Episodes = $EpisodesPrep->fetchAll();
+			foreach($Episodes AS $Episode) {
+				if(is_file($Episode['EpisodeFile'])) {
+					if(unlink($Episode['EpisodeFile'])) {
+						Series::DeleteEpisode($Episode['EpisodeID']);
+					}
+				}
+			}
+		}
+		else {
+			return FALSE;
+		}
+		
+	}
+	
 	function GetPastSchedule($Days) {
 		$SchedulePrep = $this->PDO->prepare('SELECT Series.*, Episodes.* FROM Series, Episodes WHERE Episodes.SeriesKey = Series.SerieID AND EpisodeAirDate <= :CurrentTime AND EpisodeAirDate >= :DayOffset AND EpisodeSeason != 0 AND EpisodeEpisode != 0 ORDER BY EpisodeAirDate DESC');
 		$SchedulePrep->execute(array(':CurrentTime' => time(),

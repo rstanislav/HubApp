@@ -81,7 +81,8 @@ $(document).ready(function() {
 	'a[id|="FileManagerFileDelete"],' +
 	'a[id|="FileManagerMove"],' +
 	'a[id|="SharedWishlistUpdate"],' +
-	'a[id|="SharedMoviesUpdate"]').click(function(event) {
+	'a[id|="SharedMoviesUpdate"],' +
+	'a[id|="SeasonEpisodeDelete"]').click(function(event) {
 		event.preventDefault();
 		
 		if($(this).hasClass('button')) {
@@ -790,6 +791,41 @@ function AjaxLink(Link) {
 	LinkVal  = $(Link).html();
 	
 	switch(Action) {
+		case 'SeasonEpisodeDelete':
+			jConfirm('Are you sure you want to delete all episodes from season ' + SecondID + '?', 'Delete Episodes', function(response) {
+				if(response) {
+					$.ajax({
+						method: 'get',
+						url:    'load.php',
+						data:   'page=SeasonEpisodesDelete&SerieID=' + FirstID + '&SeasonNo=' + SecondID,
+						beforeSend: function() {
+							$(Link).html('<img src="images/spinners/ajax-light.gif" />');
+						},
+						success: function(Return) {
+							if(Return != '') {
+								$(Link).html('<img src="images/icons/error.png" />');
+								
+								noty({
+									text: Return,
+									type: 'error',
+									timeout: false,
+								});
+							}
+							else {
+								$(Link).html('<img src="images/icons/check.png" />');
+								
+								noty({
+									text: 'Successfully deleted all episodes from season ' + SecondID,
+									type: 'success',
+									timeout: false,
+								});
+							}
+						}
+					});
+				}
+			});
+		break;
+		
 		case 'FileManagerFolderDelete':
 			jPrompt('Are you sure you want to delete "' + $(Link).attr('rel') + '"?' + "\n\n" + '<strong>This will delete the folder along with the contents!</strong>' + "\n\n" + 'Type "delete" to confirm', '', 'Delete Folder', function(response) {
 				if(response == 'delete') {

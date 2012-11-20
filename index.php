@@ -1,107 +1,484 @@
 <?php
-ini_set('error_reporting', E_ALL);
-session_start();
-ob_start();
+ini_set('max_execution_time', (60 * 60 * 5));
 
 require_once './resources/config.php';
-require_once './libraries/libraries.php';
-$HubObj->CheckForDBUpgrade();
+require_once APP_PATH.'/api/resources/functions.php';
+require_once APP_PATH.'/resources/api.hub.php';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 
 <html> 
 <head>
- <meta http-equiv="Content-type" content="text/html; charset=utf-8" /> 
- <title>Hub</title> 
+ <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+ <title>Hub</title>
  
- <?php
- if(!$UserObj->LoggedIn) {
- 	echo '<link type="text/css" rel="stylesheet" href="css/login.css" />'."\n";
- }
- else {
- 	echo '
- 	<link type="text/css" rel="stylesheet" href="css/stylesheet.css" />
- 	<link type="text/css" rel="stylesheet" href="css/hub.form.css" />
- 	<link type="text/css" rel="stylesheet" href="css/jquery.qtip.css" />
- 	<link type="text/css" rel="stylesheet" href="css/jquery.selectBox.css" />
- 	<link type="text/css" rel="stylesheet" href="css/jquery.fancybox-1.3.4.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="css/jquery.noty.css"/>
- 	
- 	<noscript>
- 	 <div id="error">
- 	  <img src="images/alerts/confirm.png" />
- 	  For full functionality of this site it is necessary to enable JavaScript.<br /><br />
- 	  Here are the <a href="http://enable-javascript.com/" target="_blank">
- 	  instructions how to enable JavaScript in your web browser</a>.
- 	 </div>
- 	</noscript>'."\n";
- }
- ?>
+ <link type="text/css" rel="stylesheet" href="css/stylesheet.css" />
+ <link type="text/css" rel="stylesheet" href="css/jquery.noty.css" />
+ 
+ <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+ <script type="text/javascript" src="js/jquery.noty.js"></script>
  
  <link rel="shortcut icon" href="images/favicon.ico" />
  <link rel="apple-touch-icon" href="images/logo-iphone.png" />
  <link rel="apple-touch-icon" sizes="72x72" href="images/logo-ipad.png" />
  <link rel="apple-touch-icon" sizes="114x114" href="images/logo-iphone4.png" />
  <link rel="apple-touch-icon" sizes="144x144" href="images/logo-ipad3.png" />
-
- <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
- <script type="text/javascript" src="js/jquery-ui-1.8.12.custom.min.js"></script>
- <script type="text/javascript" src="js/jquery.qtip.js"></script>
- <script type="text/javascript" src="js/jquery.alerts.js"></script>
- <script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
- <script type="text/javascript" src="js/jquery.selectToUISlider.js"></script>
- <script type="text/javascript" src="js/jquery.form.js"></script>
- <script type="text/javascript" src="js/jquery.jeditable.js"></script>
- <script type="text/javascript" src="js/jquery.timers.js"></script>
- <script type="text/javascript" src="js/jquery.selectBox.js"></script>
- <script type="text/javascript" src="js/jquery.noty.js"></script>
- <script type="text/javascript" src="js/valums.file-uploader.js"></script>
- <script type="text/javascript" src="js/jquery.fancybox-1.3.4.pack.js"></script>
- <script type="text/javascript" src="js/hub.script.js"></script>
 </head>
 
 <body>
 
-<?php
-if(!$UserObj->LoggedIn) {
-	include_once './pages/Login.php';
+<script type="text/javascript">
+$(document).ready(function() {
+	$('a[rel="ajax"]').click(function() {
+		Action   = $(this).attr('id').split('-');
+		SecondID = Action[2];
+		FirstID  = Action[1];
+		Action   = Action[0];
+		OriginalImg  = $(this).html();
+		ImageObj = this;
+		
+		switch(Action) {
+			case 'SerieRefresh':
+				AjaxImage('series/refresh/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'SerieDelete':
+				AjaxImage('series/' + FirstID, ImageObj, OriginalImg, 'delete');
+			break;
+			
+			case 'ZoneDelete':
+				AjaxImage('xbmc/zones/' + FirstID, ImageObj, OriginalImg, 'delete');
+			break;
+			
+			case 'FilePlay':
+				AjaxImage('xbmc/default/play', ImageObj, OriginalImg, 'post', { File: $(this).attr('id').replace(new RegExp(Action + '-', 'i'), '') });
+			break;
+			
+			case 'FileDelete':
+				console.log(Action + ' ' + $(this).attr('id').replace(new RegExp(Action + '-', 'i'), ''));
+			break;
+			
+			case 'WishlistDelete':
+				AjaxImage('wishlist/' + FirstID, ImageObj, OriginalImg, 'delete');
+			break;
+			
+			case 'DriveRemove':
+				AjaxImage('drives/' + FirstID, ImageObj, OriginalImg, 'delete');
+			break;
+			
+			case 'FeedDelete':
+				AjaxImage('rss/' + FirstID, ImageObj, OriginalImg, 'delete');
+			break;
+			
+			default:
+				console.log(Action + ' ' + FirstID);
+		}
+	});
+	
+	$('a[class*="button"]').click(function() {
+		ID = $(this).attr('id');
+		ButtonObj = this;
+		ButtonVal = $(this).contents().find('.label').text();
+		
+		if($(this).hasClass('regular'))  ButtonClass = 'regular';
+		if($(this).hasClass('positive')) ButtonClass = 'positive';
+		if($(this).hasClass('negative')) ButtonClass = 'negative';
+		if($(this).hasClass('blue'))     ButtonClass = 'blue';
+		if($(this).hasClass('neutral'))  ButtonClass = 'neutral';
+		if(!ButtonClass)                 ButtonClass = 'positive';
+		
+		if(ID) {
+			Pattern = /[A-z]+\-[0-9]+/i;
+			Result  = Pattern.test(ID);
+			
+			if(Result) {
+				Action = ID.split('-');
+				ID = Action[1];
+				Action = Action[0];
+				
+				switch(Action) {
+					case 'SerieAdd':
+						AjaxButton('series/add/' + ID, ButtonObj, 'Adding ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'SerieRefresh':
+						AjaxButton('series/refresh/' + ID, ButtonObj, 'Refreshing ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'SerieSpelling':
+						console.log(Action);
+					break;
+					
+					case 'SerieDelete':
+						AjaxButton('series/' + ID, ButtonObj, 'Deleting ...', ButtonClass, ButtonVal, 'delete');
+					break;
+					
+					default:
+						console.log(Action);
+				}
+			}
+			else {
+				switch(ID) {
+					case 'SerieRefreshAll':
+						AjaxButton('series/refresh/all', ButtonObj, 'Refreshing ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'EpisodesRebuild':
+						AjaxButton('series/rebuild/episodes', ButtonObj, 'Rebuilding ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'FoldersRebuild':
+						AjaxButton('series/rebuild/folders', ButtonObj, 'Rebuilding ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'SharedMoviesUpdate':
+						console.log(ID);
+					break;
+					
+					case 'MovieTogglePath':
+						console.log(ID);
+					break;
+					
+					case 'WishlistUpdateShared':
+						console.log(ID);
+					break;
+					
+					case 'WishlistAddItem':
+						WishlistID = randomString();
+						
+						$('#tbl-wishlist tbody tr:first').before(
+						    '<tr id="' + WishlistID + '">' +
+						     '<td>Now</td>' +
+						     '<td><input name="Title" style="width:250px" type="text" /></td>' +
+						     '<td><input name="Year" style="width:30px" type="text" /></td>' +
+						     '<td id="action-' + WishlistID + '" style="text-align:right">' +
+						      '<a onclick="javascript:AjaxPost(\'WishlistAddItem\', \'' + WishlistID + '\');"><img src="images/icons/add.png" /></a>' +
+						      '<a onclick="javascript:$(\'#' + WishlistID + '\').remove();"><img src="images/icons/delete.png" /></a>' +
+						     '</td>' +
+						    '</tr>');
+					break;
+					
+					case 'WishlistRefresh':
+						AjaxButton('wishlist/refresh', ButtonObj, 'Refreshing ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'DriveAdd':
+						DriveID = randomString();
+						
+						$('#tbl-drives tbody tr:first').before(
+						    '<tr id="' + DriveID + '">' +
+						     '<td>Now</td>' +
+						     '<td><input name="Share" style="width:250px" type="text" /></td>' +
+						     '<td><input name="User" style="width:30px" type="text" /></td>' +
+						     '<td><input name="Password" style="width:30px" type="text" /></td>' +
+						     '<td><input name="Mount" style="width:30px" type="text" /></td>' +
+						     '<td><input name="IsNetwork" type="hidden" value="0" />0</td>' +
+						     '<td>0</td>' +
+						     '<td>0</td>' +
+						     '<td id="action-' + DriveID + '" style="text-align:right">' +
+						      '<a onclick="javascript:AjaxPost(\'DriveAddItem\', \'' + DriveID + '\');"><img src="images/icons/add.png" /></a>' +
+						      '<a onclick="javascript:$(\'#' + DriveID + '\').remove();"><img src="images/icons/delete.png" /></a>' +
+						     '</td>' +
+						    '</tr>');
+					break;
+					
+					case 'XBMCLibraryUpdate':
+						AjaxButton('xbmc/library/update', ButtonObj, 'Updating ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'XBMCLibraryClean':
+						AjaxButton('xbmc/library/clean', ButtonObj, 'Cleaning ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'XBMCPlayerTogglePlayback':
+						if(ButtonVal == 'Pause') {
+							ButtonVal = 'Play';
+							ButtonLoadVal = 'Pausing ...';
+						}
+						else if(ButtonVal == 'Play') {
+							ButtonVal = 'Pause';
+							ButtonLoadVal = 'Playing ...';
+						}
+						
+						AjaxButton('xbmc/default/play', ButtonObj, ButtonLoadVal, ButtonClass, ButtonVal);
+					break;
+					
+					case 'XBMCPlayerStop':
+						AjaxButton('xbmc/default/stop', ButtonObj, 'Stopping ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'ZoneAdd':
+						ZoneID = randomString();
+						
+						$('#tbl-zones tbody tr:first').before(
+						    '<tr id="' + ZoneID + '">' +
+						     '<td>Now</td>' +
+						     '<td><input name="Name" style="width:250px" type="text" /></td>' +
+						     '<td><input name="Host" style="width:90px" type="text" /></td>' +
+						     '<td><input name="Port" style="width:30px" type="text" /></td>' +
+						     '<td><input name="User" style="width:50px" type="text" /></td>' +
+						     '<td><input name="Password" style="width:60px" type="text" /></td>' +
+						     '<td id="action-' + ZoneID + '" style="text-align:right">' +
+						      '<a onclick="javascript:AjaxPost(\'ZonesAddItem\', \'' + ZoneID + '\');"><img src="images/icons/add.png" /></a>' +
+						      '<a onclick="javascript:$(\'#' + ZoneID + '\').remove();"><img src="images/icons/delete.png" /></a>' +
+						     '</td>' +
+						    '</tr>');
+					break;
+					
+					case 'TorrentStartAll':
+						AjaxButton('utorrent/start/all', ButtonObj, 'Starting ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'TorrentPauseAll':
+						AjaxButton('utorrent/pause/all', ButtonObj, 'Pausing ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'TorrentStopAll':
+						AjaxButton('utorrent/stop/all', ButtonObj, 'Stopping ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'TorrentRemoveFinished':
+						AjaxButton('utorrent/remove/finished', ButtonObj, 'Removing ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'TorrentRemoveAll':
+						AjaxButton('utorrent/remove/data/all', ButtonObj, 'Removing ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'RSSUpdate':
+						AjaxButton('rss/refresh', ButtonObj, 'Updating ...', ButtonClass, ButtonVal);
+					break;
+					
+					case 'RSSAddFeed':
+						FeedID = randomString();
+						
+						$('#tbl-feeds tbody tr:first').before(
+						    '<tr id="' + FeedID + '">' +
+						     '<td>Now</td>' +
+						     '<td><input name="Title" style="width:250px" type="text" /></td>' +
+						     '<td><input name="Feed" style="width:300px" type="text" /></td>' +
+						     '<td id="action-' + FeedID + '" style="text-align:right">' +
+						      '<a onclick="javascript:AjaxPost(\'FeedAddItem\', \'' + FeedID + '\');"><img src="images/icons/add.png" /></a>' +
+						      '<a onclick="javascript:$(\'#' + FeedID + '\').remove();"><img src="images/icons/delete.png" /></a>' +
+						     '</td>' +
+						    '</tr>');
+					break;
+					
+					case 'MovieCoverCache':
+						AjaxButton('xbmc/movies/cachecovers', ButtonObj, 'Caching ...', ButtonClass, ButtonVal);
+					break;
+					
+					default:
+						console.log(ID + ' default');
+				}
+			}
+		}
+	});
+	
+	$('#search').focus(function() {
+		$('#search').animate({ width:'400px' }, { queue: false, duration: 200 });
+		
+		$('#search').blur(function() {
+			if($(this).attr('value') == '') {
+				$(this).attr('placeholder', 'Search ...');
+				
+				$(this).animate({ width:'100px' }, { queue: false, duration: 200 });
+			}
+		});
+	});
+	
+	$('#search').keypress(function(event) {
+		if(event.which == '13') {
+			event.preventDefault();
+			
+			if($(this).attr('value') != 'Search ...' && $(this).attr('value') != '') {
+				window.location = '?Page=Search&Search=' + escape($(this).attr('value'));
+			}
+	   	}
+	});
+});
+
+function AjaxPost(Action, RowID) {
+	switch(Action) {
+		case 'WishlistAddItem':
+			URL = 'wishlist';
+		break;
+		
+		case 'DriveAddItem':
+			URL = 'drives';
+		break;
+		
+		case 'ZonesAddItem':
+			URL = 'xbmc/zones';
+		break;
+		
+		case 'FeedAddItem':
+			URL = 'rss';
+		break;
+	}
+	
+	switch(Action) {
+		default:
+			var Data = '{';
+			$('#' + RowID).contents().each(function(index) {
+				Name = $(this).contents().attr('name');
+				Value = $(this).contents().attr('value');
+				
+				ImageObj = $(this).contents().find('img').first();
+				
+				if(Name != undefined && Value != undefined) {
+					Data = Data + '"' + Name + '": "' + Value + '",';
+				}
+			});
+			Data = Data.slice(0, -1) + '}';
+	}
+	
+	$.ajax({
+		type: 	'post',
+		url:    'api/' + URL,
+		data:   $.parseJSON(Data),
+		beforeSend: function() {
+			$(ImageObj).attr('src', 'images/spinners/ajax-light.gif');
+		},
+		success: function(data, textStatus, jqXHR) {
+			$('#' + RowID).contents().each(function(index) {
+				Name = $(this).contents().attr('name');
+				Value = $(this).contents().attr('value');
+				
+				if(Name != undefined && Value != undefined) {
+					$(this).html($(this).contents().attr('value'));
+				}
+			});
+			
+			$('#action-' + RowID).html('');
+			
+			noty({
+				text: data.error.message,
+				type: 'success',
+				timeout: 3000,
+			});
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			$(ImageObj).attr('src', 'images/icons/error.png');
+		    
+		    var responseObj = JSON.parse(jqXHR.responseText);
+		    noty({
+		    	text: responseObj.error.message,
+		    	type: 'error',
+		    	timeout: false,
+		    });
+		}
+	});
 }
-else {
-?>
-<div id="loading">
- <img class="spinner" src="images/blank.gif"/> 
- <span class="spinnertext"> Loading...</span>
-</div>
 
-<div id="upload-wrapper"></div>
-<div id="loading-wrapper"></div>
+function randomString() {
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	var string_length = 8;
+	var randomstring = '';
+	for(var i = 0; i < string_length; i++) {
+		var rnum = Math.floor(Math.random() * chars.length);
+		randomstring += chars.substring(rnum, rnum+1);
+	}
+	
+	return randomstring;
+}
 
-<div id="error" style="display:none">
- <img src="images/alerts/confirm.png" />
- <div class="error-head">Page missing!</div>
-  
-  The file "random.php" does not exist
- </div>
-</div>
+function AjaxButton(URL, ButtonObj, BeforeText, ButtonClass, ButtonVal, Method, Data) {
+	if(Method == undefined) {
+		Method = 'get';
+	}
+	
+	$.ajax({
+		type: 	Method,
+		url:    '/api/' + URL,
+		data:   Data,
+		beforeSend: function() {
+			$(ButtonObj).removeClass(ButtonClass).addClass('disabled');
+			$(ButtonObj).contents().find('.label').text(BeforeText);
+		},
+		success: function(data, textStatus, jqXHR) {
+			$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+			$(ButtonObj).contents().find('.label').text(ButtonVal);
+			
+			noty({
+				text: data.error.message,
+				type: 'success',
+				timeout: 3000,
+			});
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
+		    $(ButtonObj).contents().find('.label').text('Error!');
+		    
+		    var responseObj = JSON.parse(jqXHR.responseText);
+		    noty({
+		    	text: responseObj.error.message,
+		    	type: 'error',
+		    	timeout: false,
+		    });
+		}
+	});
+}
+
+function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
+	if(Method == undefined) {
+		Method = 'get';
+	}
+	
+	$.ajax({
+		type: 	Method,
+		url:    'api/' + URL,
+		data:   Data,
+		beforeSend: function() {
+			$(ImageObj).html('<img src="images/spinners/ajax-light.gif" />');
+		},
+		success: function(data, textStatus, jqXHR) {
+			$(ImageObj).html(OriginalImg);		
+			
+			if(Method == 'delete') {
+				$(ImageObj).parent().parent().remove();
+			}
+			
+			noty({
+				text: data.error.message,
+				type: 'success',
+				timeout: 3000,
+			});
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			$(ImageObj).html('<img src="images/icons/error.png" />');
+		    
+		    var responseObj = JSON.parse(jqXHR.responseText);
+		    noty({
+		    	text: responseObj.error.message,
+		    	type: 'error',
+		    	timeout: false,
+		    });
+		}
+	});
+}
+</script>
 
 <table class="main">
  <tr>
   <td class="header left">
-   <a href="#!/"><img src="images/logo.png" title="Hub Version: <?php echo $HubObj::HubVersion; ?>" /></a>
+   <a href="/"><img src="images/logo.png" title="Hub Version: " /></a>
    <img src="images/blank.gif" id="divider" />
   </td>
   <td class="header middle">
-   <?php
-   if($UserObj->CheckPermission($UserObj->UserGroupID, 'Search')) {
-   	echo '<input type="search" id="search" placeholder="Search..." results="5" />'."\n";
-   }
-   ?>
+   <input type="search" id="search" placeholder="Search..." results="5" />
   </td>
   <td class="header right">
-   <?php
-   include_once './pages/ZoneSwitch.php';
-   ?>
+   <select name="zoneSelect" id="zoneSelect" class="blue">
+    <?php 
+    $Zones = json_decode($Hub->Request('/xbmc/zones'));
+    foreach($Zones AS $Zone) {
+    	$Selected = $Zone->IsDefault ? ' selected="selected"' : '';
+    	echo '<option value="'.$Zone->Name.'"'.$Selected.'>'.$Zone->Name.'</option>'."\n";
+    }
+    ?>
+   </select>
   </td>
  </tr>
  <tr>
@@ -109,100 +486,118 @@ else {
    <div id="navbuttons">
     <span id="LockStatus"></span>
     <span id="TorrentSpeedSetting"></span>
-    <?php
-   	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewStatistics')) {
-   		// echo '<a rel="Statistics" href="#!/Statistics"><img id="IconStat" src="images/icons/statistics_dark.png" /></a>'."\n";
-   	}
-   	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewSettings')) {
-   		echo '<a rel="Settings" href="#!/Settings"><img id="IconSettings" src="images/icons/settings_dark.png" /></a>'."\n";
-   	}
-   	echo '<a rel="Profile" href="#!/Profile"><img id="IconProfile" src="images/icons/profile_dark.png" /></a>'."\n";
-   	if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewUsers')) {
-   		echo '<a rel="Users" href="#!/Users"><img id="IconUsers" src="images/icons/users_dark.png" /></a>'."\n";
-   	}
-   	?>
-   	<a rel="Logout" href="#!/Logout"><img id="IconLogout" src="images/icons/logout_dark.png" /></a>
+    <a href="?Page=Settings"><img id="IconSettings" src="images/icons/settings_dark.png" /></a>
+    <a href="?Page=Profile"><img id="IconProfile" src="images/icons/profile_dark.png" /></a>
+    <a href="?Page=Users"><img id="IconUsers" src="images/icons/users_dark.png" /></a>
+   	<a href="?Page=Logout"><img id="IconLogout" src="images/icons/logout_dark.png" /></a>
    </div>
    <ul>
-    <?php
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewSeries')) {
-    	echo '<li class="series"><a rel="Series" href="#!/Series">Series</a></li>'."\n";
-    }
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovies')) {
-    	echo '<li class="movies"><a rel="Movies" href="#!/Movies">Movies</a></li>'."\n";
-    }
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewWishlist')) {
-    	echo '<li class="wishlist"><a rel="Wishlist" href="#!/Wishlist">Wishlist</a><span id="WishlistBadge"></span></li>'."\n";
-    }
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewDrives')) {
-    	echo '<li class="drive"><a rel="Drives" href="#!/Drives">Drives</a></li>'."\n";
-    }
-    
-    echo '<li class="manager"><a rel="FileManager" href="#!/FileManager">File Manager</a></li>'."\n";
-    
-    /*
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewUnsortedFiles')) {
-    	echo '<li class="unsorted"><a rel="UnsortedFiles" href="#!/UnsortedFiles">Unsorted Files</a></li>'."\n";
-    }
-    */
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewExtractFiles')) {
-    	echo '<li class="extract"><a rel="ExtractFiles" href="#!/ExtractFiles">Extract Files</a></li>'."\n";
-    }
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewHubLog')) {
-    	echo '<li class="log"><a rel="HubLog" href="#!/HubLog">Log</a></li>'."\n";
-    }
-    ?>
+    <li class="series"><a href="?Page=Series">Series</a></li>
+    <li class="movies"><a href="?Page=Movies">Movies</a></li>
+    <li class="wishlist"><a href="?Page=Wishlist">Wishlist</a><span id="WishlistBadge"></span></li>
+    <li class="drive"><a href="?Page=Drives">Drives</a></li>
+    <li class="extract"><a href="?Page=ExtractFiles">Extract Files</a></li>
+    <li class="log"><a href="?Page=Log">Log</a></li>
    </ul>
        
    <h3>XBMC</h3>
    <ul>
-    <?php
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewXBMCCP')) {
-    	echo '<li class="control-panel"><a rel="XBMCControlPanel" href="#!/XBMCCP">Control Panel</a></li>'."\n";
-    }
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewXBMCZones')) {
-    	echo '<li class="zones"><a rel="XBMCZones" href="#!/XBMCZones">Zones</a></li>'."\n";
-    }
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewXBMCScreenshots')) {
-    	echo '<li class="screenshot"><a rel="XBMCScreenshots" href="#!/XBMCScreenshots">Screenshots</a></li>'."\n";
-    }
-    if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewXBMCLog')) {
-    	echo '<li class="log"><a rel="XBMCLog" href="#!/XBMCLog">Log</a></li>'."\n";
-    }
-    ?>
+    <li class="control-panel"><a href="?Page=XBMCCP">Control Panel</a></li>
+    <li class="zones"><a href="?Page=Zones">Zones</a></li>
+    <li class="log"><a href="?Page=XBMCLog">Log</a></li>
    </ul>
        
+   <h3>uTorrent</h3>
+   <ul>
+   	<li class="control-panel"><a href="?Page=UTorrentCP">Control Panel</a><span id="UTorrentBadge"></span></li>
+   </ul>
+   
+   <h3>RSS Feeds</h3>  
+   <ul>
+   	<li class="control-panel"><a href="?Page=RSSCP">Control Panel</a></li>
+   	<?php 
+   	$Feeds = json_decode($Hub->Request('rss/'));
+   	
+   	foreach($Feeds AS $Feed) {
+   		echo '<li class="feeds"><a href="?Page=RSS&ID='.$Feed->ID.'">'.$Feed->Title.'</a><span id="RSS-'.$Feed->ID.'"></span></li>'."\n";
+   	}
+   	?>
+   </ul>
+  </td>
+  <td colspan="2" id="maincontent">
    <?php
-   if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewUTorrentCP')) {
-       echo '
-   	   <h3>uTorrent</h3>
-   	   <ul>
-   	    <li class="control-panel"><a rel="UTorrentControlPanel" href="#!/uTorrentCP">Control Panel</a><span id="UTorrentBadge"></span></li>
-   	   </ul>'."\n";
+   if(filter_has_var(INPUT_GET, 'Page')) {
+   	$Page = $_GET['Page'];
+   }
+   else {
+   	$Page = '';
    }
    
-   if($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewRSSFeed')) {
-       echo '
-   	   <h3>RSS Feeds</h3>  
-   	   <ul>
-   	    <li class="control-panel"><a rel="RSSCP" href="#!/RSSCP">Control Panel</a></li>'."\n";
-   	   
-   	   $RSSFeeds = $RSSObj->GetRSSFeeds();
-   	   if(is_array($RSSFeeds)) {
-   	   		foreach($RSSFeeds AS $RSSFeed) {
-   	   			echo '<li class="feeds"><a rel="RSS" href="#!/RSS/'.$RSSFeed['RSSTitle'].'">'.$RSSFeed['RSSTitle'].'</a><span id="RSS-'.$RSSFeed['RSSID'].'"></span></li>'."\n";
-   	   		}
-   	   }
-   	   echo '
-   	   </ul>'."\n";
+   switch($Page) {
+   	case 'Series':
+   		include_once APP_PATH.'/pages/Series.php';
+   	break;
+   	
+   	case 'Movies':
+   		include_once APP_PATH.'/pages/Movies.php';
+   	break;
+   	
+   	case 'Wishlist':
+   		include_once APP_PATH.'/pages/Wishlist.php';
+   	break;
+   	
+   	case 'Drives':
+   		include_once APP_PATH.'/pages/Drives.php';
+   	break;
+   	
+   	case 'FileManager':
+   		include_once APP_PATH.'/pages/FileManager.php';
+   	break;
+   	
+   	case 'ExtractFiles':
+   		include_once APP_PATH.'/pages/ExtractFiles.php';
+   	break;
+   	
+   	case 'Log':
+   		include_once APP_PATH.'/pages/Log.php';
+   	break;
+   	
+   	case 'XBMCCP':
+   		include_once APP_PATH.'/pages/XBMCCP.php';
+   	break;
+   	
+   	case 'Zones':
+   		include_once APP_PATH.'/pages/XBMCZones.php';
+   	break;
+   	
+   	case 'XBMCLog':
+   		include_once APP_PATH.'/pages/XBMCLog.php';
+   	break;
+   	
+   	case 'UTorrentCP':
+   		include_once APP_PATH.'/pages/UTorrentCP.php';
+   	break;
+   	
+   	case 'RSSCP':
+   		include_once APP_PATH.'/pages/RSSCP.php';
+   	break;
+   	
+   	case 'RSS':
+   		include_once APP_PATH.'/pages/RSS.php';
+   	break;
+   	
+   	case 'Search':
+   		include_once APP_PATH.'/pages/Search.php';
+   	break;
+   	
+   	case 'Schedule':
+   	default:
+   		include_once APP_PATH.'/pages/Schedule.php';
    }
    ?>
   </td>
-  <td colspan="2" id="maincontent"></td>
  </tr>
 </table>
-<?php
-}
-?>
+
 </body>	
 </html> 

@@ -220,13 +220,13 @@ table.main {
 }
 
 #divider {
+	left: 209px;
+	width: 3px;
+	height: 43px;
+	margin: 0px 0px 0px 0px;
   	vertical-align: middle;
   	display: inline-block;
   	position: absolute;
-  	left: 209px;
-  	width: 3px;
-  	height: 43px;
-  	margin: 0px 0px 0px 0px;
   	background: url('../images/header/divider.png') no-repeat;
 }
 /*
@@ -1268,4 +1268,51 @@ a {
 }
 .cover-link {
 	line-height: 250px;
+}
+
+#TorrentMagnetPanel {
+	display: none;
+	position: absolute;
+	top: 0px;
+	left: 60%;
+	background: #222222;
+	border: 1px solid #333333;
+	border-top: 0;
+	color: #fff;
+	width: 430px;
+	height: 42px;
+	-moz-border-radius-bottomright: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	z-index: 9999;
+}
+
+#TorrentMagnetPanel div {
+	 margin-top: 10px;
+	 margin-left: 20px;
+}
+
+#PanelTrigger {
+	position: absolute;
+	text-decoration: none;
+	top: 0px; 
+	left: 80%;
+	color:#fff;
+	padding: 15px 15px 15px 15px;
+	background: #222222 url('../images/icons/magnet.png') 50% 50% no-repeat;
+	border: 1px solid #666666;
+	border-top: 0;
+	-moz-border-radius-bottomright: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	display: block;
+	z-index: 2;
+}
+
+#PanelTrigger:hover {
+	background: #333333 url('../images/icons/magnet.png') 50% 50% no-repeat;
+	border: 1px solid #555555;
+	border-top: 0;
 }

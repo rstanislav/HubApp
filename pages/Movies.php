@@ -1,176 +1,100 @@
 <div class="head-control">
- <a id="MovieTogglePath-0" class="button positive"><span class="inner"><span class="label" nowrap="">Toggle File Path</span></span></a>
+ <a id="MovieCoverCache" class="button positive"><span class="inner"><span class="label" nowrap="">Cache Covers</span></span></a>
+ <a id="SharedMoviesUpdate" class="button positive"><span class="inner"><span class="label" nowrap="">Update Shared Movies</span></span></a>
+ <a id="MovieTogglePath" class="button positive"><span class="inner"><span class="label" nowrap="">Toggle File Path</span></span></a>
 </div>
 
-<div class="head">Recently added movies <small style="font-size: 12px;">(<a href="#!/Help/Movies">?</a>)</small></div>
+<div class="head">Recently added movies</div>
 
 <?php
-$XBMCObj->Connect('default');
+$RecentMovies = json_decode($Hub->Request('/xbmc/movies/recent'));
 
-if(is_object($XBMCObj->XBMCRPC)) {
-    $RecentMovies = $XBMCObj->GetRecentlyAddedMovies();
-	if(is_array($RecentMovies)) {
-		$i = 1;
-		echo '
-		<table width="100%" class="nostyle">
-		 <tr>'."\n";
-		foreach($RecentMovies['movies'] AS $Movie) {
-			if(is_file(APP_PATH.'/posters/thumbnails/movie-'.$Movie['movieid'].'.jpg')) {
-				$Thumbnail = 'posters/thumbnails/movie-'.$Movie['movieid'].'.jpg';
-			}
-			else {
-				$Thumbnail = 'images/poster-unavailable.png';
-			}
-			
-			$Files = $HubObj->ConcatFilePath($Movie['file']);
-			
-			$FilePath = '';
-			if(is_array($Files)) {
-				$FilePath = implode('<br />', $Files);
-			}
-			else {
-				$FilePath = $Files;
-			}
-			
-			$FilePath = preg_replace('/[A-z0-9-]+\:[A-z0-9-]+@/', '', $FilePath);
-			$MoviePlayLink  = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay')) ? '<a id="FilePlay-'.urlencode($Movie['file']).'" class="cover-link"><img src="images/icons/control_play.png" /></a>' : '';
-
-			if(!empty($Movie['trailer'])) {
-				if(strstr($Movie['trailer'], 'plugin.video.youtube')) {
-					$MovieTrailerLink = '<a href="http://youtube.com/watch?v='.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie['trailer']).'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/youtube.png" /></a>';
-				}
-				else if(strstr($Movie['trailer'], 'http://playlist.yahoo.com')) {
-					$MovieTrailerLink = '<a href="'.$Movie['trailer'].'" rel="trailer" class="cover-link" title="'.$Movie['label'].' ('.$Movie['year'].') Trailer"><img  src="images/icons/yahoo.png" /></a>';
-				}
-			}
-			else {
-				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie['label'].' '.$Movie['year'].' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
-			}
-			
-			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie['movieid'].'" class="cover-link"><img src="images/icons/information.png" /></a>'  : '';
-			
-			$Watched = ($Movie['playcount']) ? '<div class="cover-watched">watched</div>' : '';
-			
-			$MoviePoster = '
-			 <div id="Cover-'.$Movie['movieid'].'" class="cover">
-			  <img class="poster" width="150" height="250" src="'.$Thumbnail.'" />
-			  '.$Watched.'
-			  <div id="CoverControl-'.$Movie['movieid'].'" class="cover-control">
-			   '.$MoviePlayLink.'
-			   '.$MovieInfoLink.'
-			   '.$MovieTrailerLink.'
-			  </div>
-			 </div>';
-			
-			$PathShow = (filter_has_var(INPUT_COOKIE, 'MoviePath')) ? ' style="'.$_COOKIE['MoviePath'].'"' : ' style="display: inline;"';
-			echo '
-			<td style="text-align: center; width:33%;">
-			 <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
-			 <a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Movie['file'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> <strong>'.$Movie['label'].' ('.$Movie['year'].')</strong>
-			 <span class="MoviePath"'.$PathShow.'><br /><small>'.$FilePath.'</small></span><br /><br />
-			</td>'."\n";
-			
-			if($i++ % 3 == 0) {
-				echo '
-				</tr>
-				<tr>'."\n";
-			}
-		}
-		echo '</table>'."\n";
-	}
-	?>
-	
-	<div class="head">All Movies <small style="font-size: 12px;">(<a href="#!/Help/Movies">?</a>)</small></div>
-	<?php
-	$AllMovies = $XBMCObj->GetMovies();
-	
-	if(is_array($AllMovies)) {
-		$Movies = array();
-		foreach($AllMovies['movies'] AS $Movie) {
-			$Title = trim(str_replace('The ', '', trim($Movie['label'])));
-			$Movies[$Title][] = $Movie;
-		}
-		
-		ksort($Movies);
-		
-		echo '
-		<table width="100%">
-		 <thead>
-		 <tr>
-		  <th>Title</th>
-		  <th style="width:40px; text-align:center">Year</th>
-		  <th>File</th>
-		  <th style="width:74px">&nbsp;</th>
-		 </tr>
-		 </thead>'."\n";
-		
-		foreach($Movies AS $Movie) {
-			$MoviePlayLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'XBMCPlay'))             ? '<a id="FilePlay-'.urlencode($DrivesObj->GetNetworkLocation($Movie[0]['file'])).'"><img src="images/icons/control_play.png" /></a>' : '';
-			$MovieInfoLink   = ($UserObj->CheckPermission($UserObj->UserGroupID, 'ViewMovieInformation')) ? '<a id="MovieInfo-'.$Movie[0]['movieid'].'"><img src="images/icons/information.png" /></a>'  : '';
-			$MovieDeleteLink = ($UserObj->CheckPermission($UserObj->UserGroupID, 'MovieDelete'))          ? '<a id="MovieDelete-'.$Movie[0]['movieid'].'"><img src="images/icons/delete.png" /></a>'    : '';
-			
-			$WatchedIcon = ($Movie[0]['playcount']) ? '<img style="vertical-align:text-bottom;" src="images/icons/watched.png" /> ' : '';
-			
-			$MovieID        = trim($Movie[0]['movieid']);
-			$MovieLabel     = trim($Movie[0]['label']);
-			$MovieFile      = trim($Movie[0]['file']);
-			$MovieYear      = (array_key_exists('year', $Movie[0]))      ? trim($Movie[0]['year'])      : '';
-			$MovieThumbnail = (array_key_exists('thumbnail', $Movie[0])) ? trim($Movie[0]['thumbnail']) : '';
-			$MovieFanart    = (array_key_exists('fanart', $Movie[0]))    ? trim($Movie[0]['fanart'])    : '';
-			$MovieGenre     = (array_key_exists('genre', $Movie[0]))     ? trim($Movie[0]['genre'])     : '';
-			$MovieFile      = (array_key_exists('file', $Movie[0]))      ? $HubObj->ConcatFilePath(trim($Movie[0]['file']))      : '';
-			$FileManagerLink = '';
-			
-			$MovieFile = preg_replace('/[A-z0-9-]+\:[A-z0-9-]+@/', '', $MovieFile);
-			if(array_key_exists('file', $Movie[0]) && !is_array($Movie[0]['file'])) {
-				$FileManagerLink = '<a href="#!/FileManager/'.$DrivesObj->GetLocalLocation(dirname($Movie[0]['file'])).'" title="View \''.$DrivesObj->GetLocalLocation(dirname($Movie[0]['file'])).'\' in File Manager"><img style="vertical-align: middle" src="images/icons/go_arrow.png" /></a> ';
-			}
-			else {
-				$FileManagerLink = '';
-			}
-			
-			if(is_array($MovieFile)) {
-				$FileManagerLink = '';
-				$MovieFile = implode('<br />', $MovieFile);
-			}
-			
-			if(array_key_exists('trailer', $Movie[0])) {
-				if(strstr($Movie[0]['trailer'], 'plugin.video.youtube')) {
-					$MovieTrailerLink = '<a href="http://youtube.com/watch?v='.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie[0]['trailer']).'" rel="trailer" title="'.$MovieLabel.' ('.$MovieYear.') Trailer"><img  src="images/icons/youtube.png" /></a>';
-				}
-				else if(strstr($Movie[0]['trailer'], 'http://playlist.yahoo.com')) {
-					$MovieTrailerLink = '<a href="'.$Movie[0]['trailer'].'" rel="trailer" title="'.$MovieLabel.' ('.$MovieYear.') Trailer"><img  src="images/icons/yahoo.png" /></a>';
-				}
-				else {
-					$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$MovieYear.' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
-				}
-			}
-			else {
-				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($MovieLabel.' '.$MovieYear.' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="images/icons/youtube.png" /></a>';
-			}
-			
-			if(strlen($MovieLabel)) {
-				echo '
-				<tr>
-				 <td>'.$WatchedIcon.''.$MovieLabel.'</td>
-				 <td style="text-align:center">'.$MovieYear.'</td>
-				 <td>'.$FileManagerLink.$MovieFile.'</td>
-				 <td style="text-align: right">
-				  '.$MoviePlayLink.'
-				  '.$MovieInfoLink.'
-				  '.$MovieTrailerLink.'
-				  '.$MovieDeleteLink.'
-				 </td>
-				</tr>'."\n";
-			}
-		}
-		echo '</table>'."\n";
-	}
-	else {
-		echo '<div class="notification information">No data available</div>';
-	}
+if(is_object($RecentMovies) && is_object($RecentMovies->error)) {
+	echo '<div class="notification information">'.$RecentMovies->error->message.'</div>'."\n";
 }
 else {
-	echo '<div class="notification warning">Unable to connect to XBMC</div>';
+	echo '
+	<table class="nostyle">
+	 <thead>
+	  <tr>'."\n";
+	 
+	$i = 1;
+	foreach($RecentMovies AS $Movie) {
+		$Watched = ($Movie->playcount) ? '<div class="cover-watched">watched</div>' : '';
+		
+		$MoviePoster = '
+		 <div id="Cover-'.$Movie->movieid.'" class="cover">
+		  <img class="poster" width="150" height="250" src="'.$Movie->postersmall.'" />
+		  '.$Watched.'
+		  <div id="CoverControl-'.$Movie->movieid.'" class="cover-control">
+		   <a id="" class="cover-link"><img src="images/icons/control_play.png" /></a>
+		   <a id="" class="cover-link"><img src="images/icons/information.png" /></a>
+		   <a id="" class="cover-link"><img src="images/icons/youtube.png" /></a>
+		  </div>
+		 </div>';
+		 
+		echo '
+		<td style="text-align: center; width:33%;">
+		 <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
+		 <strong>'.$Movie->label.' ('.$Movie->year.')</strong>
+		 <br /><br />
+		</td>'."\n";
+		
+		if($i++ % 3 == 0) {
+			echo '
+			</tr>
+			<tr>'."\n";
+		}
+	}
+	
+	echo '
+	<table>'."\n";
 }
+?>
+
+<div class="head">All movies</div>
+
+<?php
+$Movies = json_decode($Hub->Request('/xbmc/movies'));
+
+echo '
+<table>
+ <thead>
+  <tr>
+   <th style="width: 16px">&nbsp;</th>
+   <th style="width: 300px">Title</th>
+   <th style="width: 30px">Year</th>
+   <th>File</th>
+   <th style="width: 73px">&nbsp;</th>
+  </tr>
+ </thead>'."\n";
+ 
+if(is_object($Movies) && property_exists('error', $Movies)) {
+	echo '
+	<tr>
+	 <td colspan="5">'.$Movies->error->message.'</td>
+	</tr>'."\n";
+}
+else {
+	foreach($Movies AS $Movie) {
+		$WatchedIcon = ($Movie->playcount) ? '<img src="images/icons/watched.png" />' : '';
+		
+		echo '
+		<tr>
+		 <td>'.$WatchedIcon.'</td>
+		 <td>'.$Movie->label.'</td>
+		 <td>'.$Movie->year.'</td>
+		 <td>'.ConcatFilePath($Movie->file).'</td>
+		 <td>
+		  <a id="FilePlay-'.$Movie->file.'" rel="ajax"><img src="images/icons/control_play.png" /></a>
+		  <a id="MovieInformation-'.$Movie->movieid.'" rel="ajax"><img src="images/icons/information.png" /></a>
+		  <img src="images/icons/youtube.png" />
+		  <a id="FileDelete-'.$Movie->file.'" rel="ajax"><img src="images/icons/delete.png" /></a>
+		 </td>
+		</tr>'."\n";
+	}
+}
+
+echo '
+</table>'."\n";
 ?>

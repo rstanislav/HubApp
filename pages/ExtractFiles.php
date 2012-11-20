@@ -1,81 +1,108 @@
-<div class="head">Extract Files <small style="font-size: 12px;">(<a href="#!/Help/ExtractFiles">?</a>)</small></div>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('a[id=ExtractOK]').click(function() {
+		$(document).dequeue("ajaxRequests");
+	});
+});
+</script>
+
+<div class="head">Extract Files </div>
 
 <?php
-if(!strlen(EVENT)) {
-	if($HubObj->CheckLock()) {
-		echo '<div class="notification information">Hub is currently locked</div>';
-	}
-	else {
-		$HubObj->Lock();
-		
-		$Files = $ExtractFilesObj->GetFiles();
-		
-		if(is_array($Files) && sizeof($Files)) {
-			$FileNo = 0;
-			$AjaxQueue = FALSE;
+$CompletedFiles = json_decode($Hub->Request('/drives/files/completed'));
+
+if(is_object($CompletedFiles) && property_exists($CompletedFiles, 'error')) {
+	echo '<div class="notification warning">'.$CompletedFiles->error->message.'</div>'."\n";
+}
+else {
+	echo 'Are you happy with these results? <a id="ExtractOK">Go ahead and execute them</a><br /><br />'."\n";
+	
+	if(is_object($CompletedFiles) && property_exists($CompletedFiles, 'Extract')) {
+		$FileNo = 0;
+		foreach($CompletedFiles->Extract AS $File) {
+			$FileNo++;
 			
-			if(array_key_exists('Extract', $Files)) {
-				foreach($Files['Extract'] AS $File) {
-					$FileNo++;
-					$AjaxQueue = TRUE;
-					list($File, $DriveID) = explode(',', $File);
-					
-					echo '
-					<div id="ExtractFile-'.$FileNo.'">Waiting to extract "'.$File.'" ...</div>
-					
-					<script type="text/javascript">
-					$(document).queue("ajaxRequests", function() {
-						$("#ExtractFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Extracting \"'.$File.'\" ...");
-					    
-						$.ajax({ url:  "load.php",
-								 data: "page=ExtractFile&File='.urlencode($File).'&ID='.$FileNo.'&DriveID='.$DriveID.'",
-								 success: function(data) {
-								     $("#ExtractFile-'.$FileNo.'").html(data);
-					       	 	     $(document).dequeue("ajaxRequests");
-					             }
-						});
-					});
-					</script>'."\n";
-				}
-			}
+			$ExtractArr = array('File' => $File, 'debug' => TRUE);
+			$ExtractFile = json_decode($Hub->Request('/drives/files/extract', 'POST', $ExtractArr));
 			
-			if(array_key_exists('Move', $Files)) {
-				foreach($Files['Move'] AS $File) {
-					$FileNo++;
-					$AjaxQueue = TRUE;
-					list($File, $DriveID) = explode(',', $File);
-					
-					echo '
-					<div id="MoveFile-'.$FileNo.'">Waiting to move '.$File.' ...</div>
-					
-					<script type="text/javascript">
-					$(document).queue("ajaxRequests", function() {
-						$("#ExtractFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Moving \"'.$File.'\" ...");
-					    
-						$.ajax({ url:  "load.php",
-								 data: "page=MoveFile&File='.urlencode($File).'&ID='.$FileNo.'&DriveID='.$DriveID.'",
-								 success: function(data) {
-								     $("#MoveFile-'.$FileNo.'").html(data);
-					       	 	     $(document).dequeue("ajaxRequests");
-					             }
-						});
-					});
-					</script>'."\n";
-				}
-			}
-			
-			if($AjaxQueue && $UserObj->CheckPermission($UserObj->UserGroupID, 'ExtractFiles')) {
+			if(is_object($ExtractFile) && property_exists($ExtractFile, 'error')) {
+				echo '<div id="ExtractFile-'.$FileNo.'">Waiting: '.$ExtractFile->error->message.' ...</div>'."\n";
+				
 				echo '
 				<script type="text/javascript">
-				$(document).dequeue("ajaxRequests");
+				$(document).queue("ajaxRequests", function() {
+					$.ajax({
+						type: 	"post",
+						url:    "/api/drives/files/extract",
+						data:   { File: "'.$File.'" },
+						beforeSend: function() {
+							$("#ExtractFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Working \"'.$ExtractFile->error->message.'\" ...");
+						},
+						success: function(data, textStatus, jqXHR) {
+							$("#ExtractFile-'.$FileNo.'").html("<img src=\"images/icons/check.png\" /> " + data.error.message);
+						
+							$(document).dequeue("ajaxRequests");
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+						    var responseObj = JSON.parse(jqXHR.responseText);
+						    $("#ExtractFile-'.$FileNo.'").html("<img src=\"images/icons/error.png\" /> " + responseObj.error.message);
+						}
+					});
+				});
 				</script>'."\n";
 			}
 		}
-		else {
-			echo '<div class="notification information">No files to move/extract</div>';
-		}
-		
-		$HubObj->Unlock();
 	}
+	
+	if(is_object($CompletedFiles) && property_exists($CompletedFiles, 'Move')) {
+		foreach($CompletedFiles->Move AS $File) {
+			$FileNo++;
+			
+			$MoveArr = array('File' => $File, 'debug' => TRUE);
+			$MoveFile = json_decode($Hub->Request('/drives/files/move', 'POST', $MoveArr));
+			
+			if(is_object($MoveFile) && property_exists($MoveFile, 'error')) {
+				echo '<div id="MoveFile-'.$FileNo.'">Waiting: '.$MoveFile->error->message.' ...</div>'."\n";
+				
+				echo '
+				<script type="text/javascript">
+				$(document).queue("ajaxRequests", function() {
+					$.ajax({
+						type: 	"post",
+						url:    "/api/drives/files/move",
+						data:   { File: "'.$File.'" },
+						beforeSend: function() {
+							$("#MoveFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Working \"'.$ExtractFile->error->message.'\" ...");
+						},
+						success: function(data, textStatus, jqXHR) {
+							$("#MoveFile-'.$FileNo.'").html("<img src=\"images/icons/check.png\" /> " + data.error.message);
+						
+							$(document).dequeue("ajaxRequests");
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+						    var responseObj = JSON.parse(jqXHR.responseText);
+						    $("#MoveFile-'.$FileNo.'").html("<img src=\"images/icons/error.png\" /> " + responseObj.error.message);
+						}
+					});
+				});
+				</script>'."\n";
+			}
+		}
+	}
+	
+	echo '
+	<script type="text/javascript">
+	$(document).queue("ajaxRequests", function() {
+		$.ajax({
+			type: 	"get",
+			url:    "/api/drives/clean",
+			success: function(data, textStatus, jqXHR) {
+				console.log(data.error.message);
+			
+				$(document).dequeue("ajaxRequests");
+			}
+		});
+	});
+	</script>'."\n";
 }
 ?>

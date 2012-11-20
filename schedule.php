@@ -1,98 +1,163 @@
 <?php
 error_reporting(E_ALL);
 
-ini_set('display_errors',     0); 
+ini_set('display_errors',     1); 
 ini_set('log_errors',         1);
 ini_set('error_log',          realpath(dirname(__FILE__)).'/tmp/schedule_error.log');
 ini_set('max_execution_time', (60 * 60 * 5));
 
 session_start();
 require_once realpath(dirname(__FILE__)).'/resources/config.php';
-require_once realpath(dirname(__FILE__)).'/libraries/libraries.php';
+require_once realpath(dirname(__FILE__)).'/api/resources/DB.php';
+require_once realpath(dirname(__FILE__)).'/api/resources/functions.php';
+require_once realpath(dirname(__FILE__)).'/resources/api.hub.php';
 
-$HubObj->CheckForDBUpgrade();
+$DBUpgrade = json_decode($Hub->Request('/hub/upgrade'));
 
-$Settings = $HubObj->Settings;
+$LockStatus = json_decode($Hub->Request('/hub/lockstatus'));
 
-if($Settings['SettingHubKillSwitch'] || $HubObj->CheckLock()) {
-	die();
+if(is_object($LockStatus) && property_exists($LockStatus, 'error')) {
+	if($LockStatus->error->code == 200) {
+		$Hub->Request('/hub/lock');
+	}
+	else {
+		die('locked');
+	}
 }
-else {
-	$HubObj->Lock();
-}
-
-$UTorrentObj->Connect();
-$SeriesObj->ConnectTheTVDB();
-$XBMCObj->Connect('default');
 
 // Check for existing active drive and that all required folders are present
-$DrivesObj->CheckActiveDrive();
-
-if(date('G') > 4 && date('G') < 6) {
-	// Refresh all wishlist items
-	$WishlistObj->WishlistRefresh();
-	
-	// Backup XBMC Files
-	// ...
+$ActiveDrive = json_decode($Hub->Request('/drives/active/check'));
+if(is_object($ActiveDrive) && property_exists($ActiveDrive, 'error')) {
+	if($ActiveDrive->error->code != 200) {
+		die();
+	}
 }
 
 // Update RSS Feeds
-$RSSObj->Update();
+$Hub->Request('/rss/refresh');
 
 // Download torrents corresponding with new episodes and/or wishlist items
-$RSSObj->DownloadWantedTorrents();
+$Hub->Request('/rss/download');
 
 // Remove finished torrents from uTorrent
-if(is_object($UTorrentObj->UTorrentAPI)) {
-	$UTorrentObj->DeleteFinishedTorrents();
-}
+$Hub->Request('/utorrent/remove/finished');
+
+// Delete backup files older than x days as defined in Hub settings
+$Hub->Request('/hub/backup/clean');
 
 // Extract and/or move completed downloads across all drives
-$ExtractFilesObj->ExtractAndMoveAllFiles();
+$CompletedFiles = json_decode($Hub->Request('/drives/files/completed'));
+
+if(is_object($CompletedFiles) && !property_exists($CompletedFiles, 'error')) {
+	if(is_object($CompletedFiles) && property_exists($CompletedFiles, 'Move')) {
+		foreach($CompletedFiles->Move AS $Move) {
+			$Hub->Request('/drives/files/move', 'POST', array('File' => $Move));
+		}
+	}
+	
+	if(is_object($CompletedFiles) && property_exists($CompletedFiles, 'Extract')) {
+		foreach($CompletedFiles->Extract AS $Extract) {
+			$Hub->Request('/drives/files/extract', 'POST', array('File' => $Extract));
+		}
+	}
+}
 
 // Check previous log entries and update library if new content is available
-$LogActivity = $HubObj->PDO->query('SELECT LogDate AS NewContent FROM Log WHERE LogAction = "update" ORDER BY LogDate DESC LIMIT 1')->fetch();
-$XBMCActivity = $HubObj->PDO->query('SELECT LogDate AS LastUpdate FROM Log WHERE LogType = "Success" AND LogEvent LIKE "%XBMC" AND (LogText LIKE "Updated XBMC Library%") ORDER BY LogDate DESC LIMIT 1')->fetch();
+$Hub->Request('/xbmc/library/newcontentscan');
 
-if($LogActivity['NewContent'] > $XBMCActivity['LastUpdate']) {
-	if(is_object($XBMCObj->XBMCRPC)) {
-		$ActivePlayer = $XBMCObj->MakeRequest('Player', 'GetActivePlayers');
+// Cache movie covers locally
+$Hub->Request('/xbmc/movies/cachecovers');
+
+$FolderRebuild   = GetSetting('LastFolderRebuild');
+$SerieRefresh    = GetSetting('LastSerieRefresh');
+$SerieRebuild    = GetSetting('LastSerieRebuild');
+$WishlistUpdate  = GetSetting('LastWishlistUpdate');
+$MoviesUpdate    = GetSetting('LastMoviesUpdate');
+$WishlistRefresh = GetSetting('LastWishlistRefresh');
+$Backup          = GetSetting('LastBackup');
+
+$LatestUpdate = min($FolderRebuild, $SerieRefresh, $SerieRebuild, $WishlistUpdate, $MoviesUpdate, $WishlistRefresh, $Backup);
+if((date('G') >= 4 && date('G') <= 6) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
+	if(date('dmy', $FolderRebuild) != date('dmy')) {
+		$Hub->Request('/series/rebuild/folders');
+	}
+
+	if(date('dmy', $SerieRefresh) != date('dmy')) {
+		$Hub->Request('/series/refresh/all');
+	}
+
+	if(date('dmy', $SerieRebuild) != date('dmy')) {
+		$Hub->Request('/series/rebuild/episodes');
+	}
 	
-		if(!sizeof($ActivePlayer)) {
-			$XBMCObj->ScanForContent();
-			
-			$HubObj->AddLog(EVENT.'XBMC', 'Success', 'Updated XBMC Library');
+	if(GetSetting('ShareMovies')) {
+		if(date('dmy', $MoviesUpdate) != date('dmy')) {
+			/*
+			$Movies = $XBMCObj->GetMovies();
+				
+			if(is_array($Movies)) {
+				$ShareObj->UpdateMovies($Movies);
+			}
+			*/
 		}
+	}
+	
+	if(GetSetting('ShareWishlist')) {
+		if(date('dmy', $WishlistUpdate) != date('dmy')) {
+			//$ShareObj->UpdateWishlist();
+		}
+	}
+	
+	if(date('dmy', $WishlistRefresh) != date('dmy')) {
+		$Hub->Request('/wishlist/refresh');
 	}
 }
 
-if(is_object($XBMCObj->XBMCRPC)) {
-	// Cache movie covers locally
-	$XBMCObj->CacheCovers();
-}
-
-$FolderRebuild = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastFolderRebuild"')->fetch();
-$SerieRefresh  = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRefresh"')->fetch();
-$SerieRebuild  = $HubObj->PDO->query('SELECT Value AS Last FROM Hub WHERE Setting = "LastSerieRebuild"')->fetch();
-
-$LatestUpdate = max($FolderRebuild['Last'], $SerieRefresh['Last'], $SerieRebuild['Last']);
-if((date('G') > 3 && date('G') < 7) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
-	if(date('dmy', $FolderRebuild['Last']) != date('dmy')) {
-		$SeriesObj->RebuildFolders();
-	}
-
-	if(date('dmy', $SerieRefresh['Last']) != date('dmy')) {
-		if(is_object($SeriesObj->TheTVDBAPI)) {
-			$SeriesObj->RefreshAllSeries();
+/*
+$LatestUpdate = min($FolderRebuild, $SerieRefresh, $SerieRebuild, $WishlistUpdate, $MoviesUpdate, $WishlistRefresh, $Backup);
+if((date('G') >= 4 && date('G') <= 6) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
+	if(date('dmy', $Backup) != date('dmy')) {
+		if(is_dir($HubObj->GetSetting('BackupFolder'))) {
+			if($HubObj->GetSetting('BackupHubFiles')) {
+				if(!is_file($HubObj->GetSetting('BackupFolder').'/hub-files-'.date('d-m-Y').'.zip')) {
+					if($HubObj->ZipDirectory(APP_PATH, $HubObj->GetSetting('BackupFolder').'/hub-files-'.date('d-m-Y').'.zip')) {
+						$HubObj->AddLog(EVENT.'Backup', 'Success', 'Backed up Hub files to "'.$HubObj->GetSetting('BackupFolder').'/hub-files-'.date('d-m-Y').'.zip"');
+					}
+				}
+			}
+		
+			if($HubObj->GetSetting('BackupHubDatabase')) {
+				$HubObj->BackupDatabase(DB_USER, DB_PASS, DB_NAME, $HubObj->GetSetting('BackupFolder'));
+			}
+		
+			if($HubObj->GetSetting('BackupXBMCFiles')) {
+				if(is_dir($HubObj->GetSetting('XBMCDataFolder'))) {
+					if(!is_file($HubObj->GetSetting('BackupFolder').'/xbmc-files-'.date('d-m-Y').'.zip')) {
+						if($HubObj->ZipDirectory($HubObj->GetSetting('XBMCDataFolder'), $HubObj->GetSetting('BackupFolder').'/xbmc-files-'.date('d-m-Y').'.zip')) {
+							$HubObj->AddLog(EVENT.'Backup', 'Success', 'Backed up XBMC files to "'.$HubObj->GetSetting('BackupFolder').'/xbmc-files-'.date('d-m-Y').'.zip"');
+						}
+					}
+				}
+			}
+		
+			if($HubObj->GetSetting('BackupXBMCDatabase')) {
+				$XBMCDatabases = $XBMCObj->FindDatabaseNames();
+				if(is_array($XBMCDatabases)) {
+					foreach($XBMCDatabases AS $XBMCDatabase) {
+						$HubObj->BackupDatabase(DB_USER, DB_PASS, $XBMCDatabase, $HubObj->GetSetting('BackupFolder'));
+					}
+				}
+			}
 		}
 	}
+}
+*/
 
-	if(date('dmy', $SerieRebuild['Last']) != date('dmy')) {
-		if(is_object($SeriesObj->TheTVDBAPI)) {
-			$SeriesObj->RebuildEpisodes();
-		}
+$Unlock = json_decode($Hub->Request('/hub/unlock'));
+
+if(is_object($Unlock) && property_exists($Unlock, 'error')) {
+	if($Unlock->error->code != 200) {
+		AddLog(EVENT.'Hub', 'Failure', 'Failed to remove lock');
 	}
 }
-
-$HubObj->Unlock();
 ?>

@@ -5,7 +5,14 @@ ini_set('display_errors', 1);
 date_default_timezone_set('Europe/Oslo');
 
 define('APP_PATH', realpath(dirname(__FILE__).'/../'));
-define('API_URL', sprintf('http://%s/api', $_SERVER['SERVER_ADDR']));
+
+if(filter_has_var(INPUT_SERVER, 'SERVER_ADDR')) {
+	define('API_URL', sprintf('http://%s/api', $_SERVER['SERVER_ADDR']));
+}
+else {
+	define('API_URL', sprintf('http://%s/api', '127.0.0.1'));
+}
+
 define('API_KEY', '');
 
 if(PHP_SAPI == 'cli') {

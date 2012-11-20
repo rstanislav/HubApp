@@ -1,43 +1,33 @@
+<div class="head">XBMC Log</div>
+
 <?php
-if(filter_has_var(INPUT_GET, 'Time')) {
-	$XBMCObj->GetLogFile($_GET['Time']);
+$Logs = json_decode($Hub->Request('xbmc/log/'));
+
+if(is_object($Logs) && is_object($Logs->error)) {
+	echo '<div class="notification warning">'.$Logs->error->message.'</div>'."\n";
 }
 else {
-?>
-<script type="text/javascript"> 
-$('#xbmc-log td[rel=time]:first').everyTime(5000, function(i) {
-	updateLog($('td[rel=time]:first').text());
-}, 0);
-
-function updateLog(toTime) {
-	$.ajax({
-		method: 'get',
-		url:    'load.php',
-		data:   'page=XBMCLog&Time=' + toTime,
-		success: function(html) {
-			if(html) {
-				$('#xbmc-log td[rel=time]:first').parent().before(html);
-			}
-		}
-	});
-}
-</script>
-
-<div class="head">XBMC Log <small style="font-size: 12px;">(<a href="#!/Help/XBMCLog">?</a>)</small></div>
-
-<table id="xbmc-log" class="text-select">
- <thead>
- <tr>
-  <th style="text-align:center;width: 60px">Time</th>
-  <th>&nbsp;</th>
-  <th>&nbsp;</th>
-  <th>Text</th>
- </tr>
- </thead>
-<?php
-$XBMCObj->GetLogFile();
-?>
-</table>
-<?php
+	echo '
+	<table id="xbmc-log" class="text-select">
+	 <thead>
+	 <tr>
+	  <th style="text-align:center;width: 60px">Time</th>
+	  <th>&nbsp;</th>
+	  <th>&nbsp;</th>
+	  <th>Text</th>
+	 </tr>
+	 </thead>'."\n";
+	 
+	foreach($Logs AS $Log) {
+		echo '
+		<tr>
+		 <td>'.$Log[0].'</td>
+		 <td>'.$Log[1].'</td>
+		 <td>'.$Log[2].'</td>
+		 <td>'.$Log[3].'</td>
+		</tr>'."\n";
+	}
+	
+	echo '</table>'."\n";
 }
 ?>

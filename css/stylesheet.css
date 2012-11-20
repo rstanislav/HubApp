@@ -220,13 +220,13 @@ table.main {
 }
 
 #divider {
+	left: 209px;
+	width: 3px;
+	height: 43px;
+	margin: 0px 0px 0px 0px;
   	vertical-align: middle;
   	display: inline-block;
   	position: absolute;
-  	left: 209px;
-  	width: 3px;
-  	height: 43px;
-  	margin: 0px 0px 0px 0px;
   	background: url('../images/header/divider.png') no-repeat;
 }
 /*

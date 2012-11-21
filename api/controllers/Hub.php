@@ -13,6 +13,13 @@ class Hub {
 	}
 	
 	/**
+	 * @url GET /version
+	**/
+	function GetHubVersion() {
+		return self::HubVersion;
+	}
+	
+	/**
 	 * @url GET /upgrade
 	**/
 	function DatabaseUpgrade() {

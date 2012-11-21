@@ -469,7 +469,7 @@ function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
 <table class="main">
  <tr>
   <td class="header left">
-   <a href="/"><img src="images/logo.png" title="Hub Version: " /></a>
+   <a href="/"><img src="images/logo.png" title="Hub v<?php echo json_decode($Hub->Request('/hub/version')); ?>" /></a>
    <img src="images/blank.gif" id="divider" />
   </td>
   <td class="header middle">

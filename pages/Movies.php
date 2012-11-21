@@ -22,14 +22,33 @@ else {
 	foreach($RecentMovies AS $Movie) {
 		$Watched = ($Movie->playcount) ? '<div class="cover-watched">watched</div>' : '';
 		
+		$MoviePlayLink  = '<a id="FilePlay-'.urlencode($Movie->file).'" rel="ajax" class="cover-link"><img src="images/icons/control_play.png" /></a>';
+		
+		if(!empty($Movie->trailer)) {
+			if(strstr($Movie->trailer, 'plugin.video.youtube')) {
+				$MovieTrailerLink = '<a href="http://www.youtube.com/embed/'.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie->trailer).'" rel="trailer" class="cover-link" title="'.$Movie->label.' ('.$Movie->year.') Trailer"><img  src="images/icons/youtube.png" /></a>';
+			}
+			else if(strstr($Movie->trailer, 'http://playlist.yahoo.com')) {
+				$MovieTrailerLink = '<a href="'.$Movie->trailer.'" rel="trailer" class="cover-link" title="'.$Movie->label.' ('.$Movie->year.') Trailer"><img  src="images/icons/yahoo.png" /></a>';
+			}
+			else {
+				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie->label.' '.$Movie->year.' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
+			}
+		}
+		else {
+			$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie->label.' '.$Movie->year.' trailer').'" target="_blank" class="cover-link" title="Search for trailer on YouTube"><img  src="images/icons/youtube_dark.png" /></a>';
+		}
+		
+		$MovieInfoLink = '<a class="cover-link"><img src="images/icons/information.png" /></a>';
+		
 		$MoviePoster = '
 		 <div id="Cover-'.$Movie->movieid.'" class="cover">
 		  <img class="poster" width="150" height="250" src="'.$Movie->postersmall.'" />
 		  '.$Watched.'
 		  <div id="CoverControl-'.$Movie->movieid.'" class="cover-control">
-		   <a id="" class="cover-link"><img src="images/icons/control_play.png" /></a>
-		   <a id="" class="cover-link"><img src="images/icons/information.png" /></a>
-		   <a id="" class="cover-link"><img src="images/icons/youtube.png" /></a>
+		   '.$MoviePlayLink.'
+		   '.$MovieInfoLink.'
+		   '.$MovieTrailerLink.'
 		  </div>
 		 </div>';
 		 
@@ -69,7 +88,7 @@ echo '
   </tr>
  </thead>'."\n";
  
-if(is_object($Movies) && property_exists('error', $Movies)) {
+if(is_object($Movies) && property_exists($Movies, 'error')) {
 	echo '
 	<tr>
 	 <td colspan="5">'.$Movies->error->message.'</td>
@@ -89,7 +108,7 @@ else {
 		  <a id="FilePlay-'.$Movie->file.'" rel="ajax"><img src="images/icons/control_play.png" /></a>
 		  <a id="MovieInformation-'.$Movie->movieid.'" rel="ajax"><img src="images/icons/information.png" /></a>
 		  <img src="images/icons/youtube.png" />
-		  <a id="FileDelete-'.$Movie->file.'" rel="ajax"><img src="images/icons/delete.png" /></a>
+		  <a id="FileDelete-'.$Movie->filelocal.'" rel="ajax"><img src="images/icons/delete.png" /></a>
 		 </td>
 		</tr>'."\n";
 	}

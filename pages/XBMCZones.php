@@ -4,26 +4,30 @@
 
 <div class="head">Zones</div>
 
+<table id="tbl-zones">
+ <thead>
+ <tr>
+  <th style="width:60px">Since</th>
+  <th>Name</th>
+  <th style="width:125px">Host</th>
+  <th style="width:45px">Port</th>
+  <th style="width:75px">Username</th>
+  <th style="width:75px">Password</th>
+  <th style="width:34px">&nbsp;</th>
+ </tr>
+ </thead>
 <?php
 $Zones = json_decode($Hub->Request('xbmc/zones/'));
 
 if(is_object($Zones) && is_object($Zones->error)) {
-	echo '<div class="notification warning">'.$Zones->error->message.'</div>'."\n";
+	echo '
+	<tr>
+	 <td colspan="7">'.$Zones->error->message.'</td>
+	</tr>'."\n";
 }
 else {
 	echo '
-	<table id="tbl-zones">
-	 <thead>
-	 <tr>
-	  <th style="width:60px">Since</th>
-	  <th>Name</th>
-	  <th style="width:125px">Host</th>
-	  <th style="width:45px">Port</th>
-	  <th style="width:75px">Username</th>
-	  <th style="width:75px">Password</th>
-	  <th style="width:34px">&nbsp;</th>
-	 </tr>
-	 </thead>'."\n";
+	'."\n";
 	 
 	foreach($Zones AS $Zone) {
 		echo '

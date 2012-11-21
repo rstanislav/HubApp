@@ -4,14 +4,6 @@
 
 <div class="head">Drives</div>
 
-<?php
-$Drives = json_decode($Hub->Request('drives/'));
-
-if(is_object($Drives) && is_object($Drives->error)) {
-	echo '<div class="notification warning">'.$Drives->error->message.'</div>'."\n";
-}
-else {
-?>
 <table id="tbl-drives">
  <thead>
  <tr>
@@ -26,6 +18,18 @@ else {
   <th style="width: 36px">&nbsp;</th>
  </tr>
  </thead>
+<?php
+$Drives = json_decode($Hub->Request('drives/'));
+
+if(is_object($Drives) && is_object($Drives->error)) {
+	echo '
+	<tr>
+	 <td colspan="9">'.$Drives->error->message.'</td>
+	</tr>'."\n";
+}
+else {
+?>
+
  
 <?php
 $TotalFreeSpace = $TotalSpace = 0;

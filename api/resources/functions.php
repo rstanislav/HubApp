@@ -244,6 +244,14 @@ function ParseRelease($Release) {
 					 'Year'  => $Match[2]);
 	}
 	else if(preg_match($MovieRegEx, $Release, $Match)) {
+		if($Match[2] == '1080') {
+			preg_match('/([0-9]{4})(.*?)/i', $Match[1], $Matches);
+			
+			$Match[2] = $Matches[1];
+			$Match[1] = str_replace($Match[2], '', trim($Match[1]));
+			$Match[3] = $Matches[2].'1080'.$Match[3];
+		}
+		
 		return array('Type'    => 'Movie',
 					 'Title'   => trim(str_replace($Replace, $Search, $Match[1])),
 					 'Year'    => trim($Match[2]),

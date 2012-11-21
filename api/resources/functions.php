@@ -54,6 +54,8 @@ function GetQualityRank($Str) {
 	$Str         = str_replace('.', ' ', $Str);
 	$Str         = str_replace('_', ' ', $Str);
 	$Str         = str_replace('-', ' ', $Str);
+	$Str         = str_replace('[', ' ', $Str);
+	$Str         = str_replace(']', ' ', $Str);
 	$QualityRank = 0;
 	$Words       = array_unique(explode(' ', $Str));
 	

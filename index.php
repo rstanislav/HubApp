@@ -30,6 +30,12 @@ require_once APP_PATH.'/resources/api.hub.php';
 
 <script type="text/javascript">
 $(document).ready(function() {
+	$('div[id|="Cover"]').mouseover(function() {
+		$('#CoverControl-' + $(this).attr('id').split('-')[1]).css('display', 'block');
+	}).mouseout(function() {
+		$('#CoverControl-' + $(this).attr('id').split('-')[1]).css('display', 'none');
+	});
+	
 	$('a[rel="ajax"]').click(function() {
 		Action   = $(this).attr('id').split('-');
 		SecondID = Action[2];
@@ -463,22 +469,27 @@ function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
 <table class="main">
  <tr>
   <td class="header left">
-   <a href="/"><img src="images/logo.png" title="Hub Version: " /></a>
+   <a href="/"><img src="images/logo.png" title="Hub v<?php echo json_decode($Hub->Request('/hub/version')); ?>" /></a>
    <img src="images/blank.gif" id="divider" />
   </td>
   <td class="header middle">
    <input type="search" id="search" placeholder="Search..." results="5" />
   </td>
   <td class="header right">
-   <select name="zoneSelect" id="zoneSelect" class="blue">
-    <?php 
-    $Zones = json_decode($Hub->Request('/xbmc/zones'));
-    foreach($Zones AS $Zone) {
-    	$Selected = $Zone->IsDefault ? ' selected="selected"' : '';
-    	echo '<option value="'.$Zone->Name.'"'.$Selected.'>'.$Zone->Name.'</option>'."\n";
-    }
-    ?>
-   </select>
+   <?php
+   $Zones = json_decode($Hub->Request('/xbmc/zones'));
+   
+   if(is_array($Zones)) {
+   		echo '<select name="zoneSelect" id="zoneSelect" class="blue">'."\n";
+    
+    	foreach($Zones AS $Zone) {
+    		$Selected = $Zone->IsDefault ? ' selected="selected"' : '';
+    		echo '<option value="'.$Zone->Name.'"'.$Selected.'>'.$Zone->Name.'</option>'."\n";
+    	}
+    	
+   		echo '</select>'."\n";
+   }
+   ?>
   </td>
  </tr>
  <tr>
@@ -518,8 +529,10 @@ function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
    	<?php 
    	$Feeds = json_decode($Hub->Request('rss/'));
    	
-   	foreach($Feeds AS $Feed) {
-   		echo '<li class="feeds"><a href="?Page=RSS&ID='.$Feed->ID.'">'.$Feed->Title.'</a><span id="RSS-'.$Feed->ID.'"></span></li>'."\n";
+   	if(is_array($Feeds)) {
+   		foreach($Feeds AS $Feed) {
+   			echo '<li class="feeds"><a href="?Page=RSS&ID='.$Feed->ID.'">'.$Feed->Title.'</a><span id="RSS-'.$Feed->ID.'"></span></li>'."\n";
+   		}
    	}
    	?>
    </ul>

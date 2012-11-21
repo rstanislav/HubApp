@@ -71,10 +71,19 @@ class XBMC {
 			
 			osort($MoviesTmp, 'label');
 			
+			$DrivesObj = new Drives;
 			$Movies = array();
 			foreach($MoviesTmp AS $Movie) {
-				$Movie['poster']      = 'posters/movies/'.$Movie['imdbnumber'].'.jpg';
-				$Movie['postersmall'] = 'posters/movies/'.$Movie['imdbnumber'].'-small.jpg';
+				if(is_file(APP_PATH.'/posters/movies/'.$Movie['imdbnumber'].'-small.jpg')) {
+					$Movie['poster']      = 'posters/movies/'.$Movie['imdbnumber'].'.jpg';
+					$Movie['postersmall'] = 'posters/movies/'.$Movie['imdbnumber'].'-small.jpg';
+				}
+				else {
+					$Movie['poster']      = 'images/poster-unavailable.png';
+					$Movie['postersmall'] = 'images/poster-unavailable.png';
+				}
+				
+				$Movie['filelocal'] = $DrivesObj->GetLocalLocation($Movie['file']);
 				
 				$Movies[] = $Movie;
 			}
@@ -102,10 +111,19 @@ class XBMC {
 				                                                           'properties' => array('genre', 'trailer', 'tagline', 'plot', 'plotoutline', 'title',
 					                                                                             'originaltitle', 'file', 'runtime', 'year', 'rating', 'playcount', 'thumbnail', 'imdbnumber')))['movies'];
 			
+			$DrivesObj = new Drives;
 			$Movies = array();
 			foreach($MoviesTmp AS $Movie) {
-				$Movie['poster']      = 'posters/movies/'.$Movie['imdbnumber'].'.jpg';
-				$Movie['postersmall'] = 'posters/movies/'.$Movie['imdbnumber'].'-small.jpg';
+				if(is_file(APP_PATH.'/posters/movies/'.$Movie['imdbnumber'].'-small.jpg')) {
+					$Movie['poster']      = 'posters/movies/'.$Movie['imdbnumber'].'.jpg';
+					$Movie['postersmall'] = 'posters/movies/'.$Movie['imdbnumber'].'-small.jpg';
+				}
+				else {
+					$Movie['poster']      = 'images/poster-unavailable.png';
+					$Movie['postersmall'] = 'images/poster-unavailable.png';
+				}
+				
+				$Movie['filelocal'] = $DrivesObj->GetLocalLocation($Movie['file']);
 				
 				$Movies[] = $Movie;
 			}

@@ -32,7 +32,7 @@ echo '
 if(is_object($Series) && is_object($Series->error)) {
 	echo '
 	<tr>
-	 <td colspan="5">'.$Series->error->message.'</td>
+	 <td colspan="7">'.$Series->error->message.'</td>
 	</tr>'."\n";
 }
 else {

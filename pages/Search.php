@@ -69,16 +69,19 @@ else {
 	foreach($Series->Series AS $Serie) {
 		$Plot       = property_exists($Serie, 'Overview') ? ShortText($Serie->Overview, 90) : 'NA';
 		$FirstAired = property_exists($Serie, 'FirstAired') ? date('d.m.y', strtotime($Serie->FirstAired)) : 'NA';
+		$Title      = property_exists($Serie, 'SeriesName') ? $Serie->SeriesName : 'NA';
 		
-		echo '
-		<tr>
-		 <td>'.$FirstAired.'</td>
-		 <td>'.$Serie->SeriesName.'</td>
-		 <td>'.$Plot.'</td>
-		 <td style="text-align: right">
-		  <a id="SerieAdd-'.$Serie->id.'" class="button positive"><span class="inner"><span class="label" style="min-width:50px;" nowrap="">Add</span></span></a>
-		 </td>
-		</tr>'."\n";
+		if(property_exists($Serie, 'id')) {
+			echo '
+			<tr>
+			 <td>'.$FirstAired.'</td>
+			 <td>'.$Title.'</td>
+			 <td>'.$Plot.'</td>
+			 <td style="text-align: right">
+			  <a id="SerieAdd-'.$Serie->id.'" class="button positive"><span class="inner"><span class="label" style="min-width:50px;" nowrap="">Add</span></span></a>
+			 </td>
+			</tr>'."\n";
+		}
 	}
 	
 	echo '</table>'."\n";

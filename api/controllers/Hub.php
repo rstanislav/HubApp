@@ -3,13 +3,20 @@
  * //@protected
 **/
 class Hub {
-	const HubVersion   = '3.0';
+	const HubVersion   = '3.0.1';
 	const MinDBVersion = '3.0.0';
 	
 	private $PDO;
 	
 	function __construct() {
 		$this->PDO = DB::Get();
+	}
+	
+	/**
+	 * @url GET /version
+	**/
+	function GetHubVersion() {
+		return self::HubVersion;
 	}
 	
 	/**

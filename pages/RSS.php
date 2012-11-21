@@ -19,6 +19,24 @@ else {
 	 </thead>'."\n";
 
 	foreach($Entries AS $Entry) {
+		$Parsed = ParseRelease($Entry->Title);
+		
+		switch($Parsed['Type']) {
+			case 'TV':
+				$IMDBIcon = '';
+				$FavouriteIcon = '<a href="?Page=Search&Search='.urlencode($Parsed['Title']).'"><img src="images/icons/heart_add.png" /></a>';
+			break;
+			
+			case 'Movie':
+				$IMDBIcon = '<a href="http://www.imdb.com/search/title?release_date='.$Parsed['Year'].','.$Parsed['Year'].'&title='.urlencode($Parsed['Title']).'" target="_blank"><img src="images/icons/imdb.png" /></a>';
+				$FavouriteIcon = '<img src="images/icons/heart_gray.png" />';
+			break;
+			
+			default:
+				$IMDBIcon = '';
+				$FavouriteIcon = '';
+		}
+		
 		echo '
 		<tr>
 		 <td>'.date('d.m.y H:i', $Entry->PubDate).'</td>
@@ -27,8 +45,8 @@ else {
 		  <a href="'.urlencode($Entry->Category).'">'.$Entry->Category.'</a>
 		 </td>
 		 <td style="text-align: right">
-		  <img src="images/icons/imdb.png" />
-		  <img src="images/icons/heart_add.png" />
+		  '.$IMDBIcon.'
+		  '.$FavouriteIcon.'
 		  <a id="TorrentDownload-'.$Entry->ID.'" rel="ajax"><img src="images/icons/download.png" /></a>
 		 </td>
 		</tr>'."\n";

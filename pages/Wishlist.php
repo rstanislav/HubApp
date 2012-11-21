@@ -1,7 +1,7 @@
 <div class="head-control">
  <a id="WishlistUpdateShared" class="button positive"><span class="inner"><span class="label" nowrap="">Update Shared Wishlist</span></span></a>
  <a id="WishlistAddItem" class="button positive"><span class="inner"><span class="label" nowrap="">Add Wish</span></span></a>
- <a id="WishlistBookmarklet" href="javascript:(function(){_hub_wishlist=document.createElement('SCRIPT');_hub_wishlist.type='text/javascript';_hub_wishlist.src='http://5.80.30.23/js/hub.bookmarklet.js?x='+(Math.random());document.getElementsByTagName('head')[0].appendChild(_hub_wishlist);})();" class="button positive"><span class="inner"><span class="label" nowrap="">+ Wish</span></span></a>
+ <!--<a id="WishlistBookmarklet" href="javascript:(function(){_hub_wishlist=document.createElement('SCRIPT');_hub_wishlist.type='text/javascript';_hub_wishlist.src='http://5.80.30.23/js/hub.bookmarklet.js?x='+(Math.random());document.getElementsByTagName('head')[0].appendChild(_hub_wishlist);})();" class="button positive"><span class="inner"><span class="label" nowrap="">+ Wish</span></span></a>//-->
  <a id="WishlistRefresh" class="button positive"><span class="inner"><span class="label" nowrap="">Refresh Wishlist</span></span></a>
 </div>
 

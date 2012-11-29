@@ -83,6 +83,20 @@ class XBMC {
 					$Movie['postersmall'] = 'images/poster-unavailable.png';
 				}
 				
+				if(strstr($Movie['file'], 'stack')) {
+					$Path = str_replace('stack://', '', $Movie['file']);
+					
+					$Movie['files'] = explode(', ', $Path);
+					
+					$LocalFileArr = array();
+					foreach($Movie['files'] AS $File) {
+						$LocalFileArr[] = array('network' => $File,
+						                        'local'   => $DrivesObj->GetLocalLocation($File));
+					}
+					
+					$Movie['files'] = $LocalFileArr;
+				}
+				
 				$Movie['filelocal'] = $DrivesObj->GetLocalLocation($Movie['file']);
 				
 				$Movies[] = $Movie;
@@ -121,6 +135,20 @@ class XBMC {
 				else {
 					$Movie['poster']      = 'images/poster-unavailable.png';
 					$Movie['postersmall'] = 'images/poster-unavailable.png';
+				}
+				
+				if(strstr($Movie['file'], 'stack')) {
+					$Path = str_replace('stack://', '', $Movie['file']);
+					
+					$Movie['files'] = explode(', ', $Path);
+					
+					$LocalFileArr = array();
+					foreach($Movie['files'] AS $File) {
+						$LocalFileArr[] = array('network' => $File,
+						                        'local'   => $DrivesObj->GetLocalLocation($File));
+					}
+					
+					$Movie['files'] = $LocalFileArr;
 				}
 				
 				$Movie['filelocal'] = $DrivesObj->GetLocalLocation($Movie['file']);

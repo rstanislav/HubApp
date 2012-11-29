@@ -276,7 +276,7 @@ class Series {
 					                                     AND
 					                                     	Season != 0
 					                                     AND
-					                                     	File != "0"');
+					                                     	File != ""');
 					                                     	
 					$EpisodesPrep->execute(array(':ID' => $SerieRow['ID']));
 					

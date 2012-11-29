@@ -12,7 +12,7 @@ $(document).ready(function() {
 $CompletedFiles = json_decode($Hub->Request('/drives/files/completed'));
 
 if(is_object($CompletedFiles) && property_exists($CompletedFiles, 'error')) {
-	echo '<div class="notification warning">'.$CompletedFiles->error->message.'</div>'."\n";
+	echo '<div class="notification information">'.$CompletedFiles->error->message.'</div>'."\n";
 }
 else {
 	echo 'Are you happy with these results? <a id="ExtractOK">Go ahead and execute them</a><br /><br />'."\n";

@@ -224,7 +224,7 @@ class Drives {
 															      ':Episode' => $ParsedEpisode[1]));
 							}
 							catch(PDOException $e) {
-								throw new RestException(400, (isset($_GET['debug'])) ? 'MySQL: '.$e->getMessage() : 'MySQL');
+								throw new RestException(400, 'MySQL: '.$e->getMessage());
 							}
 						}
 					break;

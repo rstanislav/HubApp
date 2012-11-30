@@ -203,7 +203,7 @@ class Drives {
 							}
 						}
 									
-						$NewFile .= '.'.$ParsedInfo['Quality'];
+						$NewFile .= '.'.$ParsedInfo['Quality'].'.'.pathinfo($File, PATHINFO_EXTENSION);
 									
 						foreach($ParsedInfo['Episodes'] AS $ParsedEpisode) {
 							try {

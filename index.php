@@ -73,12 +73,23 @@ $(document).ready(function() {
 				AjaxImage('drives/' + FirstID, ImageObj, OriginalImg, 'delete');
 			break;
 			
+			case 'TorrentDownload':
+				if(SecondID) {
+					SecondID = '/' + SecondID;
+				}
+				else {
+					SecondID = '';
+				}
+				
+				AjaxImage('rss/download/' + FirstID + SecondID, ImageObj, OriginalImg);
+			break;
+			
 			case 'FeedDelete':
 				AjaxImage('rss/' + FirstID, ImageObj, OriginalImg, 'delete');
 			break;
 			
 			default:
-				console.log(Action + ' ' + FirstID);
+				console.log(Action + ' ' + FirstID + ' default action');
 		}
 	});
 	
@@ -120,8 +131,12 @@ $(document).ready(function() {
 						AjaxButton('series/' + ID, ButtonObj, 'Deleting ...', ButtonClass, ButtonVal, 'delete');
 					break;
 					
+					case 'TorrentDownload':
+						AjaxButton('rss/download/' + ID, ButtonObj, 'Downloading ...', ButtonClass, ButtonVal);
+					break;
+					
 					default:
-						console.log(Action);
+						console.log(Action + ' default action');
 				}
 			}
 			else {

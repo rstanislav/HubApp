@@ -205,6 +205,75 @@ class RSS {
 	}
 	
 	/**
+	 * @url GET /download/:TorrentID
+	 * @url GET /download/:TorrentID/:EpisodeID
+	**/
+	function DownloadTorrent($TorrentID, $EpisodeID) {
+		if(!is_numeric($TorrentID)) {
+			throw new RestException(412, 'TorrentID must be a numeric value');
+		}
+	
+		if(!empty($EpisodeID) && !is_numeric($EpisodeID)) {
+			throw new RestException(412, 'EpisodeID must be a numeric value');
+		}
+		
+		try {
+			$TorrentPrep = $this->PDO->prepare('SELECT
+													Torrents.URI,
+													Torrents.Title,
+													RSS.Title AS Feed
+												FROM
+													Torrents,
+													RSS
+												WHERE
+													Torrents.ID = :TorrentID
+												AND
+													RSS.ID = Torrents.RSSKey');
+			
+			$TorrentPrep->execute(array(':TorrentID' => $TorrentID));
+			$Torrent = $TorrentPrep->fetch();
+		}
+		catch(PDOException $e) {
+			throw new RestException(400, 'MySQL: '.$e->getMessage());
+		}
+		
+		if(is_array($Torrent)) {
+			try {
+				$UTorrentObj = new UTorrent;
+				$UTorrentObj->Connect();
+				$UTorrentObj->AddTorrent($Torrent['URI']);
+			}
+			catch(RestException $e) {
+				throw new RestException(400, 'DownloadTorrent: '.$e->getMessage());
+			}
+			
+			if(!empty($EpisodeID)) {
+				try {
+					$EpisodePrep = $this->PDO->prepare('UPDATE
+															Episodes
+														SET
+														  	TorrentKey = :TorrentID
+														WHERE
+														  	ID = :EpisodeID');
+														  	
+					$EpisodePrep->execute(array(':TorrentID' => $TorrentID,
+												':EpisodeID' => $EpisodeID));
+				}
+				catch(PDOException $e) {
+					throw new RestException(400, 'MySQL: '.$e->getMessage());
+				}
+			}
+			
+			$LogEntry = 'Downloaded torrent "'.$Torrent['Title'].'" from "'.$Torrent['Feed'].'"';
+			AddLog(EVENT.'RSS/uTorrent', 'Success', $LogEntry);
+			throw new RestException(200, $LogEntry);
+		}
+		else {
+			throw new RestException(404, 'Did not find any torrents matching your criteria');
+		}
+	}
+	
+	/**
 	 * @url GET /download
 	**/
 	function DownloadWantedTorrents() {

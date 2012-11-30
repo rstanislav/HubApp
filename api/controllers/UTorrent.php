@@ -250,6 +250,19 @@ class UTorrent {
 	}
 	
 	/**
+	 * @url GET /add/:Torrent
+	**/
+	function AddTorrent($Torrent) {
+		$this->Connect();
+		try {
+			$this->UTorrent->torrentAdd($Torrent);
+		}
+		catch(RestException $e) {
+			throw new RestException(400, 'AddTorrent: '.$e->getMessage());
+		}
+	}
+	
+	/**
 	 * @url GET /remove/finished
 	**/
 	function RemoveFinishedTorrents() {

@@ -17,8 +17,8 @@ if(is_object($CompletedFiles) && property_exists($CompletedFiles, 'error')) {
 else {
 	echo 'Are you happy with these results? <a id="ExtractOK">Go ahead and execute them</a><br /><br />'."\n";
 	
+	$FileNo = 0;
 	if(is_object($CompletedFiles) && property_exists($CompletedFiles, 'Extract')) {
-		$FileNo = 0;
 		foreach($CompletedFiles->Extract AS $File) {
 			$FileNo++;
 			
@@ -72,7 +72,7 @@ else {
 						url:    "/api/drives/files/move",
 						data:   { File: "'.$File.'" },
 						beforeSend: function() {
-							$("#MoveFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Working \"'.$ExtractFile->error->message.'\" ...");
+							$("#MoveFile-'.$FileNo.'").html("<img src=\"images/spinners/ajax-light.gif\" /> Working \"'.$MoveFile->error->message.'\" ...");
 						},
 						success: function(data, textStatus, jqXHR) {
 							$("#MoveFile-'.$FileNo.'").html("<img src=\"images/icons/check.png\" /> " + data.error.message);
@@ -97,8 +97,6 @@ else {
 			type: 	"get",
 			url:    "/api/drives/clean",
 			success: function(data, textStatus, jqXHR) {
-				console.log(data.error.message);
-			
 				$(document).dequeue("ajaxRequests");
 			}
 		});

@@ -1,7 +1,21 @@
-<div class="head">Last 3 days</div>
+<?php
+$Days = (filter_has_var(INPUT_GET, 'Days') && !empty($_GET['Days'])) ? $_GET['Days'] : 3;
+?>
+<div class="head">
+ Last 
+ <select name="RecentSchedule" onChange="javascript:window.location='?Days=' + $(this).find(':selected').attr('value');" style="width:60px">
+  <?php 
+  for($i = 2; $i <= 31; $i++) {
+  	$Selected = ($Days == $i) ? ' selected="selected"' : '';
+  	
+  	echo '<option value="'.$i.'"'.$Selected.'>'.$i.'</option>'."\n";
+  }
+  ?>
+ </select> days
+</div>
 
 <?php
-$RecentEpisodes = json_decode($Hub->Request('/series/recent/3'));
+$RecentEpisodes = json_decode($Hub->Request('/series/recent/'.$Days));
 
 echo '
 <table>

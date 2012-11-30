@@ -365,7 +365,7 @@ class UTorrent {
 			$this->SetSetting('max_ul_rate', GetSetting('UTorrentDefinedUpSpeed'));
 			$this->SetSetting('max_dl_rate', GetSetting('UTorrentDefinedDownSpeed'));
 			
-			$LogEntry = 'Set speed settings to "defined"';
+			$LogEntry = 'Set speed settings to "limited"';
 		}
 		else {
 			$this->SetSetting('max_ul_rate', GetSetting('UTorrentDefaultUpSpeed'));
@@ -398,7 +398,7 @@ class UTorrent {
 							if($NewQuality > $OldQuality) {
 								$this->RemoveTorrent(TRUE, $Torrent[UTORRENT_TORRENT_HASH]);
 								
-								AddLog(EVENT.'uTorrent', 'Success', 'Removed "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
+								AddLog(EVENT.'uTorrent', 'Success', 'Removed torrent "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
 							}
 							else {
 								$TorrentURI = FALSE;
@@ -422,7 +422,7 @@ class UTorrent {
 						$EpisodePrep->execute(array(':TorrentKey' => $TorrentURI[2],
 													':ID'         => $TorrentURI[1]));
 						
-						AddLog(EVENT.'Series', 'Success', 'Downloaded "'.$TorrentTitle.'"');
+						AddLog(EVENT.'Series', 'Success', 'Downloaded torrent "'.$TorrentTitle.'"');
 					}
 				}
 				else {
@@ -438,7 +438,7 @@ class UTorrent {
 												 ':TorrentKey' => $TorrentURI[2],
 												 ':Title'      => $TorrentURI[3]));
 					
-					AddLog(EVENT.'Wishlist', 'Success', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
+					AddLog(EVENT.'Wishlist', 'Success', 'Downloaded torrent "'.$TorrentTitle.'" from Wishlist');
 				}
 			}
 		}

@@ -106,7 +106,7 @@ echo '
    <th style="width: 350px">Serie</th>
    <th style="width: 50px; text-align: center">Episode</th>
    <th>Title</th>
-   <th style="width: 85px; text-align: right">Time Since</th>
+   <th style="width: 85px; text-align: right">Time Until</th>
   </tr>
  </thead>'."\n";
  

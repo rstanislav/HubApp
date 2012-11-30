@@ -19,7 +19,7 @@ require_once APP_PATH.'/resources/api.hub.php';
  <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
  <script type="text/javascript" src="js/jquery.noty.js"></script>
  
- <link rel="shortcut icon" href="images/favicon.ico" />
+ <!--<link rel="shortcut icon" href="images/favicon.ico" />//-->
  <link rel="apple-touch-icon" href="images/logo-iphone.png" />
  <link rel="apple-touch-icon" sizes="72x72" href="images/logo-ipad.png" />
  <link rel="apple-touch-icon" sizes="114x114" href="images/logo-iphone4.png" />

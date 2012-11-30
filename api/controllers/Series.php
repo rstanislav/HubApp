@@ -316,7 +316,8 @@ class Series {
 			                                     	Episodes.Title AS EpisodeTitle,
 			                                     	Episodes.AirDate,
 			                                     	Episodes.File,
-			                                     	Episodes.TorrentKey
+			                                     	Episodes.TorrentKey,
+			                                     	Episodes.ID AS EpisodeID
 			                                     FROM
 			                                     	Series,
 			                                     	Episodes
@@ -538,7 +539,8 @@ class Series {
 			                                     	E.File,
 			                                     	E.TorrentKey,
 			                                     	E.AirDate,
-			                                     	E.Title AS EpisodeTitle
+			                                     	E.Title AS EpisodeTitle,
+			                                     	E.ID AS EpisodeID
 			                                     FROM
 			                                     	Series S
 			                                     JOIN

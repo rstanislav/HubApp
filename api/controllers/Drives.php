@@ -281,10 +281,16 @@ class Drives {
 		}
 		
 		$Drive   = substr($File, 0, strpos($File, '/'));
-		$RARFile = @RarArchive::open($File);
+		
+		if(class_exists('RarArchive')) {
+			$RARFile = RarArchive::open($File);
+		}
+		else {
+			throw new RestException(500, 'RarArchive (php_rar.dll) is not loaded');
+		}
 		
 		if($RARFile === FALSE) {
-			throw new RestException(400);
+			throw new RestException(400, 'Unable to open "'.$File.'"');
 		}
 					
 		foreach($RARFile->getEntries() AS $Entry) {

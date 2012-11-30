@@ -1,50 +1,46 @@
 ##The Pitch##
-[Hub][6] gives you complete control over your media center running [XBMC][1] on a Windows computer. Using APIs from [XBMC][2], [uTorrent][3], [TheTVDB][4], [Boxcar][5] together with RSS feeds from your own torrent sites, you can control every aspect of your media center.
+[Hub][6] gives you complete control over your media center running [XBMC][1] on a Windows computer. Using APIs from [XBMC][2], [uTorrent][3], [TheTVDB][4] together with RSS feeds from your own torrent sites, you can control every aspect of your media center.
 
-##Features##
+##Features
 
-* TV Series
+######TV Series
  * Search for and add TV series you would like to keep track of
  * New episodes are automatically downloaded when available via RSS feeds you provide
 
-* [Hub][6]
+######[Hub][6]
  * Set your own preferred media quality range, from HDTV to 1080p
  * Downloaded torrents are automatically extracted and moved to the appropriate folder on your active drive
 
-* Drive Control
+######Drive Control
  * Add new drives by simply plugging them in to the computer and selecting them in the control panel!
  * Required folder structure is automatically created and added to XBMC library sources
  * Select a drive that will function as your "active drive" (where new files are added)
  * [Hub][6] will automatically switch to a new drive when your free disk space reaches a user defined threshold
  * View a detailed log of actions [Hub][6] has taken
  
-* Movies
+######Movies
  * View your movie library and start movies directly from the control panel
 
-* Wishlist
+######Wishlist
  * Maintain a movie wishlist
  * Wishes are automatically downloaded when available via RSS feeds you provide
  
-* RSS Feeds
+######RSS Feeds
  * Add as many RSS feeds as you like - [Hub][6] will choose torrents on a first-come first-served basis
 
-* Zones
+######Zones
  * Add multiple zones if you have more than one HTPC
- * Switch to a new zone with two clicks
- * You can control the living room while your kids are controlling the bedroom!
+ * Switch to a new zone with two clicks - You can control the living room while your kids are controlling the bedroom!
 
-* Users
+######Users
  * Add as many users as you like
  * User groups keeps your users easily organized
  * Assign permissions to each user group
  
-* Torrents
+######Torrents
  * Control your torrents directly from the control panel
  * Browse and download locally archived (just links) torrents from your RSS feeds
  * Search for torrents across all RSS feeds
-
-* iPhone Notifications
- * Get notifications on your iPhone when a wish has been granted, new torrents are added, new episodes are available etc. using [Boxcar][5]
  
 ####These are just some of the features of [Hub][6]!####
 
@@ -63,5 +59,4 @@
 [2]: http://xbmc.org/
 [3]: http://utorrent.com/
 [4]: http://thetvdb.org/
-[5]: http://boxcar.io/
 [6]: http://hubapp.net/

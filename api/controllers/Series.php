@@ -1287,8 +1287,12 @@ class Series {
 			if(sizeof($SerieRes)) {
 				$Data = array();
 				foreach($SerieRes AS $SerieRow) {
-					$SerieRow['Poster']      = 'http://'.$_SERVER['SERVER_ADDR'].'/'.$SerieRow['Poster'];
-					$SerieRow['PosterSmall'] = str_replace('posters/', 'posters/thumbnails/', $SerieRow['Poster']);
+					if(strlen($SerieRow['Poster'])) {
+						$FileInfo = pathinfo($SerieRow['Poster']);
+						
+						$SerieRow['Poster']      = 'posters/series/'.$FileInfo['filename'].'.'.$FileInfo['extension'];
+						$SerieRow['PosterSmall'] = 'posters/series/'.$FileInfo['filename'].'-small.'.$FileInfo['extension'];
+					}
 					
 					$Data[] = $SerieRow;
 				}

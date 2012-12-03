@@ -291,12 +291,12 @@ class XBMC {
 					$Serie = $SeriesObj->GetSerieByTitle($ItemInfo['item']['showtitle']);
 					
 					if(is_array($Serie)) {
-						$ItemInfo['item']['postersmall'] = str_replace('posters/', 'posters/thumbnails/', $Serie[0]['Poster']);
+						if(is_file(APP_PATH.'/'.$Serie[0]['PosterSmall'])) {
+							$ItemInfo['item']['postersmall'] = $Serie[0]['PosterSmall'];
+						}
 				
-						if(is_file($ItemInfo['item']['postersmall'])) {
-							if(is_file($Serie[0]['Poster'])) {
-								$ItemInfo['item']['poster'] = $Serie[0]['Poster'];
-							}
+						if(is_file(APP_PATH.'/'.$Serie[0]['Poster'])) {
+							$ItemInfo['item']['poster'] = $Serie[0]['Poster'];
 						}
 					}
 				}

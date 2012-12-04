@@ -174,7 +174,7 @@ $(document).ready(function() {
 					break;
 					
 					case 'SharedMoviesUpdate':
-						console.log(ID);
+						AjaxButton('xbmc/update/shared', ButtonObj, 'Updating ...', ButtonClass, ButtonVal);
 					break;
 					
 					case 'MovieTogglePath':
@@ -182,7 +182,7 @@ $(document).ready(function() {
 					break;
 					
 					case 'WishlistUpdateShared':
-						console.log(ID);
+						AjaxButton('wishlist/update/shared', ButtonObj, 'Updating ...', ButtonClass, ButtonVal);
 					break;
 					
 					case 'WishlistAddItem':

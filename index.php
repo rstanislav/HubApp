@@ -45,6 +45,26 @@ $(document).ready(function() {
 		ImageObj = this;
 		
 		switch(Action) {
+			case 'TorrentStart':
+				AjaxImage('utorrent/start/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'TorrentStop':
+				AjaxImage('utorrent/stop/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'TorrentPause':
+				AjaxImage('utorrent/pause/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'TorrentDelete':
+				AjaxImage('utorrent/remove/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'TorrentDeleteData':
+				AjaxImage('utorrent/remove/data/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
 			case 'SerieRefresh':
 				AjaxImage('series/refresh/' + FirstID, ImageObj, OriginalImg);
 			break;

@@ -254,7 +254,13 @@ class Drives {
 			if(@rename($File, $NewLocation.$NewFile)) {
 				$LogEntry = 'Moved "'.$File.'" to "'.$NewLocation.$NewFile.'"';
 				
-				AddLog(EVENT.'Drives', 'Success', $LogEntry);
+				if($NewLocation != $Drive.'/Unsorted') {
+					AddLog(EVENT.'Drives', 'Success', $LogEntry, 0, 'update');
+				}
+				else {
+					AddLog(EVENT.'Drives', 'Success', $LogEntry);
+				}
+				
 				throw new RestException(200, $LogEntry);
 			}
 			else {
@@ -419,8 +425,14 @@ class Drives {
 					if(@RecursiveDirRemove(dirname($File))) {
 						$LogEntry .= ' and deleted "'.dirname($File).'"';
 					}
-								
-					AddLog(EVENT.'Drives', 'Success', $LogEntry);
+					
+					if($NewLocation != $Drive.'/Unsorted') {
+						AddLog(EVENT.'Drives', 'Success', $LogEntry, 0, 'update');
+					}
+					else {
+						AddLog(EVENT.'Drives', 'Success', $LogEntry);
+					}
+					
 					throw new RestException(200, $LogEntry);
 				}
 				else {

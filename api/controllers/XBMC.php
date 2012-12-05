@@ -356,7 +356,7 @@ class XBMC {
 			
 				if(!sizeof($ActivePlayer)) {
 					try {
-						$this->LibraryUpdate();
+						$this->XBMC->VideoLibrary->Scan();
 					}
 					catch(XBMC_RPC_Exception $e){
 						throw new RestException(503, 'XBMC: '.$e->getMessage());

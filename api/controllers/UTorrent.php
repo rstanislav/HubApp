@@ -278,7 +278,7 @@ class UTorrent {
 						$RemovedTorrents++;
 						$RemovedTorrentsSize += $Torrent[UTORRENT_TORRENT_SIZE];
 				
-						$this->RemoveTorrent(FALSE, $Torrent[UTORRENT_TORRENT_HASH]);
+						$this->UTorrent->torrentRemove($Torrent[UTORRENT_TORRENT_HASH], FALSE);
 					}
 				}
 			}

@@ -14,10 +14,8 @@ require_once APP_PATH.'/resources/api.hub.php';
  <title>Hub</title>
  
  <link type="text/css" rel="stylesheet" href="css/stylesheet.css" />
- <link type="text/css" rel="stylesheet" href="css/jquery.noty.css" />
  
  <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
- <script type="text/javascript" src="js/jquery.noty.js"></script>
  
  <!--<link rel="shortcut icon" href="images/favicon.ico" />//-->
  <link rel="apple-touch-icon" href="images/logo-iphone.png" />
@@ -340,6 +338,23 @@ $(document).ready(function() {
 	});
 });
 
+function HubNotify(Type, Text) {
+	ID = randomString();
+	
+	$('#maincontent').prepend(
+	    '<div id="Notification-' + ID + '" class="notification information" style="display:none; margin-bottom:10px" onclick="javascript:$(this).remove();">' + Text + '</div>'
+	);
+	 
+	$('#Notification-' + ID).fadeIn(400);
+	
+	switch(Type) {
+		case 'success':
+		case 'information':
+			$('#Notification-' + ID).delay(4000).fadeOut(400);
+		break;
+	}
+}
+
 function AjaxPost(Action, RowID) {
 	switch(Action) {
 		case 'WishlistAddItem':
@@ -394,21 +409,13 @@ function AjaxPost(Action, RowID) {
 			
 			$('#action-' + RowID).html('');
 			
-			noty({
-				text: data.error.message,
-				type: 'success',
-				timeout: 3000,
-			});
+			HubNotify('success', data.error.message);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			$(ImageObj).attr('src', 'images/icons/error.png');
 		    
 		    var responseObj = JSON.parse(jqXHR.responseText);
-		    noty({
-		    	text: responseObj.error.message,
-		    	type: 'error',
-		    	timeout: false,
-		    });
+		    HubNotify('error', responseObj.error.message);
 		}
 	});
 }
@@ -442,22 +449,14 @@ function AjaxButton(URL, ButtonObj, BeforeText, ButtonClass, ButtonVal, Method, 
 			$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
 			$(ButtonObj).contents().find('.label').text(ButtonVal);
 			
-			noty({
-				text: data.error.message,
-				type: 'success',
-				timeout: 3000,
-			});
+			HubNotify('success', data.error.message);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
 		    $(ButtonObj).contents().find('.label').text('Error!');
 		    
 		    var responseObj = JSON.parse(jqXHR.responseText);
-		    noty({
-		    	text: responseObj.error.message,
-		    	type: 'error',
-		    	timeout: false,
-		    });
+		    HubNotify('error', responseObj.error.message);
 		}
 	});
 }
@@ -481,21 +480,13 @@ function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
 				$(ImageObj).parent().parent().remove();
 			}
 			
-			noty({
-				text: data.error.message,
-				type: 'success',
-				timeout: 3000,
-			});
+			HubNotify('success', data.error.message);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			$(ImageObj).html('<img src="images/icons/error.png" />');
 		    
 		    var responseObj = JSON.parse(jqXHR.responseText);
-		    noty({
-		    	text: responseObj.error.message,
-		    	type: 'error',
-		    	timeout: false,
-		    });
+		    HubNotify('error', responseObj.error.message);
 		}
 	});
 }

@@ -147,6 +147,57 @@ class UTorrent {
 	}
 	
 	/**
+	 * @url POST /check
+	**/
+	function CheckUTorrentSettings() {
+		$RequiredParams = array('UTorrentIP', 'UTorrentPort', 'UTorrentUsername', 'UTorrentPassword', 'UTorrentWatchFolder', 'UTorrentDefaultUpSpeed', 'UTorrentDefaultDownSpeed', 'UTorrentDefinedUpSpeed', 'UTorrentDefinedDownSpeed');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
+		}
+		
+		require_once APP_PATH.'/api/libraries/api.utorrent.php';
+		
+		$this->UTorrent = new UTorrentAPI($_POST['UTorrentIP'], 
+										  $_POST['UTorrentUsername'],
+										  $_POST['UTorrentPassword'],
+										  $_POST['UTorrentPort']);
+										  
+		if(!$this->UTorrent->Token) {
+			throw new RestException(503, 'Unable to connect to uTorrent');
+		}
+		
+		if(!is_dir($_POST['UTorrentWatchFolder'])) {
+			throw new RestException(412, '"'.$_POST['UTorrentWatchFolder'].'" does not exist');
+		}
+		
+		if(!is_numeric($_POST['UTorrentDefaultUpSpeed'])) {
+			throw new RestException(412, '"UTorrentDefaultUpSpeed" is not a numeric value');
+		}
+		
+		if(!is_numeric($_POST['UTorrentDefaultDownSpeed'])) {
+			throw new RestException(412, '"UTorrentDefaultDownSpeed" is not a numeric value');
+		}
+		
+		if(!is_numeric($_POST['UTorrentDefinedUpSpeed'])) {
+			throw new RestException(412, '"UTorrentDefinedUpSpeed" is not a numeric value');
+		}
+		
+		if(!is_numeric($_POST['UTorrentDefinedDownSpeed'])) {
+			throw new RestException(412, '"UTorrentDefinedDownSpeed" is not a numeric value');
+		}
+		
+		throw new RestException(200);
+	}
+	
+	/**
 	 * @url GET /start/:HashOrAll
 	**/
 	function StartTorrent($HashOrAll) {
@@ -250,6 +301,19 @@ class UTorrent {
 	}
 	
 	/**
+	 * @url GET /add/:Torrent
+	**/
+	function AddTorrent($Torrent) {
+		$this->Connect();
+		try {
+			$this->UTorrent->torrentAdd($Torrent);
+		}
+		catch(RestException $e) {
+			throw new RestException(400, 'AddTorrent: '.$e->getMessage());
+		}
+	}
+	
+	/**
 	 * @url GET /remove/finished
 	**/
 	function RemoveFinishedTorrents() {
@@ -265,7 +329,7 @@ class UTorrent {
 						$RemovedTorrents++;
 						$RemovedTorrentsSize += $Torrent[UTORRENT_TORRENT_SIZE];
 				
-						$this->RemoveTorrent(FALSE, $Torrent[UTORRENT_TORRENT_HASH]);
+						$this->UTorrent->torrentRemove($Torrent[UTORRENT_TORRENT_HASH], FALSE);
 					}
 				}
 			}
@@ -352,7 +416,7 @@ class UTorrent {
 			$this->SetSetting('max_ul_rate', GetSetting('UTorrentDefinedUpSpeed'));
 			$this->SetSetting('max_dl_rate', GetSetting('UTorrentDefinedDownSpeed'));
 			
-			$LogEntry = 'Set speed settings to "defined"';
+			$LogEntry = 'Set speed settings to "limited"';
 		}
 		else {
 			$this->SetSetting('max_ul_rate', GetSetting('UTorrentDefaultUpSpeed'));
@@ -385,7 +449,7 @@ class UTorrent {
 							if($NewQuality > $OldQuality) {
 								$this->RemoveTorrent(TRUE, $Torrent[UTORRENT_TORRENT_HASH]);
 								
-								AddLog(EVENT.'uTorrent', 'Success', 'Removed "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
+								AddLog(EVENT.'uTorrent', 'Success', 'Removed torrent "'.$Torrent[UTORRENT_TORRENT_NAME].'" in favour of "'.$TorrentTitle.'"');
 							}
 							else {
 								$TorrentURI = FALSE;
@@ -409,7 +473,7 @@ class UTorrent {
 						$EpisodePrep->execute(array(':TorrentKey' => $TorrentURI[2],
 													':ID'         => $TorrentURI[1]));
 						
-						AddLog(EVENT.'Series', 'Success', 'Downloaded "'.$TorrentTitle.'"');
+						AddLog(EVENT.'Series', 'Success', 'Downloaded torrent "'.$TorrentTitle.'"');
 					}
 				}
 				else {
@@ -425,7 +489,7 @@ class UTorrent {
 												 ':TorrentKey' => $TorrentURI[2],
 												 ':Title'      => $TorrentURI[3]));
 					
-					AddLog(EVENT.'Wishlist', 'Success', 'Downloaded "'.$TorrentTitle.'" from Wishlist');
+					AddLog(EVENT.'Wishlist', 'Success', 'Downloaded torrent "'.$TorrentTitle.'" from Wishlist');
 				}
 			}
 		}

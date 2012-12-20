@@ -285,5 +285,103 @@ class Wishlist {
 		AddLog(EVENT.'Wishlist', 'Success', $LogEntry);
 		throw new RestException(200, $LogEntry);
 	}
+	
+	/**
+	 * @url GET /update/shared
+	**/
+	function UpdateSharedWishlist() {
+		$WishlistShare = '
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+		
+		<html> 
+		<head>
+		 <meta http-equiv="Content-type" content="text/html; charset=utf-8" /> 
+		 <title>Hub &raquo; Share &raquo; Wishlist</title> 
+		 <link type="text/css" rel="stylesheet" href="../css/stylesheet.css" />
+		</head>
+		
+		<body>
+		
+		<div id="maincontent">
+		
+		<div class="head">Wishlist <small><small><small>updated: '.date('d.m.Y H:i').'</small></small></small></div>
+		<table>
+		 <thead>
+		  <tr>
+		   <th>Title</th>
+		   <th style="width:50px; text-align: center;">Year</th>
+		   <th style="width:100px; text-align: center;">Since</th>
+		  </tr>
+		 </thead>'."\n";
+		
+		$Wishes = $this->WishlistAll();
+		
+		if(is_array($Wishes)) {
+			foreach($Wishes AS $Wish) {
+				$WishlistShare .= '
+				<tr>
+				 <td>'.$Wish['Title'].'</td>
+				 <td style="text-align: center;">'.$Wish['Year'].'</td>
+				 <td style="text-align: center;">'.date('d.m H:i', $Wish['Date']).'</td>
+				</tr>'."\n";
+			}
+		}
+		
+		$WishlistShare .= '
+		</table>
+		
+		<br />
+		
+		<div class="head">Wishlist &raquo; Granted</div>'."\n";
+		
+		$Wishes = $this->WishlistGranted();
+		
+		if(is_array($Wishes)) {
+			$WishlistShare .= '
+			<table>
+			 <thead>
+			 <tr>
+			  <th>Title</th>
+			  <th style="text-align: center;">Year</th>
+			  <th>Since</th>
+			  <th>&nbsp;</th>
+			 </tr>
+			 </thead>'."\n";
+			foreach($Wishes AS $Wish) {
+				$WishlistShare .= '
+				<tr>
+				 <td>'.$Wish['Title'].'</td>
+				 <td style="width:50px; text-align: center;">'.$Wish['Year'].'</td>
+				 <td style="width:150px">Granted on '.date('d.m.y H:i', $Wish['DownloadDate']).'</td>
+				 <td style="text-align: center;width:18px">
+				  <a href="http://www.youtube.com/results?search_query='.urlencode($Wish['Title'].' '.$Wish['Year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img src="../images/icons/youtube.png" /></a>
+				 </td>
+				</tr>'."\n";
+			}
+			$WishlistShare .= '</table>'."\n";
+		}
+		
+		file_put_contents(APP_PATH.'/share/wishlist.html', $WishlistShare);
+		
+		try {
+			$UpdatePrep = $this->PDO->prepare('UPDATE
+												Hub
+											   SET
+											   	Value = :Time
+											   WHERE
+											   	Setting = "LastWishlistUpdate"');
+											   	
+			$UpdatePrep->execute(array(':Time' => time()));
+		}
+		catch(PDOException $e) {
+			throw new RestException(400, 'MySQL: '.$e->getMessage());
+		}
+		
+		$LogEntry = 'Updated "/share/wishlist.html"';
+		AddLog(EVENT.'Public Sharing', 'Success', $LogEntry);
+		
+		throw new RestException(200, $LogEntry);
+	}
 }
 ?>

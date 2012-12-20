@@ -22,7 +22,7 @@ class TheTVDBAPI {
 			}
 		}
 		catch(Exception $e) {
-			echo '<strong>Exception:</strong> '.$e->getMessage().' in '.$e->getTraceAsString();
+			throw new RestException(412);
 		}
 	}
 	
@@ -87,7 +87,16 @@ class TheTVDBAPI {
 			throw new Exception('Unable to get http://www.thetvdb.com/api/GetSeries.php?seriesname='.$SearchStr.'&language='.$Language);
 		}
 		
-		return $Series;
+		if(is_object($Series) && property_exists($Series, 'Series')) {
+			$SerieArr = array();
+			foreach($Series->Series AS $Serie) {
+				$SerieArr[] = $Serie;
+			}
+			
+			return $SerieArr;
+		}
+		
+		return FALSE;
 	}
 	
 	public function GetSeriesInfo($SerieID, $Language = 'en') {

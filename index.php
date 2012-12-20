@@ -14,12 +14,10 @@ require_once APP_PATH.'/resources/api.hub.php';
  <title>Hub</title>
  
  <link type="text/css" rel="stylesheet" href="css/stylesheet.css" />
- <link type="text/css" rel="stylesheet" href="css/jquery.noty.css" />
  
  <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
- <script type="text/javascript" src="js/jquery.noty.js"></script>
  
- <link rel="shortcut icon" href="images/favicon.ico" />
+ <!--<link rel="shortcut icon" href="images/favicon.ico" />//-->
  <link rel="apple-touch-icon" href="images/logo-iphone.png" />
  <link rel="apple-touch-icon" sizes="72x72" href="images/logo-ipad.png" />
  <link rel="apple-touch-icon" sizes="114x114" href="images/logo-iphone4.png" />
@@ -30,6 +28,30 @@ require_once APP_PATH.'/resources/api.hub.php';
 
 <script type="text/javascript">
 $(document).ready(function() {
+	$('#IconProfile').mouseover(function() {
+		$(this).attr('src', 'images/icons/profile.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/profile_dark.png');
+	});
+	
+	$('#IconSettings').mouseover(function() {
+		$(this).attr('src', 'images/icons/settings.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/settings_dark.png');
+	});
+	
+	$('#IconLogout').mouseover(function() {
+		$(this).attr('src', 'images/icons/logout.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/logout_dark.png');
+	});
+	
+	$('#IconUsers').mouseover(function() {
+		$(this).attr('src', 'images/icons/users.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/users_dark.png');
+	});
+	
 	$('div[id|="Cover"]').mouseover(function() {
 		$('#CoverControl-' + $(this).attr('id').split('-')[1]).css('display', 'block');
 	}).mouseout(function() {
@@ -45,6 +67,26 @@ $(document).ready(function() {
 		ImageObj = this;
 		
 		switch(Action) {
+			case 'TorrentStart':
+				AjaxImage('utorrent/start/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'TorrentStop':
+				AjaxImage('utorrent/stop/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'TorrentPause':
+				AjaxImage('utorrent/pause/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'TorrentDelete':
+				AjaxImage('utorrent/remove/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
+			case 'TorrentDeleteData':
+				AjaxImage('utorrent/remove/data/' + FirstID, ImageObj, OriginalImg);
+			break;
+			
 			case 'SerieRefresh':
 				AjaxImage('series/refresh/' + FirstID, ImageObj, OriginalImg);
 			break;
@@ -73,12 +115,23 @@ $(document).ready(function() {
 				AjaxImage('drives/' + FirstID, ImageObj, OriginalImg, 'delete');
 			break;
 			
+			case 'TorrentDownload':
+				if(SecondID) {
+					SecondID = '/' + SecondID;
+				}
+				else {
+					SecondID = '';
+				}
+				
+				AjaxImage('rss/download/' + FirstID + SecondID, ImageObj, OriginalImg);
+			break;
+			
 			case 'FeedDelete':
 				AjaxImage('rss/' + FirstID, ImageObj, OriginalImg, 'delete');
 			break;
 			
 			default:
-				console.log(Action + ' ' + FirstID);
+				console.log(Action + ' ' + FirstID + ' default action');
 		}
 	});
 	
@@ -120,8 +173,12 @@ $(document).ready(function() {
 						AjaxButton('series/' + ID, ButtonObj, 'Deleting ...', ButtonClass, ButtonVal, 'delete');
 					break;
 					
+					case 'TorrentDownload':
+						AjaxButton('rss/download/' + ID, ButtonObj, 'Downloading ...', ButtonClass, ButtonVal);
+					break;
+					
 					default:
-						console.log(Action);
+						console.log(Action + ' default action');
 				}
 			}
 			else {
@@ -139,7 +196,7 @@ $(document).ready(function() {
 					break;
 					
 					case 'SharedMoviesUpdate':
-						console.log(ID);
+						AjaxButton('xbmc/update/shared', ButtonObj, 'Updating ...', ButtonClass, ButtonVal);
 					break;
 					
 					case 'MovieTogglePath':
@@ -147,7 +204,7 @@ $(document).ready(function() {
 					break;
 					
 					case 'WishlistUpdateShared':
-						console.log(ID);
+						AjaxButton('wishlist/update/shared', ButtonObj, 'Updating ...', ButtonClass, ButtonVal);
 					break;
 					
 					case 'WishlistAddItem':
@@ -305,6 +362,23 @@ $(document).ready(function() {
 	});
 });
 
+function HubNotify(Type, Text) {
+	ID = randomString();
+	
+	$('#maincontent').prepend(
+	    '<div id="Notification-' + ID + '" class="notification information" style="display:none; margin-bottom:10px" onclick="javascript:$(this).remove();">' + Text + '</div>'
+	);
+	 
+	$('#Notification-' + ID).fadeIn(400);
+	
+	switch(Type) {
+		case 'success':
+		case 'information':
+			$('#Notification-' + ID).delay(4000).fadeOut(400);
+		break;
+	}
+}
+
 function AjaxPost(Action, RowID) {
 	switch(Action) {
 		case 'WishlistAddItem':
@@ -359,21 +433,13 @@ function AjaxPost(Action, RowID) {
 			
 			$('#action-' + RowID).html('');
 			
-			noty({
-				text: data.error.message,
-				type: 'success',
-				timeout: 3000,
-			});
+			HubNotify('success', data.error.message);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			$(ImageObj).attr('src', 'images/icons/error.png');
 		    
 		    var responseObj = JSON.parse(jqXHR.responseText);
-		    noty({
-		    	text: responseObj.error.message,
-		    	type: 'error',
-		    	timeout: false,
-		    });
+		    HubNotify('error', responseObj.error.message);
 		}
 	});
 }
@@ -407,22 +473,14 @@ function AjaxButton(URL, ButtonObj, BeforeText, ButtonClass, ButtonVal, Method, 
 			$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
 			$(ButtonObj).contents().find('.label').text(ButtonVal);
 			
-			noty({
-				text: data.error.message,
-				type: 'success',
-				timeout: 3000,
-			});
+			HubNotify('success', data.error.message);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			$(ButtonObj).removeClass('disabled').addClass(ButtonClass);
 		    $(ButtonObj).contents().find('.label').text('Error!');
 		    
 		    var responseObj = JSON.parse(jqXHR.responseText);
-		    noty({
-		    	text: responseObj.error.message,
-		    	type: 'error',
-		    	timeout: false,
-		    });
+		    HubNotify('error', responseObj.error.message);
 		}
 	});
 }
@@ -446,21 +504,13 @@ function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
 				$(ImageObj).parent().parent().remove();
 			}
 			
-			noty({
-				text: data.error.message,
-				type: 'success',
-				timeout: 3000,
-			});
+			HubNotify('success', data.error.message);
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			$(ImageObj).html('<img src="images/icons/error.png" />');
 		    
 		    var responseObj = JSON.parse(jqXHR.responseText);
-		    noty({
-		    	text: responseObj.error.message,
-		    	type: 'error',
-		    	timeout: false,
-		    });
+		    HubNotify('error', responseObj.error.message);
 		}
 	});
 }
@@ -547,6 +597,18 @@ function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
    }
    
    switch($Page) {
+   	case 'Settings':
+   		include_once APP_PATH.'/pages/Settings.php';
+   	break;
+   	
+   	case 'Profile':
+   		include_once APP_PATH.'/pages/Profile.php';
+   	break;
+   	
+   	case 'Users':
+   		include_once APP_PATH.'/pages/Users.php';
+   	break;
+   	
    	case 'Series':
    		include_once APP_PATH.'/pages/Series.php';
    	break;

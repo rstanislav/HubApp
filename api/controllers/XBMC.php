@@ -59,6 +59,58 @@ class XBMC {
 	}
 	
 	/**
+	 * @url POST /check/folder
+	**/
+	function CheckXBMCDataFolder() {
+		$RequiredParams = array('XBMCDataFolder');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
+		}
+						
+		if(is_dir($_POST['XBMCDataFolder'])) {
+			throw new RestException(200);
+		}
+		else {
+			throw new RestException(412, '"'.$_POST['XBMCDataFolder'].'" does not exist');
+		}
+	}
+	
+	/**
+	 * @url POST /check/zone
+	**/
+	function CheckZone() {
+		$RequiredParams = array('XBMCZoneName', 'XBMCZoneHost', 'XBMCZonePort', 'XBMCZoneUser', 'XBMCZonePassword');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
+		}
+		
+		try {
+			$this->CheckConnection($_POST['XBMCZoneUser'], $_POST['XBMCZonePassword'], $_POST['XBMCZoneHost'], $_POST['XBMCZonePort']);
+		}
+		catch(XBMC_RPC_ConnectionException $e) {
+			throw new RestException(412, 'XBMC: '.$e->getMessage());
+		}
+		
+		throw new RestException(200);
+	}
+	
+	/**
 	 * @url GET /movies
 	**/
 	function MoviesAll() {
@@ -81,6 +133,20 @@ class XBMC {
 				else {
 					$Movie['poster']      = 'images/poster-unavailable.png';
 					$Movie['postersmall'] = 'images/poster-unavailable.png';
+				}
+				
+				if(strstr($Movie['file'], 'stack')) {
+					$Path = str_replace('stack://', '', $Movie['file']);
+					
+					$Movie['files'] = explode(', ', $Path);
+					
+					$LocalFileArr = array();
+					foreach($Movie['files'] AS $File) {
+						$LocalFileArr[] = array('network' => $File,
+						                        'local'   => $DrivesObj->GetLocalLocation($File));
+					}
+					
+					$Movie['files'] = $LocalFileArr;
 				}
 				
 				$Movie['filelocal'] = $DrivesObj->GetLocalLocation($Movie['file']);
@@ -121,6 +187,20 @@ class XBMC {
 				else {
 					$Movie['poster']      = 'images/poster-unavailable.png';
 					$Movie['postersmall'] = 'images/poster-unavailable.png';
+				}
+				
+				if(strstr($Movie['file'], 'stack')) {
+					$Path = str_replace('stack://', '', $Movie['file']);
+					
+					$Movie['files'] = explode(', ', $Path);
+					
+					$LocalFileArr = array();
+					foreach($Movie['files'] AS $File) {
+						$LocalFileArr[] = array('network' => $File,
+						                        'local'   => $DrivesObj->GetLocalLocation($File));
+					}
+					
+					$Movie['files'] = $LocalFileArr;
 				}
 				
 				$Movie['filelocal'] = $DrivesObj->GetLocalLocation($Movie['file']);
@@ -263,12 +343,12 @@ class XBMC {
 					$Serie = $SeriesObj->GetSerieByTitle($ItemInfo['item']['showtitle']);
 					
 					if(is_array($Serie)) {
-						$ItemInfo['item']['postersmall'] = str_replace('posters/', 'posters/thumbnails/', $Serie[0]['Poster']);
+						if(is_file(APP_PATH.'/'.$Serie[0]['PosterSmall'])) {
+							$ItemInfo['item']['postersmall'] = $Serie[0]['PosterSmall'];
+						}
 				
-						if(is_file($ItemInfo['item']['postersmall'])) {
-							if(is_file($Serie[0]['Poster'])) {
-								$ItemInfo['item']['poster'] = $Serie[0]['Poster'];
-							}
+						if(is_file(APP_PATH.'/'.$Serie[0]['Poster'])) {
+							$ItemInfo['item']['poster'] = $Serie[0]['Poster'];
 						}
 					}
 				}
@@ -328,7 +408,7 @@ class XBMC {
 			
 				if(!sizeof($ActivePlayer)) {
 					try {
-						$this->LibraryUpdate();
+						$this->XBMC->VideoLibrary->Scan();
 					}
 					catch(XBMC_RPC_Exception $e){
 						throw new RestException(503, 'XBMC: '.$e->getMessage());
@@ -519,6 +599,113 @@ class XBMC {
 		
 		AddLog(EVENT.'XBMC', 'Success', $LogEntry);
 		throw new RestException(201, $LogEntry);
+	}
+	
+	/**
+	 * @url GET /update/shared
+	**/
+	function UpdateSharedMovies() {
+		$AllMovies = $this->MoviesAll();
+		
+		$Movies = array();
+		foreach($AllMovies AS $Movie) {
+			if(!trim($Movie['label'])) {
+				$Title = trim(str_replace('The ', '', trim($Movie['originaltitle'])));
+			}
+			else {
+				$Title = trim(str_replace('The ', '', trim($Movie['label'])));
+			}
+			
+			$Movies[$Title][] = $Movie;
+		}
+		
+		ksort($Movies);
+		
+		$MovieShare = '
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+		
+		<html> 
+		<head>
+		 <meta http-equiv="Content-type" content="text/html; charset=utf-8" /> 
+		 <title>Hub &raquo; Share &raquo; Movies</title> 
+		 <link type="text/css" rel="stylesheet" href="../css/stylesheet.css" />
+		</head>
+		
+		<body>
+		
+		<div id="maincontent">
+		
+		<div class="head">Movies <small><small><small>updated: '.date('d.m.Y H:i').'</small></small></small></div>
+		<table width="100%" class="nostyle">
+		 <tr>'."\n";
+		
+		$i = 1;
+		foreach($Movies AS $Movie) {
+			if(is_file(APP_PATH.'/posters/thumbnails/movie-'.$Movie[0]['movieid'].'.jpg')) {
+				$Thumbnail = '../posters/thumbnails/movie-'.$Movie[0]['movieid'].'.jpg';
+			}
+			else {
+				$Thumbnail = '../images/poster-unavailable.png';
+			}
+			
+			if(!empty($Movie[0]['trailer'])) {
+				if(strstr($Movie[0]['trailer'], 'plugin.video.youtube')) {
+					$MovieTrailerLink = '<a href="http://youtube.com/watch?v='.str_replace('plugin://plugin.video.youtube/?action=play_video&videoid=', '', $Movie[0]['trailer']).'" target="_blank" title="'.$Movie[0]['label'].' ('.$Movie[0]['year'].') Trailer"><img  src="../images/icons/youtube.png" /></a>';
+				}
+				else if(strstr($Movie[0]['trailer'], 'http://playlist.yahoo.com')) {
+					$MovieTrailerLink = '<a href="'.$Movie[0]['trailer'].'" target="_blank" title="'.$Movie[0]['label'].' ('.$Movie[0]['year'].') Trailer"><img  src="../images/icons/yahoo.png" /></a>';
+				}
+			}
+			else {
+				$MovieTrailerLink = '<a href="http://youtube.com/results?search_query='.urlencode($Movie[0]['label'].' '.$Movie[0]['year'].' trailer').'" target="_blank" title="Search for trailer on YouTube"><img  src="../images/icons/youtube.png" /></a>';
+			}
+			
+			$Watched = ($Movie[0]['playcount']) ? '<div class="cover-watched">watched</div>' : '';
+			
+			$MoviePoster = '
+			 <div id="Cover-'.$Movie[0]['movieid'].'" class="cover">
+			  <img class="poster" width="150" height="250" src="../'.$Movie[0]['postersmall'].'" />
+			  '.$Watched.'
+			 </div>';
+			 
+			$MovieTitle = (empty($Movie[0]['label'])) ? $Movie[0]['originaltitle'] : $Movie[0]['label'];
+			$MovieShare .= '
+			<td style="text-align: center;">
+			 <div style="height:310px;">
+			  <div style="width: 151px; height: 250px; margin: 0 auto;">'.$MoviePoster.'</div><br />
+			  <strong>'.$MovieTitle.' ('.$Movie[0]['year'].') '.$MovieTrailerLink.'</strong>
+			 </div>
+			</td>'."\n";
+			
+			if($i++ % 6 == 0) {
+				$MovieShare .= '
+				</tr>
+				<tr>'."\n";
+			}
+		}
+		$MovieShare .= '</table></div>'."\n";
+		
+		file_put_contents(APP_PATH.'/share/movies.html', $MovieShare);
+		
+		try {
+			$UpdatePrep = $this->PDO->prepare('UPDATE
+			                                   	Hub
+			                                   SET
+			                                   	Value = :Time
+			                                   WHERE
+			                                   	Setting = "LastMoviesUpdate"');
+			                                   	
+			$UpdatePrep->execute(array(':Time' => time()));
+		}
+		catch(PDOException $e) {
+			throw new RestException(400, 'MySQL: '.$e->getMessage());
+		}
+		
+		$LogEntry = 'Updated "/share/movies.html"';
+		AddLog(EVENT.'Public Sharing', 'Success', $LogEntry);
+		
+		throw new RestException(200, $LogEntry);
 	}
 	
 	/**

@@ -74,7 +74,7 @@ $SerieRebuild    = GetSetting('LastSerieRebuild');
 $WishlistUpdate  = GetSetting('LastWishlistUpdate');
 $MoviesUpdate    = GetSetting('LastMoviesUpdate');
 $WishlistRefresh = GetSetting('LastWishlistRefresh');
-$Backup          = GetSetting('LastBackup');
+$Backup          = time();//GetSetting('LastBackup');
 
 $LatestUpdate = min($FolderRebuild, $SerieRefresh, $SerieRebuild, $WishlistUpdate, $MoviesUpdate, $WishlistRefresh, $Backup);
 if((date('G') >= 4 && date('G') <= 6) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {
@@ -92,19 +92,13 @@ if((date('G') >= 4 && date('G') <= 6) || (time() - $LatestUpdate) >= (60 * 60 * 
 	
 	if(GetSetting('ShareMovies')) {
 		if(date('dmy', $MoviesUpdate) != date('dmy')) {
-			/*
-			$Movies = $XBMCObj->GetMovies();
-				
-			if(is_array($Movies)) {
-				$ShareObj->UpdateMovies($Movies);
-			}
-			*/
+			$Hub->Request('/xbmc/update/shared');
 		}
 	}
 	
 	if(GetSetting('ShareWishlist')) {
 		if(date('dmy', $WishlistUpdate) != date('dmy')) {
-			//$ShareObj->UpdateWishlist();
+			$Hub->Request('/wishlist/update/shared');
 		}
 	}
 	

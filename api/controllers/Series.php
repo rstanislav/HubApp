@@ -265,6 +265,13 @@ class Series {
 			if(sizeof($SerieRes)) {
 				$Data = array();
 				foreach($SerieRes AS $SerieRow) {
+					if(strlen($SerieRow['Poster'])) {
+						$FileInfo = pathinfo($SerieRow['Poster']);
+						
+						$SerieRow['Poster']      = 'posters/series/'.$FileInfo['filename'].'.'.$FileInfo['extension'];
+						$SerieRow['PosterSmall'] = 'posters/series/'.$FileInfo['filename'].'-small.'.$FileInfo['extension'];
+					}
+					
 					$EpisodesPrep = $this->PDO->prepare('SELECT
 					                                     	COUNT(ID)
 					                                     AS
@@ -276,7 +283,7 @@ class Series {
 					                                     AND
 					                                     	Season != 0
 					                                     AND
-					                                     	File != "0"');
+					                                     	File != ""');
 					                                     	
 					$EpisodesPrep->execute(array(':ID' => $SerieRow['ID']));
 					
@@ -316,7 +323,8 @@ class Series {
 			                                     	Episodes.Title AS EpisodeTitle,
 			                                     	Episodes.AirDate,
 			                                     	Episodes.File,
-			                                     	Episodes.TorrentKey
+			                                     	Episodes.TorrentKey,
+			                                     	Episodes.ID AS EpisodeID
 			                                     FROM
 			                                     	Series,
 			                                     	Episodes
@@ -341,6 +349,13 @@ class Series {
 			if(sizeof($ScheduleRes)) {
 				$Data = array();
 				foreach($ScheduleRes AS $Row) {
+					if(strlen($Row['Poster'])) {
+						$FileInfo = pathinfo($Row['Poster']);
+						
+						$Row['Poster']      = 'posters/series/'.$FileInfo['filename'].'.'.$FileInfo['extension'];
+						$Row['PosterSmall'] = 'posters/series/'.$FileInfo['filename'].'-small.'.$FileInfo['extension'];
+					}
+					
 					$Row['Season']  = sprintf('%02s', $Row['Season']);
 					$Row['Episode'] = sprintf('%02s', $Row['Episode']);
 					
@@ -538,7 +553,8 @@ class Series {
 			                                     	E.File,
 			                                     	E.TorrentKey,
 			                                     	E.AirDate,
-			                                     	E.Title AS EpisodeTitle
+			                                     	E.Title AS EpisodeTitle,
+			                                     	E.ID AS EpisodeID
 			                                     FROM
 			                                     	Series S
 			                                     JOIN
@@ -573,6 +589,13 @@ class Series {
 			if(sizeof($ScheduleRes)) {
 				$Data = array();
 				foreach($ScheduleRes AS $Row) {
+					if(strlen($Row['Poster'])) {
+						$FileInfo = pathinfo($Row['Poster']);
+						
+						$Row['Poster']      = 'posters/series/'.$FileInfo['filename'].'.'.$FileInfo['extension'];
+						$Row['PosterSmall'] = 'posters/series/'.$FileInfo['filename'].'-small.'.$FileInfo['extension'];
+					}
+					
 					$Row['Season']  = sprintf('%02s', $Row['Season']);
 					$Row['Episode'] = sprintf('%02s', $Row['Episode']);
 					
@@ -1285,8 +1308,12 @@ class Series {
 			if(sizeof($SerieRes)) {
 				$Data = array();
 				foreach($SerieRes AS $SerieRow) {
-					$SerieRow['Poster']      = 'http://'.$_SERVER['SERVER_ADDR'].'/'.$SerieRow['Poster'];
-					$SerieRow['PosterSmall'] = str_replace('posters/', 'posters/thumbnails/', $SerieRow['Poster']);
+					if(strlen($SerieRow['Poster'])) {
+						$FileInfo = pathinfo($SerieRow['Poster']);
+						
+						$SerieRow['Poster']      = 'posters/series/'.$FileInfo['filename'].'.'.$FileInfo['extension'];
+						$SerieRow['PosterSmall'] = 'posters/series/'.$FileInfo['filename'].'-small.'.$FileInfo['extension'];
+					}
 					
 					$Data[] = $SerieRow;
 				}

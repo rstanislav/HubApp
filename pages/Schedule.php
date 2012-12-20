@@ -1,7 +1,21 @@
-<div class="head">Last 3 days</div>
+<?php
+$Days = (filter_has_var(INPUT_GET, 'Days') && !empty($_GET['Days'])) ? $_GET['Days'] : 3;
+?>
+<div class="head">
+ Last 
+ <select name="RecentSchedule" onChange="javascript:window.location='?Days=' + $(this).find(':selected').attr('value');" style="width:60px">
+  <?php 
+  for($i = 2; $i <= 31; $i++) {
+  	$Selected = ($Days == $i) ? ' selected="selected"' : '';
+  	
+  	echo '<option value="'.$i.'"'.$Selected.'>'.$i.'</option>'."\n";
+  }
+  ?>
+ </select> days
+</div>
 
 <?php
-$RecentEpisodes = json_decode($Hub->Request('/series/recent/3'));
+$RecentEpisodes = json_decode($Hub->Request('/series/recent/'.$Days));
 
 echo '
 <table>
@@ -40,21 +54,30 @@ else {
 			</tr>'."\n";
 		}
 		
+		$MultipleTorrents = '';
 		switch($Episode->Status) {
 			case 'Available':
 				$ActionLink = '<a id="FilePlay-'.$Episode->File.'" rel="ajax"><img src="images/icons/control_play.png" /></a>';
 			break;
 			
 			case 'Downloaded':
-				$ActionLink = '<img src="images/icons/downloaded.png" />';
+				$ActionLink = '<a id="TorrentDownload-'.$Episode->TorrentKey.'-'.$Episode->EpisodeID.'" rel="ajax"><img src="images/icons/downloaded.png" /></a>';
 			break;
 			
 			case 'Torrent':
-				$ActionLink = '<a id="TorrentDownload-'.$Episode->Torrents[0]->ID.'" rel="ajax"><img src="images/icons/download.png" /></a>';
+				$ActionLink = '<a id="TorrentDownload-'.$Episode->Torrents[0]->ID.'-'.$Episode->EpisodeID.'" rel="ajax"><img src="images/icons/download.png" /></a>';
 			break;
 			
 			case 'Torrents':
-				$ActionLink = '<img src="images/icons/download_multiple.png" />';
+				$ActionLink = '<a onclick="javascript:$(\'tr[rel=Torrents-'.$Episode->EpisodeID.']\').fadeToggle();"><img src="images/icons/download_multiple.png" /></a>';
+				
+				foreach($Episode->Torrents AS $Torrent) {
+					$MultipleTorrents .= '
+					<tr rel="Torrents-'.$Episode->EpisodeID.'" style="display:none;">
+					 <td><a id="TorrentDownload-'.$Torrent->ID.'-'.$Episode->EpisodeID.'" rel="ajax"><img src="images/icons/download.png" /></a></td>
+					 <td colspan="4">'.$Torrent->Title.'</td>
+					 </tr>'."\n";
+				}
 			break;
 			
 			default:
@@ -69,7 +92,7 @@ else {
 		 <td style="text-align: center">'.$Episode->Season.'x'.$Episode->Episode.'</td>
 		 <td>'.$Episode->EpisodeTitle.'</td>
 		 <td style="text-align: right">'.ConvertSeconds(time() - $Episode->AirDate, FALSE).'</td>
-		</tr>'."\n";
+		</tr>'.$MultipleTorrents."\n";
 		
 		$PrevHeading = $Heading;
 	}
@@ -92,7 +115,7 @@ echo '
    <th style="width: 350px">Serie</th>
    <th style="width: 50px; text-align: center">Episode</th>
    <th>Title</th>
-   <th style="width: 85px; text-align: right">Time Since</th>
+   <th style="width: 85px; text-align: right">Time Until</th>
   </tr>
  </thead>'."\n";
  

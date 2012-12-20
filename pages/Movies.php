@@ -98,12 +98,22 @@ else {
 	foreach($Movies AS $Movie) {
 		$WatchedIcon = ($Movie->playcount) ? '<img src="images/icons/watched.png" />' : '';
 		
+		if(property_exists($Movie, 'files')) {
+			$Files = '';
+			foreach($Movie->files AS $File) {
+				$Files .= ConcatFilePath($File->network).'<br />';
+			}
+		}
+		else {
+			$Files = ConcatFilePath($Movie->file);
+		}
+		
 		echo '
 		<tr>
 		 <td>'.$WatchedIcon.'</td>
 		 <td>'.$Movie->label.'</td>
 		 <td>'.$Movie->year.'</td>
-		 <td>'.ConcatFilePath($Movie->file).'</td>
+		 <td>'.$Files.'</td>
 		 <td>
 		  <a id="FilePlay-'.$Movie->file.'" rel="ajax"><img src="images/icons/control_play.png" /></a>
 		  <a id="MovieInformation-'.$Movie->movieid.'" rel="ajax"><img src="images/icons/information.png" /></a>

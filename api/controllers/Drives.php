@@ -203,7 +203,7 @@ class Drives {
 							}
 						}
 									
-						$NewFile .= '.'.$ParsedInfo['Quality'];
+						$NewFile .= '.'.$ParsedInfo['Quality'].'.'.pathinfo($File, PATHINFO_EXTENSION);
 									
 						foreach($ParsedInfo['Episodes'] AS $ParsedEpisode) {
 							try {
@@ -224,7 +224,7 @@ class Drives {
 															      ':Episode' => $ParsedEpisode[1]));
 							}
 							catch(PDOException $e) {
-								throw new RestException(400, (isset($_GET['debug'])) ? 'MySQL: '.$e->getMessage() : 'MySQL');
+								throw new RestException(400, 'MySQL: '.$e->getMessage());
 							}
 						}
 					break;
@@ -254,7 +254,13 @@ class Drives {
 			if(@rename($File, $NewLocation.$NewFile)) {
 				$LogEntry = 'Moved "'.$File.'" to "'.$NewLocation.$NewFile.'"';
 				
-				AddLog(EVENT.'Drives', 'Success', $LogEntry);
+				if($NewLocation != $Drive.'/Unsorted') {
+					AddLog(EVENT.'Drives', 'Success', $LogEntry, 0, 'update');
+				}
+				else {
+					AddLog(EVENT.'Drives', 'Success', $LogEntry);
+				}
+				
 				throw new RestException(200, $LogEntry);
 			}
 			else {
@@ -281,10 +287,16 @@ class Drives {
 		}
 		
 		$Drive   = substr($File, 0, strpos($File, '/'));
-		$RARFile = @RarArchive::open($File);
+		
+		if(class_exists('RarArchive')) {
+			$RARFile = RarArchive::open($File);
+		}
+		else {
+			throw new RestException(500, 'RarArchive (php_rar.dll) is not loaded');
+		}
 		
 		if($RARFile === FALSE) {
-			throw new RestException(400);
+			throw new RestException(400, 'Unable to open "'.$File.'"');
 		}
 					
 		foreach($RARFile->getEntries() AS $Entry) {
@@ -413,8 +425,14 @@ class Drives {
 					if(@RecursiveDirRemove(dirname($File))) {
 						$LogEntry .= ' and deleted "'.dirname($File).'"';
 					}
-								
-					AddLog(EVENT.'Drives', 'Success', $LogEntry);
+					
+					if($NewLocation != $Drive.'/Unsorted') {
+						AddLog(EVENT.'Drives', 'Success', $LogEntry, 0, 'update');
+					}
+					else {
+						AddLog(EVENT.'Drives', 'Success', $LogEntry);
+					}
+					
 					throw new RestException(200, $LogEntry);
 				}
 				else {
@@ -472,6 +490,26 @@ class Drives {
 			
 			AddLog(EVENT.'Drives', 'Success', $LogEntry);
 			throw new RestException(200, $LogEntry);
+		}
+	}
+	
+	/**
+	 * @url POST /check
+	**/
+	function CheckDrive() {
+		echo $_POST['IsNetwork'];
+		
+		$RequiredParams = array('Share', 'User', 'Pass', 'Mount', 'IsNetwork');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
 		}
 	}
 	

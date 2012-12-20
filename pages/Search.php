@@ -66,7 +66,7 @@ else {
 	 </tr>
 	 </thead>'."\n";
 
-	foreach($Series->Series AS $Serie) {
+	foreach($Series AS $Serie) {
 		$Plot       = property_exists($Serie, 'Overview') ? ShortText($Serie->Overview, 90) : 'NA';
 		$FirstAired = property_exists($Serie, 'FirstAired') ? date('d.m.y', strtotime($Serie->FirstAired)) : 'NA';
 		$Title      = property_exists($Serie, 'SeriesName') ? $Serie->SeriesName : 'NA';

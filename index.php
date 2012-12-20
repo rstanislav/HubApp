@@ -28,6 +28,30 @@ require_once APP_PATH.'/resources/api.hub.php';
 
 <script type="text/javascript">
 $(document).ready(function() {
+	$('#IconProfile').mouseover(function() {
+		$(this).attr('src', 'images/icons/profile.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/profile_dark.png');
+	});
+	
+	$('#IconSettings').mouseover(function() {
+		$(this).attr('src', 'images/icons/settings.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/settings_dark.png');
+	});
+	
+	$('#IconLogout').mouseover(function() {
+		$(this).attr('src', 'images/icons/logout.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/logout_dark.png');
+	});
+	
+	$('#IconUsers').mouseover(function() {
+		$(this).attr('src', 'images/icons/users.png');
+	}).mouseout(function() {
+		$(this).attr('src', 'images/icons/users_dark.png');
+	});
+	
 	$('div[id|="Cover"]').mouseover(function() {
 		$('#CoverControl-' + $(this).attr('id').split('-')[1]).css('display', 'block');
 	}).mouseout(function() {
@@ -573,6 +597,18 @@ function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
    }
    
    switch($Page) {
+   	case 'Settings':
+   		include_once APP_PATH.'/pages/Settings.php';
+   	break;
+   	
+   	case 'Profile':
+   		include_once APP_PATH.'/pages/Profile.php';
+   	break;
+   	
+   	case 'Users':
+   		include_once APP_PATH.'/pages/Users.php';
+   	break;
+   	
    	case 'Series':
    		include_once APP_PATH.'/pages/Series.php';
    	break;

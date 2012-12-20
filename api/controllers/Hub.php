@@ -3,7 +3,7 @@
  * //@protected
 **/
 class Hub {
-	const HubVersion   = '3.0.1';
+	const HubVersion   = '3.1.0';
 	const MinDBVersion = '3.0.0';
 	
 	private $PDO;
@@ -76,6 +76,47 @@ class Hub {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * @url POST /check/settings
+	**/
+	function CheckSettings() {
+		$RequiredParams = array('MinimumDownloadQuality', 'MaximumDownloadQuality', 'MinimumDiskSpaceRequired', 'TheTVDBAPIKey', 'SearchURITVSeries', 'SearchURIMovies');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
+		}
+		
+		if($_POST['MinimumDownloadQuality'] > $_POST['MaximumDownloadQuality']) {
+			throw new RestException(412, 'Maximum download quality must be equal to or greater than minimum download quality');
+		}
+		
+		try {
+			require_once APP_PATH.'/api/libraries/api.thetvdb.php';
+			
+			$TheTVDB = new TheTVDBAPI($_POST['TheTVDBAPIKey']);
+		}
+		catch(Exception $e) {
+			throw new RestException(400, 'Unable to connect to TheTVDB API');
+		}
+		
+		if(!filter_var($_POST['SearchURIMovies'], FILTER_VALIDATE_URL)) {
+			throw new RestException(412, 'Search URI for movies must be a valid URL');
+		}
+		
+		if(!filter_var($_POST['SearchURITVSeries'], FILTER_VALIDATE_URL)) {
+			throw new RestException(412, 'Search URI for TV series must be a valid URL');
+		}
+		
+		throw new RestException(200);
 	}
 	
 	/**

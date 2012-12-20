@@ -494,6 +494,26 @@ class Drives {
 	}
 	
 	/**
+	 * @url POST /check
+	**/
+	function CheckDrive() {
+		echo $_POST['IsNetwork'];
+		
+		$RequiredParams = array('Share', 'User', 'Pass', 'Mount', 'IsNetwork');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
+		}
+	}
+	
+	/**
 	 * @url POST /
 	**/
 	function AddDrive($Share, $User, $Password, $Mount, $IsNetwork) {

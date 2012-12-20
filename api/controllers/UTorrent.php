@@ -147,6 +147,57 @@ class UTorrent {
 	}
 	
 	/**
+	 * @url POST /check
+	**/
+	function CheckUTorrentSettings() {
+		$RequiredParams = array('UTorrentIP', 'UTorrentPort', 'UTorrentUsername', 'UTorrentPassword', 'UTorrentWatchFolder', 'UTorrentDefaultUpSpeed', 'UTorrentDefaultDownSpeed', 'UTorrentDefinedUpSpeed', 'UTorrentDefinedDownSpeed');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
+		}
+		
+		require_once APP_PATH.'/api/libraries/api.utorrent.php';
+		
+		$this->UTorrent = new UTorrentAPI($_POST['UTorrentIP'], 
+										  $_POST['UTorrentUsername'],
+										  $_POST['UTorrentPassword'],
+										  $_POST['UTorrentPort']);
+										  
+		if(!$this->UTorrent->Token) {
+			throw new RestException(503, 'Unable to connect to uTorrent');
+		}
+		
+		if(!is_dir($_POST['UTorrentWatchFolder'])) {
+			throw new RestException(412, '"'.$_POST['UTorrentWatchFolder'].'" does not exist');
+		}
+		
+		if(!is_numeric($_POST['UTorrentDefaultUpSpeed'])) {
+			throw new RestException(412, '"UTorrentDefaultUpSpeed" is not a numeric value');
+		}
+		
+		if(!is_numeric($_POST['UTorrentDefaultDownSpeed'])) {
+			throw new RestException(412, '"UTorrentDefaultDownSpeed" is not a numeric value');
+		}
+		
+		if(!is_numeric($_POST['UTorrentDefinedUpSpeed'])) {
+			throw new RestException(412, '"UTorrentDefinedUpSpeed" is not a numeric value');
+		}
+		
+		if(!is_numeric($_POST['UTorrentDefinedDownSpeed'])) {
+			throw new RestException(412, '"UTorrentDefinedDownSpeed" is not a numeric value');
+		}
+		
+		throw new RestException(200);
+	}
+	
+	/**
 	 * @url GET /start/:HashOrAll
 	**/
 	function StartTorrent($HashOrAll) {

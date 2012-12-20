@@ -59,6 +59,58 @@ class XBMC {
 	}
 	
 	/**
+	 * @url POST /check/folder
+	**/
+	function CheckXBMCDataFolder() {
+		$RequiredParams = array('XBMCDataFolder');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
+		}
+						
+		if(is_dir($_POST['XBMCDataFolder'])) {
+			throw new RestException(200);
+		}
+		else {
+			throw new RestException(412, '"'.$_POST['XBMCDataFolder'].'" does not exist');
+		}
+	}
+	
+	/**
+	 * @url POST /check/zone
+	**/
+	function CheckZone() {
+		$RequiredParams = array('XBMCZoneName', 'XBMCZoneHost', 'XBMCZonePort', 'XBMCZoneUser', 'XBMCZonePassword');
+		
+		$PostErr = FALSE;
+		foreach($RequiredParams AS $Param) {
+			if(!filter_has_var(INPUT_POST, $Param) || empty($_POST[$Param])) {
+				$PostErr = TRUE;
+			}
+		}
+		
+		if($PostErr) {
+			throw new RestException(412, 'Required parameters are "'.implode(', ', $RequiredParams).'"');
+		}
+		
+		try {
+			$this->CheckConnection($_POST['XBMCZoneUser'], $_POST['XBMCZonePassword'], $_POST['XBMCZoneHost'], $_POST['XBMCZonePort']);
+		}
+		catch(XBMC_RPC_ConnectionException $e) {
+			throw new RestException(412, 'XBMC: '.$e->getMessage());
+		}
+		
+		throw new RestException(200);
+	}
+	
+	/**
 	 * @url GET /movies
 	**/
 	function MoviesAll() {

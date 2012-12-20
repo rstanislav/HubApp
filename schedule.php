@@ -74,7 +74,7 @@ $SerieRebuild    = GetSetting('LastSerieRebuild');
 $WishlistUpdate  = GetSetting('LastWishlistUpdate');
 $MoviesUpdate    = GetSetting('LastMoviesUpdate');
 $WishlistRefresh = GetSetting('LastWishlistRefresh');
-$Backup          = GetSetting('LastBackup');
+$Backup          = time();//GetSetting('LastBackup');
 
 $LatestUpdate = min($FolderRebuild, $SerieRefresh, $SerieRebuild, $WishlistUpdate, $MoviesUpdate, $WishlistRefresh, $Backup);
 if((date('G') >= 4 && date('G') <= 6) || (time() - $LatestUpdate) >= (60 * 60 * 24 * 2)) {

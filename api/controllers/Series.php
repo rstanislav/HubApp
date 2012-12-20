@@ -265,6 +265,13 @@ class Series {
 			if(sizeof($SerieRes)) {
 				$Data = array();
 				foreach($SerieRes AS $SerieRow) {
+					if(strlen($SerieRow['Poster'])) {
+						$FileInfo = pathinfo($SerieRow['Poster']);
+						
+						$SerieRow['Poster']      = 'posters/series/'.$FileInfo['filename'].'.'.$FileInfo['extension'];
+						$SerieRow['PosterSmall'] = 'posters/series/'.$FileInfo['filename'].'-small.'.$FileInfo['extension'];
+					}
+					
 					$EpisodesPrep = $this->PDO->prepare('SELECT
 					                                     	COUNT(ID)
 					                                     AS
@@ -342,6 +349,13 @@ class Series {
 			if(sizeof($ScheduleRes)) {
 				$Data = array();
 				foreach($ScheduleRes AS $Row) {
+					if(strlen($Row['Poster'])) {
+						$FileInfo = pathinfo($Row['Poster']);
+						
+						$Row['Poster']      = 'posters/series/'.$FileInfo['filename'].'.'.$FileInfo['extension'];
+						$Row['PosterSmall'] = 'posters/series/'.$FileInfo['filename'].'-small.'.$FileInfo['extension'];
+					}
+					
 					$Row['Season']  = sprintf('%02s', $Row['Season']);
 					$Row['Episode'] = sprintf('%02s', $Row['Episode']);
 					
@@ -575,6 +589,13 @@ class Series {
 			if(sizeof($ScheduleRes)) {
 				$Data = array();
 				foreach($ScheduleRes AS $Row) {
+					if(strlen($Row['Poster'])) {
+						$FileInfo = pathinfo($Row['Poster']);
+						
+						$Row['Poster']      = 'posters/series/'.$FileInfo['filename'].'.'.$FileInfo['extension'];
+						$Row['PosterSmall'] = 'posters/series/'.$FileInfo['filename'].'-small.'.$FileInfo['extension'];
+					}
+					
 					$Row['Season']  = sprintf('%02s', $Row['Season']);
 					$Row['Episode'] = sprintf('%02s', $Row['Episode']);
 					

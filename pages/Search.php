@@ -1,7 +1,7 @@
 <div class="head">Search &raquo; Torrents</div>
 
 <?php
-$Torrents = json_decode($Hub->Request('/rss/search/'.$_GET['Search']));
+$Torrents = json_decode($Hub->Request('/rss/search/'.urlencode($_GET['Search'])));
 
 if(is_object($Torrents) && property_exists($Torrents, 'error')) {
 	echo '<div class="notification information">'.$Torrents->error->message.'</div>'."\n";
@@ -49,7 +49,7 @@ else {
 <div class="head">Search &raquo; TheTVDB</div>
 
 <?php
-$Series = json_decode($Hub->Request('/series/search/'.$_GET['Search']));
+$Series = json_decode($Hub->Request('/series/search/'.urlencode($_GET['Search'])));
 
 if(is_object($Series) && property_exists($Series, 'error')) {
 	echo '<div class="notification information">'.$Series->error->message.'</div>'."\n";
@@ -67,7 +67,7 @@ else {
 	 </thead>'."\n";
 
 	foreach($Series AS $Serie) {
-		$Plot       = property_exists($Serie, 'Overview') ? ShortText($Serie->Overview, 90) : 'NA';
+		$Plot       = property_exists($Serie, 'Overview')   ? ShortText($Serie->Overview, 90) : 'NA';
 		$FirstAired = property_exists($Serie, 'FirstAired') ? date('d.m.y', strtotime($Serie->FirstAired)) : 'NA';
 		$Title      = property_exists($Serie, 'SeriesName') ? $Serie->SeriesName : 'NA';
 		

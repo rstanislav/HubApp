@@ -36,16 +36,16 @@ class Series {
 		
 		try {
 			$Series = $this->TheTVDB->GetSeries($SearchStr);
-		
-			if(sizeof($Series)) {
-				return json_decode(json_encode($Series), 1);
-			}
-			else {
-				throw new RestException(404, 'Did not find any TV series matching your criteria "'.$SearchStr.'"');
-			}
 		}
 		catch(Exception $e) {
 			throw new RestException(400, 'MySQL: '.$e->getMessage());
+		}
+		
+		if(is_array($Series) && sizeof($Series)) {
+			return json_decode(json_encode($Series), 1);
+		}
+		else {
+			throw new RestException(404, 'Did not find any TV series matching your criteria "'.$SearchStr.'"');
 		}
 	}
 	
@@ -1207,6 +1207,9 @@ class Series {
 					}
 					else if($Row['TorrentKey']) {
 						$Row['Status'] = 'Downloaded';
+					}
+					else if($Row['AirDate'] > time()) {
+						$Row['Status'] = 'Upcoming';
 					}
 					else {
 						$RSSObj = new RSS;

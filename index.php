@@ -570,7 +570,23 @@ function AjaxImage(URL, ImageObj, OriginalImg, Method, Data) {
        
    <h3>uTorrent</h3>
    <ul>
-   	<li class="control-panel"><a href="?Page=UTorrentCP">Control Panel</a><span id="UTorrentBadge"></span></li>
+    <?php
+    $UTorrentBadge = json_decode($Hub->Request('utorrent/badge/'));
+       
+    $Badge = '';
+    if(is_object($UTorrentBadge)) {
+       	if(property_exists($UTorrentBadge, 'Complete') && property_exists($UTorrentBadge, 'Incomplete')) {
+       		$Badge = '<span class="badge dual rightbadge blue-badge">'.$UTorrentBadge->Incomplete.'</span><span class="badge dual leftbadge red-badge">'.$UTorrentBadge->Complete.'</span>';
+       	}
+       	else if(property_exists($UTorrentBadge, 'Incomplete')) {
+       		$Badge = '<span class="badge single blue-badge">'.$UTorrentBadge->Incomplete.'</span>';
+       	}
+       	else if(property_exists($UTorrentBadge, 'Complete')) {
+       		$Badge = '<span class="badge single red-badge">'.$UTorrentBadge->Complete.'</span>';
+       	}
+    }
+    ?>
+   	<li class="control-panel"><a href="?Page=UTorrentCP">Control Panel</a><span id="UTorrentBadge"><?php echo $Badge; ?></span></li>
    </ul>
    
    <h3>RSS Feeds</h3>  

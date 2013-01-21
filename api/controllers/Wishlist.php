@@ -186,6 +186,8 @@ class Wishlist {
 			throw new RestException(412, 'Invalid request. Required parameters are "Title", "Year"');
 		}
 		
+		$Title = ConvertCase(StripIllegalChars($Title));
+		
 		try {
 			$WishlistAddPrep = $this->PDO->prepare('INSERT INTO
 														Wishlist

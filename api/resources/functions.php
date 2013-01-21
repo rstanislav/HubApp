@@ -26,6 +26,46 @@ function GetSetting($Setting) {
 	}
 }
 
+function ConvertCase($String) {
+	$Delimiters = array(' ', '-', '.', '\'', 'O\'', 'Mc');
+	$Exceptions = array('út', 'u', 's', 'és', 'utca', 'tér', 'krt', 'körút', 'sétány', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX', 'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXIX', 'XXX');
+	
+	$String = mb_convert_case($String, MB_CASE_TITLE, 'UTF-8');
+
+	foreach($Delimiters AS $DelKey => $Delimiter) {
+		$Words    = explode($Delimiter, $String);
+		$NewWords = array();
+		
+		foreach($Words AS $WordKey => $Word){
+			if(in_array(mb_strtoupper($Word, 'UTF-8'), $Exceptions)) {
+				// check exceptions list for any words that should be in upper case
+				$Word = mb_strtoupper($Word, 'UTF-8');
+			}
+			else if(in_array(mb_strtolower($Word, "UTF-8"), $Exceptions)) {
+				// check exceptions list for any words that should be in upper case
+				$Word = mb_strtolower($Word, 'UTF-8');
+			}
+			else if(!in_array($Word, $Exceptions)) {
+				// convert to uppercase (non-utf8 only)
+				$Word = ucfirst($Word);
+			}
+			
+			array_push($NewWords, $Word);
+		}
+		
+		$String = join($Delimiter, $NewWords);
+	}
+	
+	return $String;
+}
+
+function StripIllegalChars($Str) {
+	$IllegalChars = array(',', '?', '!', '\'', '\\', '/', '.', '&',   ':', ';');
+	$Replacements = array('',  '',  '',  '',   '',   '',  '',  'and', '', '');
+	
+	return str_replace($IllegalChars, $Replacements, $Str);
+}
+
 function ConvertSeconds($Seconds, $TimeFormat = TRUE) {
 	$CSeconds   = ($Seconds % 60);
 	$Remaining  = intval($Seconds / 60);

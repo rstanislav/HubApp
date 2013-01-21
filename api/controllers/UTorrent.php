@@ -99,6 +99,7 @@ class UTorrent {
 				$Torrent['UpSpeed'] = BytesToHuman($Torrent[UTORRENT_TORRENT_UPSPEED]).'/s';
 				$Torrent['DownSpeed'] = BytesToHuman($Torrent[UTORRENT_TORRENT_DOWNSPEED]).'/s';
 				$Torrent['ETA'] = $Torrent[UTORRENT_TORRENT_ETA];
+				$Torrent['ETAFormatted'] = ConvertSeconds($Torrent[UTORRENT_TORRENT_ETA]);
 				$Torrent['Label'] = $Torrent[UTORRENT_TORRENT_LABEL];
 				$Torrent['PeersConnected'] = $Torrent[UTORRENT_TORRENT_PEERS_CONNECTED];
 				$Torrent['PeersSwarm'] = $Torrent[UTORRENT_TORRENT_PEERS_SWARM];
@@ -114,6 +115,7 @@ class UTorrent {
 				$Torrent['DownloadedInBytes'] = $Torrent[UTORRENT_TORRENT_DOWNLOADED];
 				$Torrent['Downloaded'] = BytesToHuman($Torrent[UTORRENT_TORRENT_DOWNLOADED]);
 				$Torrent['Progress'] = ($Torrent[UTORRENT_TORRENT_PROGRESS] / 10).'%';
+				$Torrent['ProgressIOS'] = ($Torrent[UTORRENT_TORRENT_PROGRESS] / 1000).'';
 				
 				unset($Torrent[UTORRENT_TORRENT_HASH]);
 				unset($Torrent[UTORRENT_TORRENT_STATUS]);
@@ -492,6 +494,43 @@ class UTorrent {
 					AddLog(EVENT.'Wishlist', 'Success', 'Downloaded torrent "'.$TorrentTitle.'" from Wishlist');
 				}
 			}
+		}
+	}
+	
+	/**
+	 * @url GET /badge
+	**/
+	function GetBadge() {
+		$this->Connect();
+		
+		$Torrents = $this->UTorrent->getTorrents();;
+		
+		$Badge = array();
+		if(is_array($Torrents) && sizeof($Torrents)) {
+			$TorrentSize = sizeof($Torrents);
+	
+			$TorrentFinishedSize = 0;
+			foreach($Torrents AS $Torrent) {
+				if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000) {
+					$TorrentFinishedSize++;
+					$TorrentSize--;
+				}
+			}
+	
+			if($TorrentFinishedSize > 0 && $TorrentSize == 0) {
+				$Badge['Complete'] = $TorrentFinishedSize;
+			}
+			else if($TorrentFinishedSize > 0 && $TorrentSize > 0) {
+				$Badge['Incomplete'] = $TorrentSize;
+				$Badge['Complete']   = $TorrentFinishedSize;
+			}
+			else if($TorrentSize > 0) {
+				$Badge['Incomplete'] = $TorrentSize;
+			}
+		}
+		
+		if(sizeof($Badge)) {
+			return $Badge;
 		}
 	}
 	

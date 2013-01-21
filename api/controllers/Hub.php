@@ -3,7 +3,7 @@
  * //@protected
 **/
 class Hub {
-	const HubVersion   = '3.1.0';
+	const HubVersion   = '3.1.1';
 	const MinDBVersion = '3.0.0';
 	
 	private $PDO;

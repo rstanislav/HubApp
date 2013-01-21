@@ -496,6 +496,43 @@ class UTorrent {
 	}
 	
 	/**
+	 * @url GET /badge
+	**/
+	function GetBadge() {
+		$this->Connect();
+		
+		$Torrents = $this->UTorrent->getTorrents();;
+		
+		$Badge = array();
+		if(is_array($Torrents) && sizeof($Torrents)) {
+			$TorrentSize = sizeof($Torrents);
+	
+			$TorrentFinishedSize = 0;
+			foreach($Torrents AS $Torrent) {
+				if($Torrent[UTORRENT_TORRENT_PROGRESS] == 1000) {
+					$TorrentFinishedSize++;
+					$TorrentSize--;
+				}
+			}
+	
+			if($TorrentFinishedSize > 0 && $TorrentSize == 0) {
+				$Badge['Complete'] = $TorrentFinishedSize;
+			}
+			else if($TorrentFinishedSize > 0 && $TorrentSize > 0) {
+				$Badge['Incomplete'] = $TorrentSize;
+				$Badge['Complete']   = $TorrentFinishedSize;
+			}
+			else if($TorrentSize > 0) {
+				$Badge['Incomplete'] = $TorrentSize;
+			}
+		}
+		
+		if(sizeof($Badge)) {
+			return $Badge;
+		}
+	}
+	
+	/**
 	 * @url GET /:Hash
 	**/
 	function GetFiles($Hash) {

@@ -1208,6 +1208,9 @@ class Series {
 					else if($Row['TorrentKey']) {
 						$Row['Status'] = 'Downloaded';
 					}
+					else if($Row['AirDate'] > time()) {
+						$Row['Status'] = 'Upcoming';
+					}
 					else {
 						$RSSObj = new RSS;
 						$SearchStr = $Row['Title'].' s'.$Row['Season'].'e'.$Row['Episode'];

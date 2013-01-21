@@ -99,6 +99,7 @@ class UTorrent {
 				$Torrent['UpSpeed'] = BytesToHuman($Torrent[UTORRENT_TORRENT_UPSPEED]).'/s';
 				$Torrent['DownSpeed'] = BytesToHuman($Torrent[UTORRENT_TORRENT_DOWNSPEED]).'/s';
 				$Torrent['ETA'] = $Torrent[UTORRENT_TORRENT_ETA];
+				$Torrent['ETAFormatted'] = ConvertSeconds($Torrent[UTORRENT_TORRENT_ETA]);
 				$Torrent['Label'] = $Torrent[UTORRENT_TORRENT_LABEL];
 				$Torrent['PeersConnected'] = $Torrent[UTORRENT_TORRENT_PEERS_CONNECTED];
 				$Torrent['PeersSwarm'] = $Torrent[UTORRENT_TORRENT_PEERS_SWARM];
@@ -114,6 +115,7 @@ class UTorrent {
 				$Torrent['DownloadedInBytes'] = $Torrent[UTORRENT_TORRENT_DOWNLOADED];
 				$Torrent['Downloaded'] = BytesToHuman($Torrent[UTORRENT_TORRENT_DOWNLOADED]);
 				$Torrent['Progress'] = ($Torrent[UTORRENT_TORRENT_PROGRESS] / 10).'%';
+				$Torrent['ProgressIOS'] = ($Torrent[UTORRENT_TORRENT_PROGRESS] / 1000).'';
 				
 				unset($Torrent[UTORRENT_TORRENT_HASH]);
 				unset($Torrent[UTORRENT_TORRENT_STATUS]);

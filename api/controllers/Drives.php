@@ -232,6 +232,27 @@ class Drives {
 					case 'Movie':
 						$NewLocation = $Drive.'/Media/Movies/';
 						$NewFile     = $ParsedInfo['Title'].'.'.$ParsedInfo['Year'].'.'.$ParsedInfo['Quality'].'.'.pathinfo($File, PATHINFO_EXTENSION);
+						
+						try {
+							$WishlistUpdatePrep = $this->PDO->prepare('UPDATE
+									                              	   	Wishlist
+									                                   SET
+									                                   	DownloadDate = :Date,
+									                                   	IsFileGone = 0,
+									                                    File = :File
+									                                   WHERE
+									                                    Title = :Title
+									                                   AND
+									                                    Year = :Year');
+									                                          	
+							$WishlistUpdatePrep->execute(array(':Date'  => time(),
+							                                   ':File'  => $NewLocation.str_replace(' ', '.', $NewFile),
+										                       ':Title' => $ParsedInfo['Title'],
+														       ':Year'  => $ParsedInfo['Year']));
+						}
+						catch(PDOException $e) {
+							throw new RestException(400, 'MySQL: '.$e->getMessage());
+						}
 					break;
 					
 					default:
@@ -398,6 +419,27 @@ class Drives {
 					case 'Movie':
 						$NewLocation = $Drive.'/Media/Movies/';
 						$NewFile     = $ParsedInfo['Title'].'.'.$ParsedInfo['Year'].'.'.$ParsedInfo['Quality'].'.'.pathinfo($Entry->getName(), PATHINFO_EXTENSION);
+						
+						try {
+							$WishlistUpdatePrep = $this->PDO->prepare('UPDATE
+									                              	   	Wishlist
+									                                   SET
+									                                   	DownloadDate = :Date,
+									                                   	IsFileGone = 0,
+									                                    File = :File
+									                                   WHERE
+									                                    Title = :Title
+									                                   AND
+									                                    Year = :Year');
+									                                          	
+							$WishlistUpdatePrep->execute(array(':Date'  => time(),
+							                                  ':File'  => $NewLocation.str_replace(' ', '.', $NewFile),
+										                      ':Title' => $ParsedInfo['Title'],
+														      ':Year'  => $ParsedInfo['Year']));
+						}
+						catch(PDOException $e) {
+							throw new RestException(400, 'MySQL: '.$e->getMessage());
+						}
 					break;
 								
 					default:

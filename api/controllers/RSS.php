@@ -365,23 +365,28 @@ class RSS {
 									}
 									
 									if($Episode['File']) {
-										$OldQuality = GetQualityRank($Episode['File']);
-									
-										if($NewQuality > $OldQuality && $NewQuality >= GetSetting('MinimumDownloadQuality')) {
-											if(is_file($Episode['File'])) {
-												if(unlink($Episode['File'])) {
-													AddLog(EVENT.'Series', 'Success', 'Deleted "'.$Episode['File'].'" in favour of "'.$TorrentTitle.'"', 0, 'clean');
-												
-													$UpdateEpisodePrep = $this->PDO->prepare('UPDATE Episodes SET File = "", TorrentKey = "" WHERE File = :File');
-													$UpdateEpisodePrep->execute(array(':File' => $Episode['File']));
+										if($Episode['AirDate'] > strtotime('-1 month')) {
+											$OldQuality = GetQualityRank($Episode['File']);
+										
+											if($NewQuality > $OldQuality && $NewQuality >= GetSetting('MinimumDownloadQuality')) {
+												if(is_file($Episode['File'])) {
+													if(unlink($Episode['File'])) {
+														AddLog(EVENT.'Series', 'Success', 'Deleted "'.$Episode['File'].'" in favour of "'.$TorrentTitle.'"', 0, 'clean');
 													
-													$DownloadArr[$DownloadArrID][0] = $Torrent['URI'];
-													$DownloadArr[$DownloadArrID][1] = $Episode['ID'];
-													$DownloadArr[$DownloadArrID][2] = $Torrent['ID'];
+														$UpdateEpisodePrep = $this->PDO->prepare('UPDATE Episodes SET File = "", TorrentKey = "" WHERE File = :File');
+														$UpdateEpisodePrep->execute(array(':File' => $Episode['File']));
+														
+														$DownloadArr[$DownloadArrID][0] = $Torrent['URI'];
+														$DownloadArr[$DownloadArrID][1] = $Episode['ID'];
+														$DownloadArr[$DownloadArrID][2] = $Torrent['ID'];
+													}
+													else {
+														AddLog(EVENT.'Series', 'Failure', 'Tried to delete "'.$Episode['File'].'" in favour of "'.$TorrentTitle.'"');
+													}
 												}
-												else {
-													AddLog(EVENT.'Series', 'Failure', 'Tried to delete "'.$Episode['File'].'" in favour of "'.$TorrentTitle.'"');
-												}
+											}
+											else {
+												unset($DownloadArr[$DownloadArrID]);
 											}
 										}
 										else {
